@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameSpace.Data\GameSpace.Data.csproj" />
+    <ProjectReference Include="..\GameSpace.Services\GameSpace.Services.csproj" />
   </ItemGroup>
 
 </Project>

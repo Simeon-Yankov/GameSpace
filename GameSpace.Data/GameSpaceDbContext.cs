@@ -1,17 +1,18 @@
 ﻿using GameSpace.Data.Models;
 
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameSpace.Data
 {
-    public class GameSpaceDbContext : DbContext
+    public class GameSpaceDbContext : IdentityDbContext
     {
         public GameSpaceDbContext()
         {
         }
 
-        public GameSpaceDbContext(DbContextOptions options)
-            : base(options)
+        public GameSpaceDbContext(DbContextOptions<GameSpaceDbContext> options)
+           : base(options)
         {
         }
 

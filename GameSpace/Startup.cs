@@ -1,5 +1,7 @@
 using GameSpace.Data;
 using GameSpace.Infrstructure;
+using GameSpace.Services.Teams;
+using GameSpace.Services.Teams.Contracts;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,14 +22,25 @@ namespace GameSpace
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<GameSpaceDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            services
+                .AddDbContext<GameSpaceDbContext>(options => options
+                .UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services
+                .AddDefaultIdentity<IdentityUser>(options =>
+                {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                })
                 .AddEntityFrameworkStores<GameSpaceDbContext>();
+
             services.AddControllersWithViews();
+
+            services.AddTransient<ITeamService, TeamService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

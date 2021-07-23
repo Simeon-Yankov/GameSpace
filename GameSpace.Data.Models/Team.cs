@@ -24,10 +24,9 @@ namespace GameSpace.Data.Models
 
         public string WebsiteUrl { get; set; }
 
-        [MaxLength(IdMaxLength)]
         [ForeignKey(nameof(SocialNetwork))]
         public int? SocialNetworksId { get; init; }
 
-        public virtual SocialNetwork SocialNetwork { get; init; }
+        public virtual SocialNetwork SocialNetwork { get; set; }
     }
 }
