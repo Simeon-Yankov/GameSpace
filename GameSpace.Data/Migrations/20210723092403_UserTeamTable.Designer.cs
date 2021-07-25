@@ -4,14 +4,16 @@ using GameSpace.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GameSpace.Data.Migrations
 {
     [DbContext(typeof(GameSpaceDbContext))]
-    partial class GameSpaceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210723092403_UserTeamTable")]
+    partial class UserTeamTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,10 +86,22 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("Teams");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.UserTeam", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<int>("TeamId")
                         .HasColumnType("int");
@@ -316,13 +330,15 @@ namespace GameSpace.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
+                    b.HasOne("GameSpace.Data.Models.User", "User")
+                        .WithMany("Teams")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Team");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -384,6 +400,11 @@ namespace GameSpace.Data.Migrations
             modelBuilder.Entity("GameSpace.Data.Models.Team", b =>
                 {
                     b.Navigation("Mombers");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.User", b =>
+                {
+                    b.Navigation("Teams");
                 });
 #pragma warning restore 612, 618
         }

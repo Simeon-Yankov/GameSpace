@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,7 +16,10 @@ namespace GameSpace.Data.Models
         [MaxLength(MaxTeamName)]
         public string Name { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+        [MaxLength(IdMaxLength)]
+        public string OwnerId { get; set; }
+
+        public DateTime CreatedOn { get; init; }
 
         [MaxLength(MaxDescriptionLength)]
         public string Description { get; set; }
@@ -27,6 +31,8 @@ namespace GameSpace.Data.Models
         [ForeignKey(nameof(SocialNetwork))]
         public int? SocialNetworksId { get; init; }
 
-        public virtual SocialNetwork SocialNetwork { get; set; }
+        public virtual SocialNetwork SocialNetwork { get; init; }
+
+        public virtual ICollection<UserTeam> Mombers { get; init; }
     }
 }

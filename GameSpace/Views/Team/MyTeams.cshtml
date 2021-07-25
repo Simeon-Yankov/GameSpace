@@ -1,20 +1,20 @@
-﻿@model AddTeamServiceModel
+﻿@model AddTeamFormModel
 
-@{ 
-    ViewData["Title"] = "Create Team";
+@{
+    ViewData["Title"] = "My Teams";
 }
 
 <div class="row">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
         <h2 class="heading-margin text-center">Create Team</h2>
 
-        <form method="post">
+        <form>
             <div class="form-group">
                 <label asp-for="Name"></label>
-                <input asp-for="Name" class="form-control" placeholder="Enter a team name">
+                <input asp-for="Name" class="form-control">
                 <span asp-validation-for="Name" class="small text-danger"></span>
+                <button type="submit" class="btn btn-primary">Info</button>
             </div>
-            <button type="submit" class="btn btn-primary">Add Team</button>
         </form>
     </div>
 </div>

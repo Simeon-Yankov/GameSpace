@@ -4,14 +4,16 @@ using GameSpace.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GameSpace.Data.Migrations
 {
     [DbContext(typeof(GameSpaceDbContext))]
-    partial class GameSpaceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210723073452_DefaultUserTables")]
+    partial class DefaultUserTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,10 +64,6 @@ namespace GameSpace.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("OwnerId")
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
                     b.Property<int?>("SocialNetworksId")
                         .HasColumnType("int");
 
@@ -82,21 +80,6 @@ namespace GameSpace.Data.Migrations
                         .HasFilter("[SocialNetworksId] IS NOT NULL");
 
                     b.ToTable("Teams");
-                });
-
-            modelBuilder.Entity("GameSpace.Data.Models.UserTeam", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("TeamId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "TeamId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("UsersTeams");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -308,23 +291,6 @@ namespace GameSpace.Data.Migrations
                     b.Navigation("SocialNetwork");
                 });
 
-            modelBuilder.Entity("GameSpace.Data.Models.UserTeam", b =>
-                {
-                    b.HasOne("GameSpace.Data.Models.Team", "Team")
-                        .WithMany("Mombers")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Team");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -379,11 +345,6 @@ namespace GameSpace.Data.Migrations
             modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
                 {
                     b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("GameSpace.Data.Models.Team", b =>
-                {
-                    b.Navigation("Mombers");
                 });
 #pragma warning restore 612, 618
         }
