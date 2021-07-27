@@ -38,5 +38,9 @@
         public const int MaxCityLength = 35;
         public const int MaxZipCodeLength = 12;
         public const int MaxCountryLength = 70;
+
+        public const string DefaultTeamImageFileName = "12422580181795848664NYCS-bull-trans-T.svg.med";
+        public const string PngExtantion = ".png";
+
     }
 }

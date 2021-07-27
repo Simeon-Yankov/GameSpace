@@ -22,6 +22,8 @@ namespace GameSpace.Data
 
         public DbSet<UserTeam> UsersTeams { get; init; }
 
+        public DbSet<Appearance> Appearances { get; init; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=DESKTOP-OI0L4BE\SQLEXPRESS;Database=GameSpace;Integrated Security=true;");
@@ -38,13 +40,13 @@ namespace GameSpace.Data
                 .HasOne<IdentityUser>()
                 .WithMany()
                 .HasForeignKey(ut => ut.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserTeam>()
                 .HasOne(ut => ut.Team)
                 .WithMany(t => t.Mombers)
                 .HasForeignKey(ut => ut.TeamId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

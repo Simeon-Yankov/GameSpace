@@ -1,5 +1,7 @@
 using GameSpace.Data;
 using GameSpace.Infrstructure;
+using GameSpace.Services.Appearances;
+using GameSpace.Services.Appearances.Contracts;
 using GameSpace.Services.Teams;
 using GameSpace.Services.Teams.Contracts;
 
@@ -41,6 +43,7 @@ namespace GameSpace
             services.AddControllersWithViews();
 
             services.AddTransient<ITeamService, TeamService>();
+            services.AddTransient<IAppearanceService, AppearanceService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

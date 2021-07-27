@@ -28,6 +28,11 @@ namespace GameSpace.Data.Models
 
         public string WebsiteUrl { get; set; }
 
+        [ForeignKey(nameof(Appearance))]
+        public int? AppearanceId { get; init; }
+
+        public virtual Appearance Appearance { get; init; }
+
         [ForeignKey(nameof(SocialNetwork))]
         public int? SocialNetworksId { get; init; }
 

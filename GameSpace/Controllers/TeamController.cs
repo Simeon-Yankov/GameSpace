@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 
 using GameSpace.Data;
@@ -11,6 +12,7 @@ using GameSpace.Infrstructure;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace GameSpace.Controllers
 {
@@ -18,13 +20,17 @@ namespace GameSpace.Controllers
     {
         private readonly ITeamService teams;
 
-        public TeamController(ITeamService teams/*, GameSpaceDbContext data*/)
+        public TeamController(ITeamService teams)
         {
             this.teams = teams;
-            //this.data = data;
         }
 
-        public IActionResult MyTeams() => View();
+        public IActionResult Mine()
+        {
+            var MyTeam = this.teams.ByUser(this.User.Id());
+
+            return View(MyTeam);
+        }
 
         //public IActionResult Edit(int id)
         //{
@@ -105,7 +111,7 @@ namespace GameSpace.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create(AddTeamServiceModel team)
+        public async Task<IActionResult> Create(AddTeamServiceModel team, IFormFile image)
         {
             var nameExcists = teams.NameExcists(team.Name);
 
@@ -119,9 +125,19 @@ namespace GameSpace.Controllers
                 return View(team);
             }
 
+            var imageInMemory = new MemoryStream();
+            byte[] imageBytes = null;
+
+            if (image is not null)
+            {
+                await image?.CopyToAsync(imageInMemory);
+
+                imageBytes = imageInMemory.ToArray();
+            }
+
             var currUserId = this.User.Id();
 
-            var teamId = await teams.Create(team.Name, currUserId);
+            var teamId = await teams.Create(team.Name, imageBytes, currUserId);
 
             await teams.AddMember(teamId, currUserId);
 
