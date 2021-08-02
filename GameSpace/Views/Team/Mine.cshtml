@@ -19,11 +19,12 @@
                 {
                     <img class="card-img-top" src="data:image;base64,@System.Convert.ToBase64String(team.Image)" alt="Team @team.Name's image">
                 }
-                <div class="card-body">
-                    <h5 class="card-title">@team.Name</h5>
-                    <p class="card-text"></p>
-                    <a asp-controller="Team" asp-action="Details" asp-route-id="@team.Id" class="btn btn-primary">Details</a>
-                </div>
+            <div class="card-body">
+                <h5 class="card-title">@team.Name</h5>
+                <p class="card-text"></p>
+                <a asp-controller="Team" asp-action="Details" asp-route-id="@team.Id" class="btn btn-primary">Details</a>
+                <a asp-controller="Team" asp-action="Invite" asp-route-id="@team.Id" class="btn btn-primary">Invaite Member</a>
+            </div>
             </div>
         }
     </div>

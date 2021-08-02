@@ -1,4 +1,5 @@
 ﻿using GameSpace.Data.Models;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,8 @@ namespace GameSpace.Data
         public DbSet<UserTeam> UsersTeams { get; init; }
 
         public DbSet<Appearance> Appearances { get; init; }
+
+        public DbSet<PendingTeamRequest> PendingTeamsRequests { get; init; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

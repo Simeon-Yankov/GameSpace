@@ -1,8 +1,12 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
+using GameSpace.Models.Teams;
+using GameSpace.Models.Messages;
+using GameSpace.Services.Messages.Contracts;
 using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Teams.Models;
+using GameSpace.Services.Users.Contracts;
 using GameSpace.Infrstructure;
 
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +18,14 @@ namespace GameSpace.Controllers
     public class TeamController : Controller
     {
         private readonly ITeamService teams;
+        private readonly IUserService users;
+        private readonly IMessageService messages;
 
-        public TeamController(ITeamService teams)
+        public TeamController(ITeamService teams, IUserService users, IMessageService messages)
         {
             this.teams = teams;
+            this.users = users;
+            this.messages = messages;
         }
 
         [Authorize]
@@ -37,11 +45,96 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
+        public IActionResult Invite(int teamId) /*=> View(teamId);*/
+        {
+            var modelData = new InviteTeamFormModel
+            {
+                Id = teamId
+            };
+
+            return View(modelData);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Invite(InviteTeamFormModel model) // model too generic
+        {
+            if (model.Username is null)
+            {
+                this.ModelState.AddModelError(nameof(model.Username), "User is required.");
+            }
+
+            var teamId = model.Id;
+
+            if (!this.teams.Excists(teamId))
+            {
+                return BadRequest(); // invalid operation exception
+            }
+
+            if (!this.users.UserExcists(model.Username))
+            {
+                this.ModelState.AddModelError(nameof(model.Username), "There is no user with given name.");
+            }
+
+            if (!this.ModelState.IsValid) //x2
+            {
+                return View(model);
+            }
+
+            var senderId = this.User.Id();
+
+            if (!this.teams.IsMemberInTeam(teamId, senderId))
+            {
+                return BadRequest();
+            }
+
+            var reciverId = this.users.Id(model.Username);
+
+            if (this.teams.IsMemberInTeam(teamId, reciverId))
+            {
+                this.ModelState.AddModelError(nameof(model.Username), $"The user '{model.Username}' is already a member of the team.");
+            }
+
+            if (!this.ModelState.IsValid) //x2
+            {
+                return View(model);
+            }
+
+            var teamName = this.teams.GetName(teamId);
+
+            if (!this.messages.IsRequestSend(reciverId, teamName))
+            {
+                await this.teams.SendInvitation(senderId, reciverId, teamName);
+            }
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> AcceptInvitation(int id)
+        {
+            var messageData = this.messages.Get(id);
+
+            var teamId = this.teams.GetId(messageData.TeamName);
+
+            var isMember = this.teams.IsMemberInTeam(teamId, messageData.ReciverId);
+
+            if (!isMember)
+            {
+                await this.teams.AddMember(teamId, messageData.ReciverId);
+            }
+
+            this.messages.Delete(messageData.Id);
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [Authorize]
         public IActionResult Create() => View();
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create(AddTeamServiceModel team, IFormFile image)
+        public async Task<IActionResult> Create(AddServiceModel team, IFormFile image)
         {
             var nameExcists = this.teams.NameExcists(team.Name);
 
@@ -106,7 +199,7 @@ namespace GameSpace.Controllers
                 return View(team);
             }
 
-            await this.teams.Edit( team);
+            await this.teams.Edit(team);
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }

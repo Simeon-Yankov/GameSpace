@@ -22,17 +22,75 @@ namespace GameSpace.Services.Teams
             this.appearances = appearances;
         }
 
-        public bool Excists(int id) => data.Teams.Any(t => t.Id == id);
-
-        public bool NameExcists(string name) => this.data.Teams.Any(t => t.Name == name);
-
-        public bool ExcistsWantedName(string currName, string wantedName)
+        public int GetId(string name)
             => this.data
-                .Teams
-                .Where(t => t.Name != currName)
-                .Any(t => t.Name == wantedName);
+            .Teams
+            .Where(t => t.Name == name)
+            .Select(t => new
+            {
+                Id = t.Id
+            })
+            .First()
+            .Id;
 
-        public string GetName(int id) => this.data.Teams.First(t => t.Id == id).Name;
+        public string GetName(int id)
+            => this.data
+            .Teams
+            .Where(t => t.Id == id)
+            .Select(t => new
+            {
+                Name = t.Name
+            })
+            .First()
+            .Name;
+
+        public async Task SendInvitation(string senderId, string reciverId, string teamName)
+        {
+            var requestData = new PendingTeamRequest
+            {
+                SenderId = senderId,
+                ReciverId = reciverId,
+                TeamName = teamName
+            };
+
+            await this.data.PendingTeamsRequests.AddAsync(requestData);
+            await this.data.SaveChangesAsync();
+        }
+
+        //public IEnumerable<AddServiceModel> GetAllRequests(string userId)
+        //{
+        //    this.data
+        //        .PendingTeamsRequests
+        //        .Where(request => request.ReciverId == userId)
+        //        .Select(x => new AddServiceModel
+        //        {
+        //            Name = x.
+        //        });
+        //}
+        public async Task AddMember(int teamId, string userId)
+        {
+            var userTeamData = new UserTeam
+            {
+                UserId = userId,
+                TeamId = teamId
+            };
+
+            await this.data.UsersTeams.AddAsync(userTeamData);
+            await this.data.SaveChangesAsync();
+        }
+
+        public IEnumerable<TeamServiceModel> ByUser(string userId) // Get Owner Teams
+            => this.data
+               .Teams
+               .Where(t => t.OwnerId == userId)
+               .Select(t => new TeamServiceModel
+               {
+                   Id = t.Id,
+                   Name = t.Name,
+                   Image = t.Appearance.Image,
+                   Banner = t.Appearance.Banner
+               })
+               .ToList();
 
         public async Task<int> Create(string name, byte[] image, string ownerId)
         {
@@ -49,31 +107,6 @@ namespace GameSpace.Services.Teams
 
             return teamData.Id;
         }
-
-        public async Task AddMember(int teamId, string userId)
-        {
-            var userTeamData = new UserTeam
-            {
-                UserId = userId,
-                TeamId = teamId
-            };
-
-            await this.data.UsersTeams.AddAsync(userTeamData);
-            await this.data.SaveChangesAsync();
-        }
-
-        public IEnumerable<TeamServiceModel> ByUser(string userId)
-            => this.data
-               .Teams
-               .Where(t => t.OwnerId == userId)
-               .Select(t => new TeamServiceModel
-               {
-                   Id = t.Id,
-                   Name = t.Name,
-                   Image = t.Appearance.Image,
-                   Banner = t.Appearance.Banner
-               })
-               .ToList();
 
         public TeamDetailsServiceModel Details(int id)
             => data
@@ -92,7 +125,6 @@ namespace GameSpace.Services.Teams
                    WebsiteUrl = t.WebsiteUrl,
                })
                .FirstOrDefault();
-
 
         public async Task Edit(TeamDetailsServiceModel team)
         {
@@ -118,5 +150,26 @@ namespace GameSpace.Services.Teams
 
             await this.data.SaveChangesAsync();
         }
+
+        public bool Excists(int id) => data.Teams.Any(t => t.Id == id);
+
+        public bool NameExcists(string name) => this.data.Teams.Any(t => t.Name == name);
+
+        public bool ExcistsWantedName(string currName, string wantedName)
+            => this.data
+                .Teams
+                .Where(t => t.Name != currName)
+                .Any(t => t.Name == wantedName);
+
+        public bool IsMemberInTeam(int teamId, string userId)
+            => this.data
+                .Teams
+                .Where(t => t.Id == teamId)
+                .Select(t => new
+                {
+                    IsUserAlreadyMember = t.Mombers.Any(m => m.UserId == userId)
+                })
+                .FirstOrDefault()
+                .IsUserAlreadyMember;
     }
 }

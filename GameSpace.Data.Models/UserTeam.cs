@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using static GameSpace.Common.GlobalConstants;
-
 namespace GameSpace.Data.Models
 {
     public class UserTeam
@@ -10,6 +8,7 @@ namespace GameSpace.Data.Models
         [Required]
         public string UserId { get; init; }
 
+        [Required]
         [ForeignKey(nameof(Team))]
         public int TeamId { get; init; }
 

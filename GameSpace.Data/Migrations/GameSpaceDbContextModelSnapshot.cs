@@ -37,6 +37,36 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("Appearances");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.PendingTeamRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReciverId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("TeamName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PendingTeamsRequests");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
                 {
                     b.Property<int>("Id")

@@ -7,15 +7,11 @@ namespace GameSpace.Services.Teams.Contracts
 {
     public interface ITeamService
     {
-        bool Excists(int id);
-
-        bool NameExcists(string name);
-
-        bool ExcistsWantedName(string currName, string wantedName);
+        int GetId(string name);
 
         string GetName(int id);
 
-        Task<int> Create(string name, byte[] image, string ownerId);
+        Task SendInvitation(string senderId, string reciverId, string teamName);
 
         Task AddMember(int teamId, string userId);
 
@@ -23,8 +19,18 @@ namespace GameSpace.Services.Teams.Contracts
 
         TeamDetailsServiceModel Details(int id);
 
+        Task<int> Create(string name, byte[] image, string ownerId);
+
         Task Edit(TeamDetailsServiceModel team);
 
         Task Delete(int id);
+
+        bool Excists(int id);
+
+        bool NameExcists(string name);
+
+        bool ExcistsWantedName(string currName, string wantedName);
+
+        bool IsMemberInTeam(int teamId, string userId);
     }
 }

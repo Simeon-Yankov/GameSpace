@@ -16,7 +16,7 @@ namespace GameSpace.Data.Models
         [MaxLength(MaxTeamName)]
         public string Name { get; set; }
 
-        [MaxLength(IdMaxLength)]
+        [MaxLength(IdMax)]
         public string OwnerId { get; set; }
 
         public DateTime CreatedOn { get; init; }

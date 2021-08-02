@@ -2,8 +2,12 @@ using GameSpace.Data;
 using GameSpace.Infrstructure;
 using GameSpace.Services.Appearances;
 using GameSpace.Services.Appearances.Contracts;
+using GameSpace.Services.Messages;
+using GameSpace.Services.Messages.Contracts;
 using GameSpace.Services.Teams;
 using GameSpace.Services.Teams.Contracts;
+using GameSpace.Services.Users;
+using GameSpace.Services.Users.Contracts;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -44,6 +48,8 @@ namespace GameSpace
 
             services.AddTransient<ITeamService, TeamService>();
             services.AddTransient<IAppearanceService, AppearanceService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IMessageService, MessageService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
