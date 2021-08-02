@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 
 using GameSpace.Models.Teams;
-using GameSpace.Models.Messages;
 using GameSpace.Services.Messages.Contracts;
 using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Teams.Models;
@@ -29,27 +28,27 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Details(int id)
+        public IActionResult Details(int teamId)
         {
-            var teamData = teams.Details(id);
+            var teamData = teams.Details(teamId, this.User.Id());
 
             return View(teamData);
         }
 
         [Authorize]
-        public IActionResult Mine()
+        public IActionResult Memberships()
         {
-            var MyTeamData = this.teams.ByUser(this.User.Id());
+            var MyTeamsData = this.teams.UserMemberships(this.User.Id());
 
-            return View(MyTeamData);
+            return View(MyTeamsData);
         }
 
         [Authorize]
-        public IActionResult Invite(int teamId) /*=> View(teamId);*/
+        public IActionResult Invite(int teamId)
         {
             var modelData = new InviteTeamFormModel
             {
-                Id = teamId
+                TeamId = teamId
             };
 
             return View(modelData);
@@ -64,7 +63,7 @@ namespace GameSpace.Controllers
                 this.ModelState.AddModelError(nameof(model.Username), "User is required.");
             }
 
-            var teamId = model.Id;
+            var teamId = model.TeamId;
 
             if (!this.teams.Excists(teamId))
             {
@@ -73,7 +72,7 @@ namespace GameSpace.Controllers
 
             if (!this.users.UserExcists(model.Username))
             {
-                this.ModelState.AddModelError(nameof(model.Username), "There is no user with given name.");
+                this.ModelState.AddModelError(nameof(model.Username), "There is no existing user with the given name.");
             }
 
             if (!this.ModelState.IsValid) //x2
@@ -107,13 +106,13 @@ namespace GameSpace.Controllers
                 await this.teams.SendInvitation(senderId, reciverId, teamName);
             }
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(TeamController.Memberships), "Team");
         }
 
         [Authorize]
-        public async Task<IActionResult> AcceptInvitation(int id)
+        public async Task<IActionResult> AcceptInvitation(int requestId)
         {
-            var messageData = this.messages.Get(id);
+            var messageData = this.messages.Get(requestId);
 
             var teamId = this.teams.GetId(messageData.TeamName);
 
@@ -124,7 +123,14 @@ namespace GameSpace.Controllers
                 await this.teams.AddMember(teamId, messageData.ReciverId);
             }
 
-            this.messages.Delete(messageData.Id);
+            await this.messages.Delete(messageData.Id);
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        public async Task<IActionResult> DeclineInvitation(int requestId)
+        {
+            await this.messages.Delete(requestId);
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
@@ -175,7 +181,7 @@ namespace GameSpace.Controllers
                 return NotFound();
             }
 
-            var teamData = teams.Details(id);
+            var teamData = teams.Details(id, null);
 
             return View(teamData);
         }
@@ -209,12 +215,12 @@ namespace GameSpace.Controllers
         {
             if (!this.teams.Excists(id))
             {
-                return RedirectToAction(nameof(TeamController.Mine), "Team");
+                return RedirectToAction(nameof(TeamController.Memberships), "Team");
             }
 
-            await teams.Delete(id);
+            await this.teams.Delete(id);
 
-            return RedirectToAction(nameof(TeamController.Mine), "Team");
+            return RedirectToAction(nameof(TeamController.Memberships), "Team");
         }
     }
 }
