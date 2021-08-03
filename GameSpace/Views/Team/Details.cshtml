@@ -1,0 +1,52 @@
+﻿@model TeamDetailsServiceModel
+
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "Team Details";
+
+    var image = Model.Image;
+
+    var videoUrlExcists = Model.VideoUrl is not null;
+    var websiteUrlExcists = Model.WebsiteUrl is not null;
+    var descriptionExcists = Model.Description is not null;
+}
+@if (image is null)
+{
+    <img src="/images/12422580181795848664NYCS-bull-trans-T.svg.med.png" class="img-fluid" alt="Responsive image">
+}
+else
+{
+    <img src="data:image;base64,@System.Convert.ToBase64String(image)" class="img-fluid" alt="Responsive image">
+}
+<br>
+<dev>Owner Name: @Model.Owner.Name</dev>
+<br>
+<dev>Created On: @Model.CreatedOn</dev>
+<br>
+@if (descriptionExcists)
+{
+    <label>Description:</label>
+    <br>
+    <textarea>@Model.Description</textarea>
+    <br>
+}
+@if (videoUrlExcists)
+{
+    <dev>Video Url: @Model.VideoUrl</dev>
+    <br>
+}
+@if (websiteUrlExcists)
+{
+    <dev>Website Url: @Model.WebsiteUrl</dev>
+    <br>
+}
+@if (Model.Owner.IsOwner)
+{
+    <br>
+    <a asp-controller="Team" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-controller="Team" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+}

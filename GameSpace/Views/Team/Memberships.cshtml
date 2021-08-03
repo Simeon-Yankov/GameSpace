@@ -1,0 +1,36 @@
+﻿@model IEnumerable<TeamServiceModel>
+
+@{
+    ViewData["Title"] = "Memberships";
+}
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+    <h2 class="heading-margin text-center">All Membership Teams:</h2>
+    <div class="card-deck">
+        @foreach (var team in this.Model)
+        {
+            <div class="card mb-3" style="width: 18rem;">
+                @if (team.IsDefaultImage)
+                {
+                    <img class="card-img-top" src="/images/12422580181795848664NYCS-bull-trans-T.svg.med.png" alt="Team @team.Name's image">
+                }
+                else
+                {
+                    <img class="card-img-top" src="data:image;base64,@System.Convert.ToBase64String(team.Image)" alt="Team @team.Name's image">
+                }
+            <div class="card-body">
+                <h5 class="card-title">@team.Name</h5>
+                <p class="card-text"></p>
+                <a asp-controller="Team" asp-action="Details" asp-route-teamId="@team.Id" class="btn btn-primary">Details</a>
+                <a asp-controller="Team" asp-action="Invite" asp-route-teamId="@team.Id" class="btn btn-primary">Invite a Member</a>
+            </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (!this.Model.Any())
+{
+    <h3 class="heading-margin text-center">No teams found :(</h3>
+}

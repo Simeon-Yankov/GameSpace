@@ -1,0 +1,20 @@
+﻿@model InviteTeamFormModel
+
+@{
+    ViewData["Title"] = "Invite a Member";
+}
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <h2 class="heading-margin text-center">Invite a Member</h2>
+
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="Username"></label>
+                <input asp-for="Username" class="form-control" placeholder="Enter username">
+                <span asp-validation-for="Username" class="small text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Invite Member</button>
+        </form>
+    </div>
+</div>

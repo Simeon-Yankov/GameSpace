@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
+using AutoMapper;
+
 using GameSpace.Models.Teams;
 using GameSpace.Services.Messages.Contracts;
 using GameSpace.Services.Teams.Contracts;
@@ -19,12 +21,18 @@ namespace GameSpace.Controllers
         private readonly ITeamService teams;
         private readonly IUserService users;
         private readonly IMessageService messages;
+        private readonly IMapper mapper;
 
-        public TeamController(ITeamService teams, IUserService users, IMessageService messages)
+        public TeamController(
+            ITeamService teams,
+            IUserService users,
+            IMessageService messages,
+            IMapper mapper)
         {
             this.teams = teams;
             this.users = users;
             this.messages = messages;
+            this.mapper = mapper;
         }
 
         [Authorize]
@@ -128,6 +136,7 @@ namespace GameSpace.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
+        [Authorize]
         public async Task<IActionResult> DeclineInvitation(int requestId)
         {
             await this.messages.Delete(requestId);
