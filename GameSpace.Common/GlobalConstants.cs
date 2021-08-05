@@ -43,5 +43,7 @@
         public const string DefaultTeamImageFileName = "12422580181795848664NYCS-bull-trans-T.svg.med";
         public const string PngExtantion = ".png";
 
+        public const int MaxTeamSize = 6;
+        public const int MaxMessageLength = 100;
     }
 }

@@ -5,6 +5,7 @@ using AutoMapper;
 
 using GameSpace.Models.Teams;
 using GameSpace.Services.Messages.Contracts;
+using GameSpace.Services.Messages.Modles;
 using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Users.Contracts;
@@ -146,14 +147,14 @@ namespace GameSpace.Controllers
 
             if (!this.teams.Excists(teamName))
             {
-                return base.RedirectToAction(nameof(HomeController.Error), "Home");
+                return RedirectToAction(nameof(MessageController.All), "Message");
             }
 
             var teamId = this.teams.GetId(teamName);
 
             if (this.teams.IsTeamFull(teamId))
             {
-                return RedirectToAction(nameof(HomeController.Error), "Home"); //TODO: HOW TO SHOW NEW PAGE EORROR
+                return RedirectToAction(nameof(MessageController.All), "Message"); // SHOW SOME ERROR
             }
 
             var isMember = this.teams.IsMemberInTeam(teamId, messageData.ReciverId);
@@ -163,11 +164,13 @@ namespace GameSpace.Controllers
                 await this.teams.AddMember(teamId, messageData.ReciverId);
             }
 
-            await this.messages.Delete(messageData.Id);
+            await this.messages.Delete(messageData.RequestId);
+
+            await SendNotification(messageData, teamName);
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
-
+        
         [Authorize]
         public async Task<IActionResult> DeclineInvitation(int requestId)
         {
@@ -273,6 +276,18 @@ namespace GameSpace.Controllers
             await this.teams.Delete(teamId);
 
             return RedirectToAction(nameof(TeamController.Memberships), "Team");
+        }
+
+        private async Task SendNotification(TeamInvitationMessageServiceModel messageData, string teamName)
+        {
+            var ownerId = this.teams.GetOwnerId(teamName);
+            var message = $"{messageData.ReciverUsername} has accepted invitation for Team {teamName}.";
+
+            if (messageData.SenderId != ownerId)
+            {
+                await this.messages.SendNotification(ownerId, message);
+            }
+            await this.messages.SendNotification(messageData.SenderId, message);
         }
     }
 }

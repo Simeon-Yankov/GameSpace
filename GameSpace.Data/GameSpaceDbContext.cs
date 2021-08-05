@@ -27,6 +27,8 @@ namespace GameSpace.Data
 
         public DbSet<PendingTeamRequest> PendingTeamsRequests { get; init; }
 
+        public DbSet<Notification> Notifications { get; init; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=DESKTOP-OI0L4BE\SQLEXPRESS;Database=GameSpace;Integrated Security=true;");

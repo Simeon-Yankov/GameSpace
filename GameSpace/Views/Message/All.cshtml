@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TeamInvitationMessageViewModel>
+﻿@model IEnumerable<MessageViewModel>
 
 @{
     ViewData["Title"] = "Messages";
@@ -15,7 +15,18 @@
                     <div class="card-body">
                         <h5 class="card-title">You have invited @message.ReciverUsername.Split('@')[0] in Team @message.TeamName</h5>
                         <p class="card-text"></p>
-                        <a asp-controller="Team" asp-action="DeclineInvitation" asp-route-requestId="@message.Id" class="btn btn-danger">Decline</a>
+                        <a asp-controller="Team" asp-action="DeclineInvitation" asp-route-requestId="@message.RequestId" class="btn btn-danger">Decline</a>
+                    </div>
+                </div>
+            }
+            else if (!message.IsNotification)
+            {
+                <div class="card mb-3" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Invitation from Team @message.TeamName</h5>
+                        <p class="card-text"></p>
+                        <a asp-controller="Team" asp-action="AcceptInvitation" asp-route-requestId="@message.RequestId" class="btn btn-outline-success">Accept</a>
+                        <a asp-controller="Team" asp-action="DeclineInvitation" asp-route-requestId="@message.RequestId" class="btn btn-danger">Decline</a>
                     </div>
                 </div>
             }
@@ -23,10 +34,9 @@
             {
                 <div class="card mb-3" style="width: 18rem;">
                     <div class="card-body">
-                        <h5 class="card-title">Invitation from Team @message.TeamName</h5>
+                        <h5 class="card-title">@message.Message</h5>
                         <p class="card-text"></p>
-                        <a asp-controller="Team" asp-action="AcceptInvitation" asp-route-requestId="@message.Id" class="btn btn-outline-success">Accept</a>
-                        <a asp-controller="Team" asp-action="DeclineInvitation" asp-route-requestId="@message.Id" class="btn btn-danger">Decline</a>
+                        <a asp-controller="Message" asp-action="Clear" asp-route-notificationId="@message.NotificationId" class="btn btn-outline-success">Clear</a>
                     </div>
                 </div>
             }

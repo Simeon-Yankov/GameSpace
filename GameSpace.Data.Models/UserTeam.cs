@@ -8,6 +8,7 @@ namespace GameSpace.Data.Models
         [Required]
         public string UserId { get; init; }
 
+
         [Required]
         [ForeignKey(nameof(Team))]
         public int TeamId { get; init; }

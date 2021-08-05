@@ -10,9 +10,8 @@ namespace GameSpace.Infrstructure
     {
         public MappingProfile()
         {
-            this.CreateMap<TeamInvitationMessageServiceModel, TeamInvitationMessageViewModel>();
-            this.CreateMap<int, InviteTeamFormModel>();
-
+            this.CreateMap<TeamInvitationMessageServiceModel, MessageViewModel>();
+            this.CreateMap<NotificationMessageServiceModel, MessageViewModel>();
         }
     }
 }
