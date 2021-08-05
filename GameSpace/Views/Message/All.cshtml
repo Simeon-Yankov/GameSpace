@@ -9,14 +9,27 @@
     <div class="card-deck">
         @foreach (var message in this.Model)
         {
-            <div class="card mb-3" style="width: 18rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Invitation from Team @message.TeamName</h5>
-                    <p class="card-text"></p>
-                    <a asp-controller="Team" asp-action="AcceptInvitation" asp-route-requestId="@message.Id" class="btn btn-outline-success">Accept</a>
-                    <a asp-controller="Team" asp-action="DeclineInvitation" asp-route-requestId="@message.Id" class="btn btn-danger">Decline</a>
+            if (message.IsSender)
+            {
+                <div class="card mb-3" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">You have invited @message.ReciverUsername.Split('@')[0] in Team @message.TeamName</h5>
+                        <p class="card-text"></p>
+                        <a asp-controller="Team" asp-action="DeclineInvitation" asp-route-requestId="@message.Id" class="btn btn-danger">Decline</a>
+                    </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="card mb-3" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Invitation from Team @message.TeamName</h5>
+                        <p class="card-text"></p>
+                        <a asp-controller="Team" asp-action="AcceptInvitation" asp-route-requestId="@message.Id" class="btn btn-outline-success">Accept</a>
+                        <a asp-controller="Team" asp-action="DeclineInvitation" asp-route-requestId="@message.Id" class="btn btn-danger">Decline</a>
+                    </div>
+                </div>
+            }
         }
     </div>
 </div>

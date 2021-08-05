@@ -43,6 +43,11 @@ namespace GameSpace.Controllers
             return View(teamData);
         }
 
+        //public IActionResult Members(int teamId)
+        //{
+        //    this.teams.Member
+        //}
+
         [Authorize]
         public IActionResult Memberships()
         {
@@ -95,6 +100,11 @@ namespace GameSpace.Controllers
                 return BadRequest();
             }
 
+            if (this.teams.IsTeamFull(teamId))
+            {
+                this.ModelState.AddModelError(nameof(model.Username), $"Team is already full."); //TODO: maybe do it in summary or redirect to other page
+            }
+
             var reciverId = this.users.Id(model.Username);
 
             if (this.teams.IsMemberInTeam(teamId, reciverId))
@@ -117,12 +127,34 @@ namespace GameSpace.Controllers
             return RedirectToAction(nameof(TeamController.Memberships), "Team");
         }
 
+        //public async Task<IActionResult> CancelInvitation()
+        //{
+        //TODO: CancelInvitation
+        //}
+
         [Authorize]
         public async Task<IActionResult> AcceptInvitation(int requestId)
         {
             var messageData = this.messages.Get(requestId);
 
-            var teamId = this.teams.GetId(messageData.TeamName);
+            if (messageData is null)
+            {
+                return RedirectToAction(nameof(MessageController.All), "Message");
+            }
+
+            var teamName = messageData.TeamName;
+
+            if (!this.teams.Excists(teamName))
+            {
+                return base.RedirectToAction(nameof(HomeController.Error), "Home");
+            }
+
+            var teamId = this.teams.GetId(teamName);
+
+            if (this.teams.IsTeamFull(teamId))
+            {
+                return RedirectToAction(nameof(HomeController.Error), "Home"); //TODO: HOW TO SHOW NEW PAGE EORROR
+            }
 
             var isMember = this.teams.IsMemberInTeam(teamId, messageData.ReciverId);
 
@@ -145,13 +177,24 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> Leave(int teamId)
+        {
+            if (this.teams.Excists(teamId))
+            {
+                await this.teams.RemoveMember(teamId, this.User.Id());
+            }
+
+            return RedirectToAction(nameof(TeamController.Memberships), "Team");
+        }
+
+        [Authorize]
         public IActionResult Create() => View();
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create(AddServiceModel team, IFormFile image)
         {
-            var nameExcists = this.teams.NameExcists(team.Name);
+            var nameExcists = this.teams.Excists(team.Name);
 
             if (nameExcists)
             {
@@ -220,14 +263,14 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int teamId)
         {
-            if (!this.teams.Excists(id))
+            if (!this.teams.Excists(teamId))
             {
                 return RedirectToAction(nameof(TeamController.Memberships), "Team");
             }
 
-            await this.teams.Delete(id);
+            await this.teams.Delete(teamId);
 
             return RedirectToAction(nameof(TeamController.Memberships), "Team");
         }

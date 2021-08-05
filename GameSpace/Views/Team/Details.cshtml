@@ -44,9 +44,14 @@ else
     <dev>Website Url: @Model.WebsiteUrl</dev>
     <br>
 }
+<br>
+<a asp-controller="Team" asp-action="Members" asp-route-id="@Model.Id" class="btn btn-primary">Members</a>
 @if (Model.Owner.IsOwner)
 {
-    <br>
     <a asp-controller="Team" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-    <a asp-controller="Team" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+    <a asp-controller="Team" asp-action="Delete" asp-route-teamId="@Model.Id" class="btn btn-danger">Delete</a>
+}
+else
+{
+    <a asp-controller="Team" asp-action="Leave" asp-route-teamId="@Model.Id" class="btn btn-danger">Leave Team</a>
 }

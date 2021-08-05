@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Linq;
 using AutoMapper;
 
 using GameSpace.Infrstructure;
@@ -24,18 +24,29 @@ namespace GameSpace.Controllers
         public IActionResult All()
         {
             //TODO: Friend requests..
-            var invitationRequest = this.messages.TeamsInvitationByReciver(this.User.Id());
+
+            var userId = this.User.Id();
+
+            var invitationsSend = this.messages.TeamsInvitationBySender(userId);
+            var invitationsRecive = this.messages.TeamsInvitationByReciver(userId);
 
             var list = new List<TeamInvitationMessageViewModel>(); //TODO: Not sure!
 
-            foreach (var request in invitationRequest)
+            foreach (var request in invitationsSend)
+            {
+                var view = this.mapper.Map<TeamInvitationMessageViewModel>(request);
+
+                list.Add(view);
+            }
+
+            foreach (var request in invitationsRecive)
             {
                 var view = this.mapper.Map<TeamInvitationMessageViewModel>(request);
 
                 list.Add(view);
             }
             
-            return View(list);
+            return View(list.OrderBy(r => r.CreateOn));
         }
     }
 }
