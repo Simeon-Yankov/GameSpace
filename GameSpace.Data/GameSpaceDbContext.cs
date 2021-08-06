@@ -1,12 +1,10 @@
 ﻿using GameSpace.Data.Models;
-
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameSpace.Data
 {
-    public class GameSpaceDbContext : IdentityDbContext
+    public class GameSpaceDbContext : IdentityDbContext<User>
     {
         public GameSpaceDbContext()
         {
@@ -29,6 +27,11 @@ namespace GameSpace.Data
 
         public DbSet<Notification> Notifications { get; init; }
 
+        public DbSet<ProfileInfo> ProfilesInfo { get; init; }
+
+        public DbSet<Language> Languages { get; init; }
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=DESKTOP-OI0L4BE\SQLEXPRESS;Database=GameSpace;Integrated Security=true;");
@@ -41,11 +44,31 @@ namespace GameSpace.Data
                 entity.HasKey(ut => new { ut.UserId, ut.TeamId });
             });
 
-            modelBuilder.Entity<UserTeam>()
-                .HasOne<IdentityUser>()
-                .WithMany()
-                .HasForeignKey(ut => ut.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<UserTeam>()
+            //    .HasOne<User>()
+            //    .WithMany()
+            //    .HasForeignKey(ut => ut.UserId)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Appearance>()
+                .HasOne<ProfileInfo>()
+                .WithOne()
+                .HasForeignKey<Appearance>(a => a.ProfileInfoId);
+
+            modelBuilder.Entity<SocialNetwork>()
+                .HasOne<ProfileInfo>()
+                .WithOne()
+                .HasForeignKey<SocialNetwork>(a => a.ProfileInfoId);
+
+            modelBuilder.Entity<Appearance>()
+                .HasOne<Team>()
+                .WithOne()
+                .HasForeignKey<Appearance>(a => a.TeamId);
+
+            modelBuilder.Entity<SocialNetwork>()
+                .HasOne<Team>()
+                .WithOne()
+                .HasForeignKey<SocialNetwork>(a => a.TeamId);
 
             modelBuilder.Entity<UserTeam>()
                 .HasOne(ut => ut.Team)

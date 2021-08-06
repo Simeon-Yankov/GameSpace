@@ -1,4 +1,5 @@
 using GameSpace.Data;
+using GameSpace.Data.Models;
 using GameSpace.Infrstructure;
 using GameSpace.Services.Appearances;
 using GameSpace.Services.Appearances.Contracts;
@@ -11,7 +12,6 @@ using GameSpace.Services.Users.Contracts;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -36,7 +36,7 @@ namespace GameSpace
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services
-                .AddDefaultIdentity<IdentityUser>(options =>
+                .AddDefaultIdentity<User>(options =>
                 {
                     options.Password.RequireDigit = false;
                     options.Password.RequireLowercase = false;

@@ -13,12 +13,13 @@ namespace GameSpace.Services.Appearances
         public AppearanceService(GameSpaceDbContext data)
             => this.data = data;
 
-        public async Task<int> Create(byte[] image, byte[] banner = null)
+        public async Task<int> Create(int teamId, byte[] image, byte[] banner = null)
         {
             var appearanceData = new Appearance
             {
                 Image = image,
-                Banner = banner
+                Banner = banner,
+                TeamId = teamId
             };
 
             await this.data.Appearances.AddAsync(appearanceData);

@@ -4,6 +4,6 @@ namespace GameSpace.Services.Appearances.Contracts
 {
     public interface IAppearanceService
     {
-        Task<int> Create(byte[] image, byte[] banner = null);
+        Task<int> Create(int teamId, byte[] image, byte[] banner = null);
     }
 }

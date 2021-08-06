@@ -6,8 +6,10 @@ namespace GameSpace.Data.Models
     public class UserTeam
     {
         [Required]
+        [ForeignKey(nameof(User))]
         public string UserId { get; init; }
 
+        public virtual User User { get; init; }
 
         [Required]
         [ForeignKey(nameof(Team))]

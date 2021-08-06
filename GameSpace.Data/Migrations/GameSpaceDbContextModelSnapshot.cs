@@ -32,9 +32,57 @@ namespace GameSpace.Data.Migrations
                     b.Property<byte[]>("Image")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("ProfileInfoId")
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("ProfileInfoId1")
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TeamId1")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("ProfileInfoId")
+                        .IsUnique()
+                        .HasFilter("[ProfileInfoId] IS NOT NULL");
+
+                    b.HasIndex("ProfileInfoId1")
+                        .IsUnique()
+                        .HasFilter("[ProfileInfoId1] IS NOT NULL");
+
+                    b.HasIndex("TeamId")
+                        .IsUnique();
+
+                    b.HasIndex("TeamId1")
+                        .IsUnique()
+                        .HasFilter("[TeamId1] IS NOT NULL");
+
                     b.ToTable("Appearances");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Language", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Name")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProfileInfoId")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfileInfoId");
+
+                    b.ToTable("Languages");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.Notification", b =>
@@ -97,6 +145,32 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("PendingTeamsRequests");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.ProfileInfo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("Biography")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProfilesInfo");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
                 {
                     b.Property<int>("Id")
@@ -106,6 +180,18 @@ namespace GameSpace.Data.Migrations
 
                     b.Property<string>("FacebookUrl")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileInfoId")
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("ProfileInfoId1")
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TeamId1")
+                        .HasColumnType("int");
 
                     b.Property<string>("TwitchUrl")
                         .HasColumnType("nvarchar(max)");
@@ -118,6 +204,21 @@ namespace GameSpace.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProfileInfoId")
+                        .IsUnique()
+                        .HasFilter("[ProfileInfoId] IS NOT NULL");
+
+                    b.HasIndex("ProfileInfoId1")
+                        .IsUnique()
+                        .HasFilter("[ProfileInfoId1] IS NOT NULL");
+
+                    b.HasIndex("TeamId")
+                        .IsUnique();
+
+                    b.HasIndex("TeamId1")
+                        .IsUnique()
+                        .HasFilter("[TeamId1] IS NOT NULL");
+
                     b.ToTable("SocialNetworks");
                 });
 
@@ -127,9 +228,6 @@ namespace GameSpace.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("AppearanceId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -147,9 +245,6 @@ namespace GameSpace.Data.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
-                    b.Property<int?>("SocialNetworksId")
-                        .HasColumnType("int");
-
                     b.Property<string>("VideoUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -158,15 +253,80 @@ namespace GameSpace.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppearanceId")
-                        .IsUnique()
-                        .HasFilter("[AppearanceId] IS NOT NULL");
-
-                    b.HasIndex("SocialNetworksId")
-                        .IsUnique()
-                        .HasFilter("[SocialNetworksId] IS NOT NULL");
-
                     b.ToTable("Teams");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ProfileInfoId")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("ProfileInfoId")
+                        .IsUnique()
+                        .HasFilter("[ProfileInfoId] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.UserTeam", b =>
@@ -233,71 +393,6 @@ namespace GameSpace.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -384,19 +479,64 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("GameSpace.Data.Models.Team", b =>
+            modelBuilder.Entity("GameSpace.Data.Models.Appearance", b =>
                 {
-                    b.HasOne("GameSpace.Data.Models.Appearance", "Appearance")
-                        .WithOne("Team")
-                        .HasForeignKey("GameSpace.Data.Models.Team", "AppearanceId");
+                    b.HasOne("GameSpace.Data.Models.ProfileInfo", null)
+                        .WithOne()
+                        .HasForeignKey("GameSpace.Data.Models.Appearance", "ProfileInfoId");
 
-                    b.HasOne("GameSpace.Data.Models.SocialNetwork", "SocialNetwork")
-                        .WithOne("Team")
-                        .HasForeignKey("GameSpace.Data.Models.Team", "SocialNetworksId");
+                    b.HasOne("GameSpace.Data.Models.ProfileInfo", null)
+                        .WithOne("Appearance")
+                        .HasForeignKey("GameSpace.Data.Models.Appearance", "ProfileInfoId1");
 
-                    b.Navigation("Appearance");
+                    b.HasOne("GameSpace.Data.Models.Team", null)
+                        .WithOne()
+                        .HasForeignKey("GameSpace.Data.Models.Appearance", "TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("SocialNetwork");
+                    b.HasOne("GameSpace.Data.Models.Team", null)
+                        .WithOne("Appearance")
+                        .HasForeignKey("GameSpace.Data.Models.Appearance", "TeamId1");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Language", b =>
+                {
+                    b.HasOne("GameSpace.Data.Models.ProfileInfo", "ProfileInfo")
+                        .WithMany("Languages")
+                        .HasForeignKey("ProfileInfoId");
+
+                    b.Navigation("ProfileInfo");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
+                {
+                    b.HasOne("GameSpace.Data.Models.ProfileInfo", null)
+                        .WithOne()
+                        .HasForeignKey("GameSpace.Data.Models.SocialNetwork", "ProfileInfoId");
+
+                    b.HasOne("GameSpace.Data.Models.ProfileInfo", null)
+                        .WithOne("SocialNetwork")
+                        .HasForeignKey("GameSpace.Data.Models.SocialNetwork", "ProfileInfoId1");
+
+                    b.HasOne("GameSpace.Data.Models.Team", null)
+                        .WithOne()
+                        .HasForeignKey("GameSpace.Data.Models.SocialNetwork", "TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.Team", null)
+                        .WithOne("SocialNetwork")
+                        .HasForeignKey("GameSpace.Data.Models.SocialNetwork", "TeamId1");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.User", b =>
+                {
+                    b.HasOne("GameSpace.Data.Models.ProfileInfo", "ProfileInfo")
+                        .WithOne("User")
+                        .HasForeignKey("GameSpace.Data.Models.User", "ProfileInfoId");
+
+                    b.Navigation("ProfileInfo");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.UserTeam", b =>
@@ -407,13 +547,15 @@ namespace GameSpace.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
+                    b.HasOne("GameSpace.Data.Models.User", "User")
+                        .WithMany("Teams")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Team");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -427,7 +569,7 @@ namespace GameSpace.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("GameSpace.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -436,7 +578,7 @@ namespace GameSpace.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("GameSpace.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -451,7 +593,7 @@ namespace GameSpace.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("GameSpace.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -460,26 +602,36 @@ namespace GameSpace.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("GameSpace.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GameSpace.Data.Models.Appearance", b =>
+            modelBuilder.Entity("GameSpace.Data.Models.ProfileInfo", b =>
                 {
-                    b.Navigation("Team");
-                });
+                    b.Navigation("Appearance");
 
-            modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
-                {
-                    b.Navigation("Team");
+                    b.Navigation("Languages");
+
+                    b.Navigation("SocialNetwork");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.Team", b =>
                 {
+                    b.Navigation("Appearance");
+
                     b.Navigation("Mombers");
+
+                    b.Navigation("SocialNetwork");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.User", b =>
+                {
+                    b.Navigation("Teams");
                 });
 #pragma warning restore 612, 618
         }

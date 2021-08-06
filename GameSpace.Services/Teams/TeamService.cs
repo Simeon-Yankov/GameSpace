@@ -172,12 +172,14 @@ namespace GameSpace.Services.Teams
             {
                 Name = name,
                 CreatedOn = DateTime.UtcNow,
-                AppearanceId = await appearances.Create(image), //TODO: Implement in Create image adding
+                //Appearanc = await appearances.Create(image), //TODO: Implement in Create image adding
                 OwnerId = ownerId
             };
 
             await this.data.Teams.AddAsync(teamData);
             await this.data.SaveChangesAsync();
+
+            await this.appearances.Create(teamData.Id, image);
 
             return teamData.Id;
         }

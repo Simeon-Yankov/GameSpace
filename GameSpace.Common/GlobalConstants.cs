@@ -3,7 +3,7 @@
     public class GlobalConstants
     {
         //Global
-        public const int IdMax = 40;
+        public const int IdMaxLength = 40;
         //public const double MaxDecimalValue = (double)decimal.MaxValue;
         //public const double MaxDoublelValue = double.MaxValue;
         //public const int MaxIntValue = int.MaxValue;

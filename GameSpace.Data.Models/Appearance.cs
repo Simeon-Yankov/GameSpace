@@ -8,6 +8,8 @@
 
         public byte[] Banner { get; set; }
 
-        public Team Team { get; init; }
+        public int TeamId { get; init; }
+
+        public string ProfileInfoId { get; init; }
     }
 }

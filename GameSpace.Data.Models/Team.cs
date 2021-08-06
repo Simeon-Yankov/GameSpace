@@ -16,7 +16,7 @@ namespace GameSpace.Data.Models
         [MaxLength(MaxTeamName)]
         public string Name { get; set; }
 
-        [MaxLength(IdMax)]
+        [MaxLength(IdMaxLength)]
         public string OwnerId { get; set; }
 
         public DateTime CreatedOn { get; init; }
@@ -28,13 +28,7 @@ namespace GameSpace.Data.Models
 
         public string WebsiteUrl { get; set; }
 
-        [ForeignKey(nameof(Appearance))]
-        public int? AppearanceId { get; init; }
-
-        public virtual Appearance Appearance { get; init; }
-
-        [ForeignKey(nameof(SocialNetwork))]
-        public int? SocialNetworksId { get; init; }
+        public virtual Appearance Appearance { get; set; }
 
         public virtual SocialNetwork SocialNetwork { get; init; }
 
