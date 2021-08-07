@@ -154,7 +154,7 @@ namespace GameSpace.Services.Teams
                                 .Select(u => new OwnerServiceModel
                                 {
                                     Id = u.Id,
-                                    Name = u.UserName,
+                                    Name = u.Nickname,
                                     IsOwner = u.Id == userId
                                 })
                                 .First(),
@@ -172,14 +172,12 @@ namespace GameSpace.Services.Teams
             {
                 Name = name,
                 CreatedOn = DateTime.UtcNow,
-                //Appearanc = await appearances.Create(image), //TODO: Implement in Create image adding
+                AppearanceId = await appearances.Create(image), //TODO: Implement in Create image adding
                 OwnerId = ownerId
             };
 
             await this.data.Teams.AddAsync(teamData);
             await this.data.SaveChangesAsync();
-
-            await this.appearances.Create(teamData.Id, image);
 
             return teamData.Id;
         }

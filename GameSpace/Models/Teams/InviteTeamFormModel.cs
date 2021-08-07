@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.User;
 
 namespace GameSpace.Models.Teams
 {
@@ -8,7 +8,7 @@ namespace GameSpace.Models.Teams
     {
         public int TeamId { get; init; }
 
-        [StringLength(MaxUsernameLength, MinimumLength = MinUsernameLength)]
-        public string Username { get; init; }
+        [StringLength(NicknameMaxLength, MinimumLength = NicknameMinLength)]
+        public string Nickname { get; init; }
     }
 }

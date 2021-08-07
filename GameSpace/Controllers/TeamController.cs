@@ -72,9 +72,9 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Invite(InviteTeamFormModel model) // model too generic
         {
-            if (model.Username is null)
+            if (model.Nickname is null)
             {
-                this.ModelState.AddModelError(nameof(model.Username), "User is required.");
+                this.ModelState.AddModelError(nameof(model.Nickname), "User is required.");
             }
 
             var teamId = model.TeamId;
@@ -84,9 +84,9 @@ namespace GameSpace.Controllers
                 return BadRequest(); // invalid operation exception
             }
 
-            if (!this.users.UserExcists(model.Username))
+            if (!this.users.UserExcists(model.Nickname))
             {
-                this.ModelState.AddModelError(nameof(model.Username), "There is no existing user with the given name.");
+                this.ModelState.AddModelError(nameof(model.Nickname), "There is no existing user with the given name.");
             }
 
             if (!this.ModelState.IsValid) //x2
@@ -103,14 +103,14 @@ namespace GameSpace.Controllers
 
             if (this.teams.IsTeamFull(teamId))
             {
-                this.ModelState.AddModelError(nameof(model.Username), $"Team is already full."); //TODO: maybe do it in summary or redirect to other page
+                this.ModelState.AddModelError(nameof(model.Nickname), $"Team is already full."); //TODO: maybe do it in summary or redirect to other page
             }
 
-            var reciverId = this.users.Id(model.Username);
+            var reciverId = this.users.Id(model.Nickname);
 
             if (this.teams.IsMemberInTeam(teamId, reciverId))
             {
-                this.ModelState.AddModelError(nameof(model.Username), $"The user '{model.Username}' is already a member of the team.");
+                this.ModelState.AddModelError(nameof(model.Nickname), $"The user '{model.Nickname}' is already a member of the team.");
             }
 
             if (!this.ModelState.IsValid) //x2

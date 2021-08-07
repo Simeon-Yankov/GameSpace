@@ -10,10 +10,17 @@
         //public const int MaxRate = 100;
         public const int NonNegative = 0;
 
-        //ProfileInfo
-        public const int MaxUsernameLength = 30; //20
-        public const int MinUsernameLength = 6;
+        public class User
+        {
+            public const int NicknameMaxLength = 30;
+            public const int NicknameMinLength = 2;
 
+
+            public const int PasswordMaxLength = 100;
+            public const int PasswordMinLength = 6;
+        }
+
+        //ProfileInfo
         public const int MaxBiographyLength = 500;
 
         //PersonalInfo

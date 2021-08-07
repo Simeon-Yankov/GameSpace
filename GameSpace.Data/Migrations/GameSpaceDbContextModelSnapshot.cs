@@ -16,7 +16,7 @@ namespace GameSpace.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
+                .HasAnnotation("ProductVersion", "5.0.8")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("GameSpace.Data.Models.Appearance", b =>
@@ -32,34 +32,7 @@ namespace GameSpace.Data.Migrations
                     b.Property<byte[]>("Image")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("ProfileInfoId")
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<string>("ProfileInfoId1")
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<int>("TeamId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TeamId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ProfileInfoId")
-                        .IsUnique()
-                        .HasFilter("[ProfileInfoId] IS NOT NULL");
-
-                    b.HasIndex("ProfileInfoId1")
-                        .IsUnique()
-                        .HasFilter("[ProfileInfoId1] IS NOT NULL");
-
-                    b.HasIndex("TeamId")
-                        .IsUnique();
-
-                    b.HasIndex("TeamId1")
-                        .IsUnique()
-                        .HasFilter("[TeamId1] IS NOT NULL");
 
                     b.ToTable("Appearances");
                 });
@@ -151,6 +124,9 @@ namespace GameSpace.Data.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
+                    b.Property<int?>("AppearanceId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,4)");
 
@@ -161,12 +137,18 @@ namespace GameSpace.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<int?>("SocialNetworkId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppearanceId")
+                        .IsUnique()
+                        .HasFilter("[AppearanceId] IS NOT NULL");
+
+                    b.HasIndex("SocialNetworkId")
+                        .IsUnique()
+                        .HasFilter("[SocialNetworkId] IS NOT NULL");
 
                     b.ToTable("ProfilesInfo");
                 });
@@ -181,18 +163,6 @@ namespace GameSpace.Data.Migrations
                     b.Property<string>("FacebookUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProfileInfoId")
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<string>("ProfileInfoId1")
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<int>("TeamId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TeamId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("TwitchUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -204,21 +174,6 @@ namespace GameSpace.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfileInfoId")
-                        .IsUnique()
-                        .HasFilter("[ProfileInfoId] IS NOT NULL");
-
-                    b.HasIndex("ProfileInfoId1")
-                        .IsUnique()
-                        .HasFilter("[ProfileInfoId1] IS NOT NULL");
-
-                    b.HasIndex("TeamId")
-                        .IsUnique();
-
-                    b.HasIndex("TeamId1")
-                        .IsUnique()
-                        .HasFilter("[TeamId1] IS NOT NULL");
-
                     b.ToTable("SocialNetworks");
                 });
 
@@ -228,6 +183,9 @@ namespace GameSpace.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AppearanceId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -245,6 +203,9 @@ namespace GameSpace.Data.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
+                    b.Property<int?>("SocialNetworkId")
+                        .HasColumnType("int");
+
                     b.Property<string>("VideoUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -252,6 +213,14 @@ namespace GameSpace.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppearanceId")
+                        .IsUnique()
+                        .HasFilter("[AppearanceId] IS NOT NULL");
+
+                    b.HasIndex("SocialNetworkId")
+                        .IsUnique()
+                        .HasFilter("[SocialNetworkId] IS NOT NULL");
 
                     b.ToTable("Teams");
                 });
@@ -280,6 +249,11 @@ namespace GameSpace.Data.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Nickname")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -479,27 +453,6 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("GameSpace.Data.Models.Appearance", b =>
-                {
-                    b.HasOne("GameSpace.Data.Models.ProfileInfo", null)
-                        .WithOne()
-                        .HasForeignKey("GameSpace.Data.Models.Appearance", "ProfileInfoId");
-
-                    b.HasOne("GameSpace.Data.Models.ProfileInfo", null)
-                        .WithOne("Appearance")
-                        .HasForeignKey("GameSpace.Data.Models.Appearance", "ProfileInfoId1");
-
-                    b.HasOne("GameSpace.Data.Models.Team", null)
-                        .WithOne()
-                        .HasForeignKey("GameSpace.Data.Models.Appearance", "TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GameSpace.Data.Models.Team", null)
-                        .WithOne("Appearance")
-                        .HasForeignKey("GameSpace.Data.Models.Appearance", "TeamId1");
-                });
-
             modelBuilder.Entity("GameSpace.Data.Models.Language", b =>
                 {
                     b.HasOne("GameSpace.Data.Models.ProfileInfo", "ProfileInfo")
@@ -509,25 +462,34 @@ namespace GameSpace.Data.Migrations
                     b.Navigation("ProfileInfo");
                 });
 
-            modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
+            modelBuilder.Entity("GameSpace.Data.Models.ProfileInfo", b =>
                 {
-                    b.HasOne("GameSpace.Data.Models.ProfileInfo", null)
-                        .WithOne()
-                        .HasForeignKey("GameSpace.Data.Models.SocialNetwork", "ProfileInfoId");
+                    b.HasOne("GameSpace.Data.Models.Appearance", "Appearance")
+                        .WithOne("ProfileInfo")
+                        .HasForeignKey("GameSpace.Data.Models.ProfileInfo", "AppearanceId");
 
-                    b.HasOne("GameSpace.Data.Models.ProfileInfo", null)
-                        .WithOne("SocialNetwork")
-                        .HasForeignKey("GameSpace.Data.Models.SocialNetwork", "ProfileInfoId1");
+                    b.HasOne("GameSpace.Data.Models.SocialNetwork", "SocialNetwork")
+                        .WithOne("ProfileInfo")
+                        .HasForeignKey("GameSpace.Data.Models.ProfileInfo", "SocialNetworkId");
 
-                    b.HasOne("GameSpace.Data.Models.Team", null)
-                        .WithOne()
-                        .HasForeignKey("GameSpace.Data.Models.SocialNetwork", "TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Appearance");
 
-                    b.HasOne("GameSpace.Data.Models.Team", null)
-                        .WithOne("SocialNetwork")
-                        .HasForeignKey("GameSpace.Data.Models.SocialNetwork", "TeamId1");
+                    b.Navigation("SocialNetwork");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Team", b =>
+                {
+                    b.HasOne("GameSpace.Data.Models.Appearance", "Appearance")
+                        .WithOne("Team")
+                        .HasForeignKey("GameSpace.Data.Models.Team", "AppearanceId");
+
+                    b.HasOne("GameSpace.Data.Models.SocialNetwork", "SocialNetwork")
+                        .WithOne("Team")
+                        .HasForeignKey("GameSpace.Data.Models.Team", "SocialNetworkId");
+
+                    b.Navigation("Appearance");
+
+                    b.Navigation("SocialNetwork");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.User", b =>
@@ -609,24 +571,30 @@ namespace GameSpace.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.Appearance", b =>
+                {
+                    b.Navigation("ProfileInfo");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.ProfileInfo", b =>
                 {
-                    b.Navigation("Appearance");
-
                     b.Navigation("Languages");
-
-                    b.Navigation("SocialNetwork");
 
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
+                {
+                    b.Navigation("ProfileInfo");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.Team", b =>
                 {
-                    b.Navigation("Appearance");
-
                     b.Navigation("Mombers");
-
-                    b.Navigation("SocialNetwork");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.User", b =>

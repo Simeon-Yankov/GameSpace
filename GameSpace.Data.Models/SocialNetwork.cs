@@ -15,8 +15,8 @@ namespace GameSpace.Data.Models
 
         public string YoutubeUrl { get; set; }
 
-        public int TeamId { get; init; }
+        public ProfileInfo ProfileInfo { get; init; }
 
-        public string ProfileInfoId { get; init; }
+        public Team Team { get; init; }
     }
 }

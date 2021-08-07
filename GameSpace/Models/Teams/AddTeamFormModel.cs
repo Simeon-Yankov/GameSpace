@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.User;
 
 namespace GameSpace.Models.Teams
 {
     public class AddTeamFormModel
     {
         [Required]
-        [StringLength(MaxUsernameLength, MinimumLength = MinUsernameLength)]
+        [StringLength(NicknameMaxLength, MinimumLength = NicknameMinLength)]
         public string Name { get; init; }
     }
 }

@@ -50,26 +50,6 @@ namespace GameSpace.Data
             //    .HasForeignKey(ut => ut.UserId)
             //    .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Appearance>()
-                .HasOne<ProfileInfo>()
-                .WithOne()
-                .HasForeignKey<Appearance>(a => a.ProfileInfoId);
-
-            modelBuilder.Entity<SocialNetwork>()
-                .HasOne<ProfileInfo>()
-                .WithOne()
-                .HasForeignKey<SocialNetwork>(a => a.ProfileInfoId);
-
-            modelBuilder.Entity<Appearance>()
-                .HasOne<Team>()
-                .WithOne()
-                .HasForeignKey<Appearance>(a => a.TeamId);
-
-            modelBuilder.Entity<SocialNetwork>()
-                .HasOne<Team>()
-                .WithOne()
-                .HasForeignKey<SocialNetwork>(a => a.TeamId);
-
             modelBuilder.Entity<UserTeam>()
                 .HasOne(ut => ut.Team)
                 .WithMany(t => t.Mombers)
