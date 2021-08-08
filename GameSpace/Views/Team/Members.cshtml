@@ -1,78 +1,47 @@
-﻿
+﻿@model TeamMembersServiceModel
 
-<div class="col-xl-3 col-md-6 mb-4 ">
-    <div class="card border-0 ">
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">
-                    <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="avatar">
+@{
+    ViewData["Title"] = "Members";
+}
+
+@foreach (var member in Model.Members)
+{
+    <div class="col-xl-3 col-md-6 mb-4 ">
+        <div class="card border-0 ">
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        @if (member.IsDefaultImage)
+                        {
+                            <img src="/images/Profile.jpg" class="card-img-top" alt="Profile picture">
+                        }
+                        else
+                        {
+                            <img src="data:image;base64,@System.Convert.ToBase64String(member.Image)" class="card-img-top" alt="Profile picture">
+                        }
                     <div class="card-body text-center ">
-                        <h5 class="card-title mb-0">Member One</h5>
-                        <div class="card-text text-black-50">Team Lead</div>
+                        <h5 class="card-title mb-0">@member.Nickname</h5>
+                        @if (member.IsMemberOwner)
+                        {
+                            <div class="card-text text-black-50">Team Lead</div>
+                        }
+                        else
+                        {
+                            <div class="card-text text-black-50">Member</div>
+                            @if (this.Model.IsOwner)
+                            {
+                                <a asp-controller="Team" asp-action="PromoteToOwner" asp-route-teamId="@Model.TeamId" asp-route-memberId="@member.Id" class="btn btn-warning">Promote to owner</a>
+                                <a asp-controller="Team" asp-action="Leave" asp-route-teamId="@Model.TeamId" asp-route-memberId="@member.Id" class="btn btn-danger">Kick</a>
+                            }
+                        }
                     </div>
-                </div>
-                <div class="flip-card-back">
-                    <h1 class="person text- ">Member One</h1>
-                    <p class="description text-black-50">This is some description about the member of the team, which appears at the back of card and the image appears at the top of the front side with their social media links and the position of the member.</p> <a href="#" class="fa fa-facebook"></a> <a href="#" class="fa fa-twitter"></a> <a href="#" class="fa fa-linkedin"></a>
+                    </div>
+                    @*<div class="flip-card-back">
+                            <h1 class="person text- ">@member.Nickname</h1>
+                            <p class="description text-black-50">This is some description about the member of the team, which appears at the back of card and the image appears at the top of the front side with their social media links and the position of the member.</p> <a href="#" class="fa fa-facebook"></a> <a href="#" class="fa fa-twitter"></a> <a href="#" class="fa fa-linkedin"></a>
+                        </div>*@
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-0 ">
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">
-                    <img src="https://images.unsplash.com/photo-1557862921-37829c790f19?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80" class="card-img-top" alt="avatar">
-                    <div class="card-body text-center ">
-                        <h5 class="card-title mb-0">Member Two</h5>
-                        <div class="card-text text-black-50">Web Developer</div>
-                    </div>
-                </div>
-                <div class="flip-card-back">
-                    <h1 class="person text- ">Member Two</h1>
-                    <p class="description text-black-50">This is some description about the member of the team, which appears at the back of card and the image appears at the top of the front side with their social media links and the position of the member.</p> <a href="#" class="fa fa-facebook"></a> <a href="#" class="fa fa-twitter"></a> <a href="#" class="fa fa-linkedin"></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-0 ">
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">
-                    <img src="https://images.unsplash.com/photo-1496345875659-11f7dd282d1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80" class="card-img-top" alt="avatar">
-                    <div class="card-body text-center ">
-                        <h5 class="card-title mb-0">Member Three</h5>
-                        <div class="card-text text-black-50">Software Tester</div>
-                    </div>
-                </div>
-                <div class="flip-card-back">
-                    <h1 class="person text- ">Member Three</h1>
-                    <p class="description text-black-50">This is some description about the member of the team, which appears at the back of card and the image appears at the top of the front side with their social media links and the position of the member.</p> <a href="#" class="fa fa-facebook"></a> <a href="#" class="fa fa-twitter"></a> <a href="#" class="fa fa-linkedin"></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-0 ">
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">
-                    <img src="https://images.unsplash.com/photo-1473700216830-7e08d47f858e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="avatar">
-                    <div class="card-body text-center ">
-                        <h5 class="card-title mb-0">Member Four</h5>
-                        <div class="card-text text-black-50">Web Designer</div>
-                    </div>
-                </div>
-                <div class="flip-card-back">
-                    <h1 class="person text- ">Member Four</h1>
-                    <p class="description text-black-50">This is some description about the member of the team, which appears at the back of card and the image appears at the top of the front side with their social media links and the position of the member .</p> <a href="#" class="fa fa-facebook"></a> <a href="#" class="fa fa-twitter"></a> <a href="#" class="fa fa-linkedin"></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+}

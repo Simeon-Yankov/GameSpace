@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using static GameSpace.Common.GlobalConstants;
+
+namespace GameSpace.Data.Models
+{
+    public class ProfileInfo
+    {
+        public ProfileInfo()
+        {
+            this.Id = Guid.NewGuid().ToString();
+
+            this.Languages = new HashSet<Language>();
+        }
+
+        [Key]
+        [MaxLength(IdMaxLength)]
+        public string Id { get; init; }
+
+        [Column(TypeName = "decimal(18,4)")]
+        public decimal Balance { get; set; }
+
+        [MaxLength(MaxBiographyLength)]
+        public string Biography { get; set; }
+
+        public DateTime CreatedOn { get; init; }
+
+        [ForeignKey(nameof(Appearance))]
+        public int? AppearanceId { get; init; }
+
+        public virtual Appearance Appearance { get; init; }
+
+        [ForeignKey(nameof(SocialNetwork))]
+        public int? SocialNetworkId { get; init; }
+
+        public virtual SocialNetwork SocialNetwork { get; init; }
+
+        public virtual User User { get; init; }
+
+        public virtual ICollection<Language> Languages { get; init; }
+    }
+}

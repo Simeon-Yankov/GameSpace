@@ -8,7 +8,6 @@ using GameSpace.Data;
 using GameSpace.Infrstructure;
 using GameSpace.Models.Messages;
 using GameSpace.Services.Messages.Contracts;
-using GameSpace.Services.Messages.Modles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

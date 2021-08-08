@@ -1,10 +1,5 @@
 ﻿@model TeamDetailsServiceModel
 
-@using Microsoft.AspNetCore.Identity
-
-@inject SignInManager<User> SignInManager
-@inject UserManager<User> UserManager
-
 @{
     ViewData["Title"] = "Team Details";
 
@@ -45,7 +40,7 @@ else
     <br>
 }
 <br>
-<a asp-controller="Team" asp-action="Members" asp-route-id="@Model.Id" class="btn btn-primary">Members</a>
+<a asp-controller="Team" asp-action="Members" asp-route-teamId="@Model.Id" class="btn btn-primary">Members</a>
 @if (Model.Owner.IsOwner)
 {
     <a asp-controller="Team" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>

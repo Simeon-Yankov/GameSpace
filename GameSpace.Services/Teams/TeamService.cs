@@ -113,6 +113,19 @@ namespace GameSpace.Services.Teams
             await this.data.SaveChangesAsync();
         }
 
+        public IEnumerable<TeamServiceModel> ByUser(string userId) // Get Owner Teams
+            => this.data
+               .Teams
+               .Where(t => t.OwnerId == userId)
+               .Select(t => new TeamServiceModel
+               {
+                   Id = t.Id,
+                   Name = t.Name,
+                   Image = t.Appearance.Image,
+                   Banner = t.Appearance.Banner
+               })
+               .ToList();
+
         public IEnumerable<TeamServiceModel> UserMemberships(string userId)
              => this.data
                 .Teams
@@ -126,18 +139,25 @@ namespace GameSpace.Services.Teams
                 })
                .ToList();
 
-        public IEnumerable<TeamServiceModel> ByUser(string userId) // Get Owner Teams
+        public TeamMembersServiceModel Members(string currentUserId, int teamId)
             => this.data
-               .Teams
-               .Where(t => t.OwnerId == userId)
-               .Select(t => new TeamServiceModel
-               {
-                   Id = t.Id,
-                   Name = t.Name,
-                   Image = t.Appearance.Image,
-                   Banner = t.Appearance.Banner
-               })
-               .ToList();
+                .Teams
+                .Where(t => t.Id == teamId)
+                .Select(t => new TeamMembersServiceModel
+                {
+                    TeamId = t.Id,
+                    IsOwner = t.Mombers.Any(m => m.Team.OwnerId == currentUserId),
+                    Members = t
+                            .Mombers
+                            .Select(m => new TeamMemberServiceModel
+                            {
+                                Id = m.UserId,
+                                Nickname = m.User.Nickname,
+                                Image = m.User.ProfileInfo.Appearance.Image,
+                                IsMemberOwner = m.UserId == m.Team.OwnerId,
+                            })
+                })
+                .FirstOrDefault();
 
         public TeamDetailsServiceModel Details(int teamId, string userId)
             => data
@@ -165,6 +185,17 @@ namespace GameSpace.Services.Teams
                    WebsiteUrl = t.WebsiteUrl,
                })
                .First();
+
+        public async Task PromoteToOwner(int teamId, string userId)
+        {
+            var teamData = this.data
+                            .Teams
+                            .FirstOrDefault(t => t.Id == teamId);
+
+            teamData.OwnerId = userId;
+
+            await this.data.SaveChangesAsync();
+        }
 
         public async Task<int> Create(string name, byte[] image, string ownerId)
         {

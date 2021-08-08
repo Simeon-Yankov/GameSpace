@@ -3,17 +3,17 @@ using System.Threading.Tasks;
 
 using AutoMapper;
 
+using GameSpace.Infrstructure;
 using GameSpace.Models.Teams;
 using GameSpace.Services.Messages.Contracts;
 using GameSpace.Services.Messages.Modles;
 using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Users.Contracts;
-using GameSpace.Infrstructure;
 
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GameSpace.Controllers
 {
@@ -50,14 +50,6 @@ namespace GameSpace.Controllers
         //}
 
         [Authorize]
-        public IActionResult Memberships()
-        {
-            var MyTeamsData = this.teams.UserMemberships(this.User.Id());
-
-            return View(MyTeamsData);
-        }
-
-        [Authorize]
         public IActionResult Invite(int teamId)
         {
             var modelData = new InviteTeamFormModel
@@ -84,7 +76,7 @@ namespace GameSpace.Controllers
                 return BadRequest(); // invalid operation exception
             }
 
-            if (!this.users.UserExcists(model.Nickname))
+            if (!this.users.UserExcistsByNickname(model.Nickname))
             {
                 this.ModelState.AddModelError(nameof(model.Nickname), "There is no existing user with the given name.");
             }
@@ -128,11 +120,6 @@ namespace GameSpace.Controllers
             return RedirectToAction(nameof(TeamController.Memberships), "Team");
         }
 
-        //public async Task<IActionResult> CancelInvitation()
-        //{
-        //TODO: CancelInvitation
-        //}
-
         [Authorize]
         public async Task<IActionResult> AcceptInvitation(int requestId)
         {
@@ -170,7 +157,7 @@ namespace GameSpace.Controllers
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
-        
+
         [Authorize]
         public async Task<IActionResult> DeclineInvitation(int requestId)
         {
@@ -180,12 +167,53 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Leave(int teamId)
+        public IActionResult Memberships()
         {
+            var MyTeamsData = this.teams.UserMemberships(this.User.Id());
+
+            return View(MyTeamsData);
+        }
+
+        [Authorize]
+        public IActionResult Members(int teamId)
+        {
+            var teamMembersData = this.teams.Members(this.User.Id(), teamId);
+
+            return View(teamMembersData);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Leave(int teamId, string memberId = null)
+        {
+
             if (this.teams.Excists(teamId))
             {
-                await this.teams.RemoveMember(teamId, this.User.Id());
+                memberId ??= this.User.Id();
+                await this.teams.RemoveMember(teamId, memberId);
             }
+
+            return RedirectToAction(nameof(TeamController.Memberships), "Team");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> PromoteToOwner(int teamId, string memberId)
+        {
+            if (!this.users.UserExcistsById(memberId)) //TODO: when you del you adc
+            {
+                return RedirectToAction(nameof(TeamController.Memberships), "Team"); //TODO: maybe throw bad request 3x
+            }
+
+            if (!this.teams.Excists(teamId))
+            {
+                return RedirectToAction(nameof(TeamController.Memberships), "Team");
+            }
+
+            if (!this.teams.IsMemberInTeam(teamId, memberId))
+            {
+                return RedirectToAction(nameof(TeamController.Memberships), "Team");
+            }
+
+            await this.teams.PromoteToOwner(teamId, memberId);
 
             return RedirectToAction(nameof(TeamController.Memberships), "Team");
         }

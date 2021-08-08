@@ -12,19 +12,22 @@ namespace GameSpace.Services.Teams.Contracts
         string GetName(int id);
 
         string GetOwnerId(string teamName);
+
         Task SendInvitation(string senderId, string reciverId, string teamName);
 
         Task AddMember(int teamId, string userId);
 
         Task RemoveMember(int teamId, string userId);
 
-        //IEnumerable<TeamMemberServiceModel> AllMembers(int teamId);
+        IEnumerable<TeamServiceModel> ByUser(string userId);
 
         IEnumerable<TeamServiceModel> UserMemberships(string userId);
 
-        IEnumerable<TeamServiceModel> ByUser(string userId);
+        TeamMembersServiceModel Members(string currentUserId, int teamId);
 
         TeamDetailsServiceModel Details(int id, string userId);
+
+        Task PromoteToOwner(int teamId, string userId);
 
         Task<int> Create(string name, byte[] image, string ownerId);
 
