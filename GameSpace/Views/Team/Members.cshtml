@@ -4,44 +4,49 @@
     ViewData["Title"] = "Members";
 }
 
-@foreach (var member in Model.Members)
-{
-    <div class="col-xl-3 col-md-6 mb-4 ">
-        <div class="card border-0 ">
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        @if (member.IsDefaultImage)
-                        {
-                            <img src="/images/Profile.jpg" class="card-img-top" alt="Profile picture">
-                        }
-                        else
-                        {
-                            <img src="data:image;base64,@System.Convert.ToBase64String(member.Image)" class="card-img-top" alt="Profile picture">
-                        }
-                    <div class="card-body text-center ">
-                        <h5 class="card-title mb-0">@member.Nickname</h5>
-                        @if (member.IsMemberOwner)
-                        {
-                            <div class="card-text text-black-50">Team Lead</div>
-                        }
-                        else
-                        {
-                            <div class="card-text text-black-50">Member</div>
-                            @if (this.Model.IsOwner)
+<div class="card-deck">
+    @foreach (var member in Model.Members)
+    {
+        <div class="col-xl-3 col-md-6 mb-4 ">
+            <div class="card border-0 ">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            @if (member.IsDefaultImage)
                             {
-                                <a asp-controller="Team" asp-action="PromoteToOwner" asp-route-teamId="@Model.TeamId" asp-route-memberId="@member.Id" class="btn btn-warning">Promote to owner</a>
-                                <a asp-controller="Team" asp-action="Leave" asp-route-teamId="@Model.TeamId" asp-route-memberId="@member.Id" class="btn btn-danger">Kick</a>
+                                <img src="/images/Profile.jpg" class="card-img-top" alt="Profile picture">
                             }
-                        }
+                            else
+                            {
+                                <img src="data:image;base64,@System.Convert.ToBase64String(member.Image)" class="card-img-top" alt="Profile picture">
+                            }
+                            <div class="card-body text-center ">
+                                <h5 class="card-title mb-0">@member.Nickname</h5>
+                                @if (member.IsMemberOwner)
+                                {
+                                    <div class="card-text text-black-50">Team Lead</div>
+                                }
+                                else
+                                {
+                                    <div class="card-text text-black-50">Member</div>
+                                    <br />
+                                    @if (this.Model.IsOwner)
+                                    {
+                                        <div class="accordion">
+                                            <a asp-controller="Team" asp-action="PromoteToOwner" asp-route-teamId="@Model.TeamId" asp-route-memberId="@member.Id" class="btn btn-outline-warning">Promote to owner</a>
+                                            <a asp-controller="Team" asp-action="Leave" asp-route-teamId="@Model.TeamId" asp-route-memberId="@member.Id" class="btn btn-outline-danger">Kick</a>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        @*<div class="flip-card-back">
+                                <h1 class="person text- ">@member.Nickname</h1>
+                                <p class="description text-black-50">This is some description about the member of the team, which appears at the back of card and the image appears at the top of the front side with their social media links and the position of the member.</p> <a href="#" class="fa fa-facebook"></a> <a href="#" class="fa fa-twitter"></a> <a href="#" class="fa fa-linkedin"></a>
+                            </div>*@
                     </div>
-                    </div>
-                    @*<div class="flip-card-back">
-                            <h1 class="person text- ">@member.Nickname</h1>
-                            <p class="description text-black-50">This is some description about the member of the team, which appears at the back of card and the image appears at the top of the front side with their social media links and the position of the member.</p> <a href="#" class="fa fa-facebook"></a> <a href="#" class="fa fa-twitter"></a> <a href="#" class="fa fa-linkedin"></a>
-                        </div>*@
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
+</div>

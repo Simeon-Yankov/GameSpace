@@ -3,50 +3,53 @@
 @{
     ViewData["Title"] = "Team Details";
 
-    var image = Model.Image;
+    var image = Model.Appearance.Image;
 
     var videoUrlExcists = Model.VideoUrl is not null;
     var websiteUrlExcists = Model.WebsiteUrl is not null;
     var descriptionExcists = Model.Description is not null;
 }
-@if (image is null)
-{
-    <img src="/images/12422580181795848664NYCS-bull-trans-T.svg.med.png" class="img-fluid" alt="Responsive image">
-}
-else
-{
-    <img src="data:image;base64,@System.Convert.ToBase64String(image)" class="img-fluid" alt="Responsive image">
-}
-<br>
-<dev>Owner Name: @Model.Owner.Name</dev>
-<br>
-<dev>Created On: @Model.CreatedOn</dev>
-<br>
-@if (descriptionExcists)
-{
-    <label>Description:</label>
+<div class="container-fluid">
+    @if (image is null)
+    {
+        <img src="/images/12422580181795848664NYCS-bull-trans-T.svg.med.png" class="img-fluid" alt="Responsive image">
+    }
+    else
+    {
+        <img src="data:image;base64,@System.Convert.ToBase64String(image)" class="img-fluid" alt="Responsive image">
+    }
     <br>
-    <textarea>@Model.Description</textarea>
     <br>
-}
-@if (videoUrlExcists)
-{
-    <dev>Video Url: @Model.VideoUrl</dev>
+    <dev>Owner Name: @Model.Owner.Name</dev>
     <br>
-}
-@if (websiteUrlExcists)
-{
-    <dev>Website Url: @Model.WebsiteUrl</dev>
+    <dev>Created On: @Model.CreatedOn</dev>
     <br>
-}
-<br>
-<a asp-controller="Team" asp-action="Members" asp-route-teamId="@Model.Id" class="btn btn-primary">Members</a>
-@if (Model.Owner.IsOwner)
-{
-    <a asp-controller="Team" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-    <a asp-controller="Team" asp-action="Delete" asp-route-teamId="@Model.Id" class="btn btn-danger">Delete</a>
-}
-else
-{
-    <a asp-controller="Team" asp-action="Leave" asp-route-teamId="@Model.Id" class="btn btn-danger">Leave Team</a>
-}
+    @if (descriptionExcists)
+    {
+        <label>Description:</label>
+        <br>
+        <textarea>@Model.Description</textarea>
+        <br>
+    }
+    @if (videoUrlExcists)
+    {
+        <dev>Video Url: @Model.VideoUrl</dev>
+        <br>
+    }
+    @if (websiteUrlExcists)
+    {
+        <dev>Website Url: @Model.WebsiteUrl</dev>
+        <br>
+    }
+    <br>
+    <a asp-controller="Team" asp-action="Members" asp-route-teamId="@Model.Id" class="btn btn-outline-primary">Members</a>
+    @if (Model.Owner.IsOwner)
+    {
+        <a asp-controller="Team" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning">Edit</a>
+        <a asp-controller="Team" asp-action="Delete" asp-route-teamId="@Model.Id" class="btn btn-outline-danger">Delete</a>
+    }
+    else
+    {
+        <a asp-controller="Team" asp-action="Leave" asp-route-teamId="@Model.Id" class="btn btn-danger">Leave Team</a>
+    }
+</div>

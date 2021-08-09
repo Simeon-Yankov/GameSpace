@@ -21,7 +21,7 @@
         }
 
         //ProfileInfo
-        public const int MaxBiographyLength = 500;
+        public const int BiographyMaxLength = 120;
 
         //PersonalInfo
         public const int MaxNameLength = 50;

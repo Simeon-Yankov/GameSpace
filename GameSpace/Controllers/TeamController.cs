@@ -76,7 +76,7 @@ namespace GameSpace.Controllers
                 return BadRequest(); // invalid operation exception
             }
 
-            if (!this.users.UserExcistsByNickname(model.Nickname))
+            if (!this.users.ExcistsByNickname(model.Nickname))
             {
                 this.ModelState.AddModelError(nameof(model.Nickname), "There is no existing user with the given name.");
             }
@@ -198,7 +198,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> PromoteToOwner(int teamId, string memberId)
         {
-            if (!this.users.UserExcistsById(memberId)) //TODO: when you del you adc
+            if (!this.users.ExcistsById(memberId)) //TODO: when you del you adc
             {
                 return RedirectToAction(nameof(TeamController.Memberships), "Team"); //TODO: maybe throw bad request 3x
             }
@@ -266,21 +266,23 @@ namespace GameSpace.Controllers
 
             var teamData = teams.Details(id, null);
 
-            return View(teamData);
+            var teamForm = this.mapper.Map<EditTeamFromModel>(teamData);
+
+            return View(teamForm);
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Edit(TeamDetailsServiceModel team)
+        public async Task<IActionResult> Edit(EditTeamFromModel team)
         {
             if (!this.teams.Excists(team.Id))
             {
-                return NotFound(); //TODO: NotFound redirect.
+                return BadRequest(); //TODO: NotFound redirect.
             }
 
-            if (this.teams.ExcistsWantedName(teams.GetName(team.Id), team.Name))
+            if (this.teams.ExcistsWantedName(this.teams.GetName(team.Id), team.Name))
             {
-                this.ModelState.AddModelError(nameof(team.Name), "There is already team with this name.");
+                this.ModelState.AddModelError(nameof(team.Name), "There is already a team with this given name.");
             }
 
             if (!this.ModelState.IsValid)
@@ -288,7 +290,12 @@ namespace GameSpace.Controllers
                 return View(team);
             }
 
-            await this.teams.Edit(team);
+            await this.teams.Edit(
+                team.Id,
+                team.Name,
+                team.Description,
+                team.VideoUrl,
+                team.WebsiteUrl);
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }

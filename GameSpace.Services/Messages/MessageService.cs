@@ -68,7 +68,7 @@ namespace GameSpace.Services.Messages
 
             foreach (var teamInitation in teamsInvitation)
             {
-                teamInitation.ReciverUsername = this.users.GetName(teamInitation.ReciverId);
+                teamInitation.ReciverUsername = this.users.GetNickname(teamInitation.ReciverId);
             }
 
             return teamsInvitation;
@@ -105,7 +105,7 @@ namespace GameSpace.Services.Messages
 
             if (requestData is not null)
             {
-                requestData.ReciverUsername = this.users.GetName(requestData.ReciverId);
+                requestData.ReciverUsername = this.users.GetNickname(requestData.ReciverId);
             }
 
             return requestData;

@@ -31,7 +31,7 @@ namespace GameSpace.Services.Teams.Contracts
 
         Task<int> Create(string name, byte[] image, string ownerId);
 
-        Task Edit(TeamDetailsServiceModel team);
+        Task Edit(int teamId, string name, string description, string videoUrl, string websiteUrl);
 
         Task Delete(int id);
 

@@ -23,20 +23,18 @@ namespace GameSpace.Data.Models
         [Column(TypeName = "decimal(18,4)")]
         public decimal Balance { get; set; }
 
-        [MaxLength(MaxBiographyLength)]
+        [MaxLength(BiographyMaxLength)]
         public string Biography { get; set; }
-
-        public DateTime CreatedOn { get; init; }
 
         [ForeignKey(nameof(Appearance))]
         public int? AppearanceId { get; init; }
 
-        public virtual Appearance Appearance { get; init; }
+        public virtual Appearance Appearance { get; set; }
 
         [ForeignKey(nameof(SocialNetwork))]
         public int? SocialNetworkId { get; init; }
 
-        public virtual SocialNetwork SocialNetwork { get; init; }
+        public virtual SocialNetwork SocialNetwork { get; set; }
 
         public virtual User User { get; init; }
 

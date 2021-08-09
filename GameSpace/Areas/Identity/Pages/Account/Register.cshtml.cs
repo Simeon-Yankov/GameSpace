@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -74,7 +75,8 @@ namespace GameSpace.Areas.Identity.Pages.Account
                 {
                     UserName = Input.Email,
                     Email = Input.Email,
-                    Nickname = Input.Nickname
+                    Nickname = Input.Nickname,
+                    CreatedOn = DateTime.UtcNow
                 };
 
                 var result = await this.userManager.CreateAsync(user, Input.Password);

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 using static GameSpace.Common.GlobalConstants.User;
 using static GameSpace.Common.GlobalConstants;
+using System;
 
 namespace GameSpace.Data.Models
 {
@@ -15,11 +16,13 @@ namespace GameSpace.Data.Models
         [MaxLength(NicknameMaxLength)]
         public string Nickname { get; set; }
 
+        public DateTime CreatedOn { get; init; }
+
         [MaxLength(IdMaxLength)]
         [ForeignKey(nameof(ProfileInfo))]
         public string ProfileInfoId { get; init; }
 
-        public virtual ProfileInfo ProfileInfo { get; init; }
+        public virtual ProfileInfo ProfileInfo { get; set; }
 
         public virtual ICollection<UserTeam> Teams { get; init; }
     }

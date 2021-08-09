@@ -1,5 +1,5 @@
-﻿using GameSpace.Services.Users.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using GameSpace.Services.Appearances.Models;
+using GameSpace.Services.Users.Models;
 
 namespace GameSpace.Services.Teams.Models
 {
@@ -10,21 +10,16 @@ namespace GameSpace.Services.Teams.Models
         public string Name { get; init; }
 
         //[Display(Name = "Owner Name")]
-        public OwnerServiceModel Owner { get; init; }
+        public UserOwnerServiceModel Owner { get; init; }
 
-        [Display(Name = "Created On")]
         public string CreatedOn { get; init; }
 
         public string Description { get; set; }
 
-        [Display(Name = "Video Url")]
         public string VideoUrl { get; set; }
 
-        [Display(Name = "Website Url")]
         public string WebsiteUrl { get; set; }
 
-        public byte[] Image { get; init; }
-
-        public byte[] Banner { get; init; }
+        public AppearanceServiceModel Appearance { get; init; }
     }
 }

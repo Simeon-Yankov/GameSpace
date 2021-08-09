@@ -3,24 +3,24 @@
 @{ 
     ViewData["Title"] = "Create a Team";
 }
+    <div class="row">
+        <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+            <h2 class="heading-margin text-center">Create a Team</h2>
 
-<div class="row">
-    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
-        <h2 class="heading-margin text-center">Create a Team</h2>
-
-        <form method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label asp-for="Name"></label>
-                <input asp-for="Name" class="form-control" placeholder="Enter a team name">
-                <span asp-validation-for="Name" class="small text-danger"></span>
-            </div>
+            <form method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter a team name">
+                    <span asp-validation-for="Name" class="small text-danger"></span>
+                </div>
                 <label>Image</label>
-            <div class="custom-file">
-                <input type="file" name="Image" class="custom-file-input" id="validatedCustomFile">
-                <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
-                <div class="invalid-feedback">Example invalid custom file feedback</div>
-            </div>
-            <button type="submit" class="btn btn-primary">Add Team</button>
-        </form>
+                <div class="custom-file">
+                    <input type="file" name="Image" class="custom-file-input" id="validatedCustomFile">
+                    <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                    <div class="invalid-feedback">Example invalid custom file feedback</div>
+                </div>
+                <hr />
+                <button type="submit" class="btn btn-outline-primary">Add Team</button>
+            </form>
+        </div>
     </div>
-</div>

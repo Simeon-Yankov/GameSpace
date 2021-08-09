@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GameSpace.Data;
 using GameSpace.Data.Models;
 using GameSpace.Services.Appearances.Contracts;
+using GameSpace.Services.Appearances.Models;
 using GameSpace.Services.Messages.Contracts;
 using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Teams.Models;
@@ -171,15 +172,18 @@ namespace GameSpace.Services.Teams
                    Owner = this.data
                                 .Users
                                 .Where(u => u.Id == t.OwnerId)
-                                .Select(u => new OwnerServiceModel
+                                .Select(u => new UserOwnerServiceModel
                                 {
                                     Id = u.Id,
                                     Name = u.Nickname,
                                     IsOwner = u.Id == userId
                                 })
                                 .First(),
-                   Image = t.Appearance.Image,
-                   Banner = t.Appearance.Banner,
+                   Appearance = new AppearanceServiceModel
+                   {
+                       Image = t.Appearance.Image,
+                       Banner = t.Appearance.Banner
+                   },
                    Description = t.Description,
                    VideoUrl = t.VideoUrl,
                    WebsiteUrl = t.WebsiteUrl,
@@ -213,15 +217,15 @@ namespace GameSpace.Services.Teams
             return teamData.Id;
         }
 
-        public async Task Edit(TeamDetailsServiceModel team)
+        public async Task Edit(int teamId, string name, string description, string videoUrl, string websiteUrl)
         {
-            var teamData = this.data.Teams.First(t => t.Id == team.Id);
+            var teamData = this.data.Teams.First(t => t.Id == teamId);
 
-            teamData.Name = team.Name;
+            teamData.Name = name;
             //teamData.Appearance.Image = team.Image;
-            teamData.Description = team.Description;
-            teamData.VideoUrl = team.VideoUrl;
-            teamData.WebsiteUrl = team.WebsiteUrl;
+            teamData.Description = description;
+            teamData.VideoUrl = videoUrl;
+            teamData.WebsiteUrl = websiteUrl;
 
             await this.data.SaveChangesAsync();
         }
