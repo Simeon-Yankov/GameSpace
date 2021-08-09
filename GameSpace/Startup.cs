@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 using GameSpace.Data;
 using GameSpace.Data.Models;
 using GameSpace.Infrstructure;
@@ -12,6 +14,7 @@ using GameSpace.Services.Users.Contracts;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,11 +46,12 @@ namespace GameSpace
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireUppercase = false;
                 })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<GameSpaceDbContext>();
 
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllersWithViews(options => 
+            services.AddControllersWithViews(options =>
             {
                 options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
             });
@@ -60,7 +64,13 @@ namespace GameSpace
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.PrepareDataBase();
+            Task
+                .Run(async () =>
+                {
+                    await app.PrepareDataBase();
+                })
+                .GetAwaiter()
+                .GetResult();
 
             if (env.IsDevelopment())
             {

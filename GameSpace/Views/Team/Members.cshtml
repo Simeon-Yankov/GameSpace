@@ -25,11 +25,24 @@
                                 @if (member.IsMemberOwner)
                                 {
                                     <div class="card-text text-black-50">Team Lead</div>
+                                    <br />
+                                    @if (member.Id != this.User.Id())@*x2 partial*@
+                                    {
+                                        <div class="accordion">
+                                            <a asp-controller="User" asp-action="Profile" asp-route-userId="@member.Id" class="btn btn-outline-primary">View Profile</a>
+                                        </div>
+                                    }
                                 }
-                                else
+                                @if (!member.IsMemberOwner)
                                 {
                                     <div class="card-text text-black-50">Member</div>
                                     <br />
+                                    @if (member.Id != this.User.Id())@*x2 partial*@
+                                    {
+                                        <div class="accordion">
+                                            <a asp-controller="User" asp-action="Profile" asp-route-userId="@member.Id" class="btn btn-outline-primary">View Profile</a>
+                                        </div>
+                                    }
                                     @if (this.Model.IsOwner)
                                     {
                                         <div class="accordion">
