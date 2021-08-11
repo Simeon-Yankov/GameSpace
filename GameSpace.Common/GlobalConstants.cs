@@ -52,5 +52,11 @@
 
         public const int MaxTeamSize = 6;
         public const int MaxMessageLength = 100;
+
+        public class Language
+        {
+            public const int LanguageMaxLength = 15;
+            public const int LanguageMinLength = 2;
+        }
     }
 }

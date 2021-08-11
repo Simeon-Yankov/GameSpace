@@ -13,7 +13,7 @@ namespace GameSpace.Data.Models
         {
             this.Id = Guid.NewGuid().ToString();
 
-            this.Languages = new HashSet<Language>();
+            this.Languages = new HashSet<ProfileInfoLanguage>();
         }
 
         [Key]
@@ -38,6 +38,6 @@ namespace GameSpace.Data.Models
 
         public virtual User User { get; init; }
 
-        public virtual ICollection<Language> Languages { get; init; }
+        public virtual ICollection<ProfileInfoLanguage> Languages { get; init; }
     }
 }

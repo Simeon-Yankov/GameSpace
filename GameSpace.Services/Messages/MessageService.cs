@@ -25,11 +25,11 @@ namespace GameSpace.Services.Messages
         public IEnumerable<NotificationMessageServiceModel> GetNotifications(string userId)
             => this.data
                 .Notifications
-                .Where(n => n.ReciverId == userId && n.IsDeleted == false)
+                .Where(n => n.ReceiverId == userId && n.IsDeleted == false)
                 .Select(n => new NotificationMessageServiceModel
                 {
                     NotificationId = n.Id,
-                    ReciverId = n.ReciverId,
+                    ReciverId = n.ReceiverId,
                     Message = n.Message,
                     CreatedOn = n.CreatedOn,
                     IsDeleted = n.IsDeleted
@@ -40,7 +40,7 @@ namespace GameSpace.Services.Messages
         {
             var notificaion = new Notification
             {
-                ReciverId = reciverId,
+                ReceiverId = reciverId,
                 Message = message,
                 CreatedOn = DateTime.UtcNow
             };
@@ -58,7 +58,7 @@ namespace GameSpace.Services.Messages
                             {
                                 RequestId = request.Id,
                                 SenderId = request.SenderId,
-                                ReciverId = request.ReciverId,
+                                ReciverId = request.ReceiverId,
                                 TeamName = request.TeamName,
                                 CreatedOn = request.CreatedOn, // TODO: maybe cast
                                 IsSender = true
@@ -77,12 +77,12 @@ namespace GameSpace.Services.Messages
         public IEnumerable<TeamInvitationMessageServiceModel> TeamsInvitationByReciver(string userId)
             => this.data
                 .PendingTeamsRequests
-                .Where(request => request.ReciverId == userId && request.IsDeleted == false)
+                .Where(request => request.ReceiverId == userId && request.IsDeleted == false)
                 .Select(request => new TeamInvitationMessageServiceModel
                 {
                     RequestId = request.Id,
                     SenderId = request.SenderId,
-                    ReciverId = request.ReciverId,
+                    ReciverId = request.ReceiverId,
                     TeamName = request.TeamName,
                     CreatedOn = request.CreatedOn // TODO: maybe cast
                 })
@@ -98,7 +98,7 @@ namespace GameSpace.Services.Messages
                             {
                                 RequestId = request.Id,
                                 SenderId = request.SenderId,
-                                ReciverId = request.ReciverId,
+                                ReciverId = request.ReceiverId,
                                 TeamName = request.TeamName
                             })
                             .FirstOrDefault();
@@ -139,6 +139,6 @@ namespace GameSpace.Services.Messages
             => this.data
                 .PendingTeamsRequests
                 .Where(request => request.IsDeleted == false)
-                .Any(request => request.TeamName == teamName && request.ReciverId == reciverId);
+                .Any(request => request.TeamName == teamName && request.ReceiverId == reciverId);
     }
 }

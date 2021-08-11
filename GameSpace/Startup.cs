@@ -7,6 +7,10 @@ using GameSpace.Services.Appearances;
 using GameSpace.Services.Appearances.Contracts;
 using GameSpace.Services.Messages;
 using GameSpace.Services.Messages.Contracts;
+using GameSpace.Services.Regions;
+using GameSpace.Services.Regions.Contracts;
+using GameSpace.Services.Sumonners;
+using GameSpace.Services.Sumonners.Contracts;
 using GameSpace.Services.Teams;
 using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Users;
@@ -60,6 +64,8 @@ namespace GameSpace
             services.AddTransient<IAppearanceService, AppearanceService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IMessageService, MessageService>();
+            services.AddTransient<ISummonerService, SummonerService>();
+            services.AddTransient<IRegionService, RegionService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

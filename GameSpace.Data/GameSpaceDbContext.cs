@@ -31,6 +31,16 @@ namespace GameSpace.Data
 
         public DbSet<Language> Languages { get; init; }
 
+        public DbSet<GameAccount> GameAccounts { get; init; }
+
+        public DbSet<Rank> Ranks { get; init; }
+
+        public DbSet<Region> Regions { get; init; }
+
+        public DbSet<ProfileInfoLanguage> ProfileInfosLanguages { get; init; }
+
+        //public DbSet<Stat> Stats { get; init; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -44,6 +54,11 @@ namespace GameSpace.Data
                 entity.HasKey(ut => new { ut.UserId, ut.TeamId });
             });
 
+            modelBuilder.Entity<ProfileInfoLanguage>(entity =>
+            {
+                entity.HasKey(pil => new { pil.ProfileInfoId, pil.LanguageId });
+            });
+
             //modelBuilder.Entity<UserTeam>()
             //    .HasOne<User>()
             //    .WithMany()
@@ -54,6 +69,12 @@ namespace GameSpace.Data
                 .HasOne(ut => ut.Team)
                 .WithMany(t => t.Mombers)
                 .HasForeignKey(ut => ut.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameAccount>()
+                .HasOne(ga => ga.User)
+                .WithMany(u => u.GameAccounts)
+                .HasForeignKey(ga => ga.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);

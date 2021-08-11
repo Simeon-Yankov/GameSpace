@@ -9,6 +9,9 @@ namespace GameSpace.Data.Models
 {
     public class Team
     {
+        public Team() 
+            => this.Mombers = new HashSet<UserTeam>();
+
         [Key]
         public int Id { get; init; }
 
@@ -32,6 +35,11 @@ namespace GameSpace.Data.Models
         public int? AppearanceId { get; init; }
 
         public virtual Appearance Appearance { get; init; }
+
+        //[ForeignKey(nameof(GameStats))]
+        //public int? GameStatsId { get; init; }
+
+        //public virtual Stat GameStats { get; init; }
 
         [ForeignKey(nameof(SocialNetwork))]
         public int? SocialNetworkId { get; init; }

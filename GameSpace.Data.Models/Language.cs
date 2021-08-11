@@ -1,23 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-using GameSpace.Data.Models.Enums;
-
-using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.Language;
 
 namespace GameSpace.Data.Models
 {
     public class Language
     {
+        public Language() 
+            => this.ProfilesInfo = new HashSet<ProfileInfoLanguage>();
+
         [Key]
         public int Id { get; set; }
 
-        public LanguageName Name { get; init; }
+        [Required]
+        [MaxLength(LanguageMaxLength)]
+        public string Name { get; init; }
 
-        [MaxLength(IdMaxLength)]
-        [ForeignKey(nameof(ProfileInfo))]
-        public string ProfileInfoId { get; init; }
-
-        public ProfileInfo ProfileInfo { get; init; }
+        public virtual ICollection<ProfileInfoLanguage> ProfilesInfo { get; init; }
     }
 }

@@ -1,11 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Threading.Tasks;
+
+using AutoMapper;
+
 using GameSpace.Infrstructure;
 using GameSpace.Models.User;
 using GameSpace.Services.Users.Contracts;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace GameSpace.Controllers
 {

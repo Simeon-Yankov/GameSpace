@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using GameSpace.Data;
 using GameSpace.Data.Models;
 using GameSpace.Services.Appearances.Models;
 using GameSpace.Services.SocialNetworks.Models;
+using GameSpace.Services.Sumonners.Models;
 using GameSpace.Services.Users.Contracts;
 using GameSpace.Services.Users.Models;
 
@@ -39,31 +41,38 @@ namespace GameSpace.Services.Users
                 .First()
                 .Nickname;
 
-        public UserProfileServiceModel Profile(string userId)
+        public UserProfileServiceModel Profile(string userId) 
             => this.data
-                .Users
-                .Where(u => u.Id == userId)
-                .Select(u => new UserProfileServiceModel
+               .Users
+               .Where(u => u.Id == userId)
+            .Select(u => new UserProfileServiceModel
+            {
+                Id = u.Id,
+                Nickname = u.Nickname,
+                Biography = u.ProfileInfo.Biography,
+                CreatedOn = u.CreatedOn,
+                Appearance = new AppearanceServiceModel
                 {
-                    Id = u.Id,
-                    Nickname = u.Nickname,
-                    Biography = u.ProfileInfo.Biography,
-                    CreatedOn = u.CreatedOn,
-                    Appearance = new AppearanceServiceModel
-                    {
-                        Image = u.ProfileInfo.Appearance.Image,
-                        Banner = u.ProfileInfo.Appearance.Banner
-                    },
-                    SocialNetwork = new SocialNotworkServiceModel
-                    {
-                        FacebookUrl = u.ProfileInfo.SocialNetwork.FacebookUrl,
-                        YoutubeUrl = u.ProfileInfo.SocialNetwork.YoutubeUrl,
-                        TwitchUrl = u.ProfileInfo.SocialNetwork.TwitchUrl,
-                        TwitterUrl = u.ProfileInfo.SocialNetwork.TwitterUrl,
-                    },
-                    Languages = u.ProfileInfo.Languages
-                })
-                .FirstOrDefault();
+                    Image = u.ProfileInfo.Appearance.Image,
+                    Banner = u.ProfileInfo.Appearance.Banner
+                },
+                SocialNetwork = new SocialNotworkServiceModel
+                {
+                    FacebookUrl = u.ProfileInfo.SocialNetwork.FacebookUrl,
+                    YoutubeUrl = u.ProfileInfo.SocialNetwork.YoutubeUrl,
+                    TwitchUrl = u.ProfileInfo.SocialNetwork.TwitchUrl,
+                    TwitterUrl = u.ProfileInfo.SocialNetwork.TwitterUrl,
+                },
+                GameAccounts = u.
+                                GameAccounts
+                                .Select(ga => new SummonerServiceModel
+                                {
+                                    Name = ga.SummonerName,
+                                    Icon = ga.Icon,
+                                    RegionName = ga.Region.Name
+                                })
+            })
+            .FirstOrDefault();
 
         public async Task Edit(
             string userId,
@@ -102,7 +111,7 @@ namespace GameSpace.Services.Users
             await this.data.SaveChangesAsync();
         }
 
-        public bool AnyMessages(string userId) => this.data.PendingTeamsRequests.Any(request => request.ReciverId == userId); //TODO FOR FRIEND REQUEST AND MOVE TO MESSAGE CONTROLLER
+        public bool AnyMessages(string userId) => this.data.PendingTeamsRequests.Any(request => request.ReceiverId == userId); //TODO FOR FRIEND REQUEST AND MOVE TO MESSAGE CONTROLLER
 
         public bool ExcistsById(string userId) => this.data.Users.Any(u => u.Id == userId);
 

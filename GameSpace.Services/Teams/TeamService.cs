@@ -83,7 +83,7 @@ namespace GameSpace.Services.Teams
             var requestData = new PendingTeamRequest
             {
                 SenderId = senderId,
-                ReciverId = reciverId,
+                ReceiverId = reciverId,
                 TeamName = teamName,
                 CreatedOn = DateTime.UtcNow
             };

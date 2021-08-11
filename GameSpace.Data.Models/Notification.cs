@@ -11,7 +11,7 @@ namespace GameSpace.Data.Models
         public int Id { get; init; }
 
         [Required]
-        public string ReciverId { get; init; }
+        public string ReceiverId { get; init; }
 
         [Required]
         [MaxLength(MaxMessageLength)]

@@ -16,7 +16,7 @@ namespace GameSpace.Data.Models
 
         [Required]
         [MaxLength(IdMaxLength)]
-        public string ReciverId { get; init; }
+        public string ReceiverId { get; init; }
 
         [Required]
         [MaxLength(MaxTeamName)]

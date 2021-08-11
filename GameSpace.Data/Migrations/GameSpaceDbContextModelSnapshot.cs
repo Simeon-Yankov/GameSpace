@@ -37,6 +37,46 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("Appearances");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.GameAccount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("Icon")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("RankId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RegionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SummonerName")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RankId");
+
+                    b.HasIndex("RegionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GameAccounts");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.Language", b =>
                 {
                     b.Property<int>("Id")
@@ -44,16 +84,12 @@ namespace GameSpace.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Name")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ProfileInfoId")
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProfileInfoId");
 
                     b.ToTable("Languages");
                 });
@@ -76,7 +112,7 @@ namespace GameSpace.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("ReciverId")
+                    b.Property<string>("ReceiverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -98,7 +134,7 @@ namespace GameSpace.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ReciverId")
+                    b.Property<string>("ReceiverId")
                         .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
@@ -131,8 +167,8 @@ namespace GameSpace.Data.Migrations
                         .HasColumnType("decimal(18,4)");
 
                     b.Property<string>("Biography")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
 
                     b.Property<int?>("SocialNetworkId")
                         .HasColumnType("int");
@@ -148,6 +184,52 @@ namespace GameSpace.Data.Migrations
                         .HasFilter("[SocialNetworkId] IS NOT NULL");
 
                     b.ToTable("ProfilesInfo");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.ProfileInfoLanguage", b =>
+                {
+                    b.Property<string>("ProfileInfoId")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProfileInfoId", "LanguageId");
+
+                    b.HasIndex("LanguageId");
+
+                    b.ToTable("ProfileInfosLanguages");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Rank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ranks");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Region", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Regions");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
@@ -282,6 +364,9 @@ namespace GameSpace.Data.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -299,6 +384,8 @@ namespace GameSpace.Data.Migrations
                     b.HasIndex("ProfileInfoId")
                         .IsUnique()
                         .HasFilter("[ProfileInfoId] IS NOT NULL");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -453,13 +540,27 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("GameSpace.Data.Models.Language", b =>
+            modelBuilder.Entity("GameSpace.Data.Models.GameAccount", b =>
                 {
-                    b.HasOne("GameSpace.Data.Models.ProfileInfo", "ProfileInfo")
-                        .WithMany("Languages")
-                        .HasForeignKey("ProfileInfoId");
+                    b.HasOne("GameSpace.Data.Models.Rank", "Rank")
+                        .WithMany("GameAccounts")
+                        .HasForeignKey("RankId");
 
-                    b.Navigation("ProfileInfo");
+                    b.HasOne("GameSpace.Data.Models.Region", "Region")
+                        .WithMany("GameAccounts")
+                        .HasForeignKey("RegionId");
+
+                    b.HasOne("GameSpace.Data.Models.User", "User")
+                        .WithMany("GameAccounts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Rank");
+
+                    b.Navigation("Region");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.ProfileInfo", b =>
@@ -475,6 +576,25 @@ namespace GameSpace.Data.Migrations
                     b.Navigation("Appearance");
 
                     b.Navigation("SocialNetwork");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.ProfileInfoLanguage", b =>
+                {
+                    b.HasOne("GameSpace.Data.Models.Language", "Language")
+                        .WithMany("ProfilesInfo")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.ProfileInfo", "ProfileInfo")
+                        .WithMany("Languages")
+                        .HasForeignKey("ProfileInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Language");
+
+                    b.Navigation("ProfileInfo");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.Team", b =>
@@ -497,6 +617,10 @@ namespace GameSpace.Data.Migrations
                     b.HasOne("GameSpace.Data.Models.ProfileInfo", "ProfileInfo")
                         .WithOne("User")
                         .HasForeignKey("GameSpace.Data.Models.User", "ProfileInfoId");
+
+                    b.HasOne("GameSpace.Data.Models.User", null)
+                        .WithMany("Friends")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("ProfileInfo");
                 });
@@ -578,11 +702,26 @@ namespace GameSpace.Data.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.Language", b =>
+                {
+                    b.Navigation("ProfilesInfo");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.ProfileInfo", b =>
                 {
                     b.Navigation("Languages");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Rank", b =>
+                {
+                    b.Navigation("GameAccounts");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Region", b =>
+                {
+                    b.Navigation("GameAccounts");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
@@ -599,6 +738,10 @@ namespace GameSpace.Data.Migrations
 
             modelBuilder.Entity("GameSpace.Data.Models.User", b =>
                 {
+                    b.Navigation("Friends");
+
+                    b.Navigation("GameAccounts");
+
                     b.Navigation("Teams");
                 });
 #pragma warning restore 612, 618
