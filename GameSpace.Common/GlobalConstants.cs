@@ -31,7 +31,9 @@
         public const int MaxPhoneNumber = 15;
 
         //GamingAccounts
-        public const int SummonerNameLength = 16;
+        public const int SummonerNameMaxLength = 16;
+        public const int SummonerNameMinLength = 3;
+        public const int AccountIdMaxLength = 56;
         public const int RankLength = 16;
 
         //Team

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -67,9 +67,14 @@ namespace GameSpace.Services.Users
                                 GameAccounts
                                 .Select(ga => new SummonerServiceModel
                                 {
+                                    Id = ga.Id,
                                     Name = ga.SummonerName,
                                     Icon = ga.Icon,
-                                    RegionName = ga.Region.Name
+                                    RegionName = ga.Region.Name,
+                                    AccountId = ga.AccountId,
+                                    LastUpdate = DateTime.UtcNow,
+                                    LastUpdateDiff = DateTime.UtcNow.Subtract(ga.LastUpdated),
+                                    IsVerified = ga.IsVerified
                                 })
             })
             .FirstOrDefault();

@@ -9,7 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataProcesses\Models\" />
     <Folder Include="SocialNetworks\Contracts\" />
   </ItemGroup>
 
