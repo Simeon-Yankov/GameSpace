@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using GameSpace.Data.Models;
+using GameSpace.Services.Regions.Models;
 
 namespace GameSpace.Services.Regions.Contracts
 {
@@ -12,7 +13,9 @@ namespace GameSpace.Services.Regions.Contracts
 
         string GetRegionName(int regionId);
 
-        IEnumerable<Region> AllRegions();
+        bool RegionExists(int regionId);
+
+        IEnumerable<RegionServiceModel> AllRegions();
 
         Region GetRegion(int regionId);
     }

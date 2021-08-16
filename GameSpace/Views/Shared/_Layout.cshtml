@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
 
 @inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,9 +13,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
     @* ----- *@
-    @*<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">*@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
-    @*<link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">*@
 </head>
 <body>
     <header>
@@ -27,24 +26,29 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (SignInManager.IsSignedIn(User))
+                        @if (SignInManager.IsSignedIn(User) && !User.IsAdmin())
                         {
-                            <li class="nav-item">
+                            <li class="nav-item" style="padding: 0 4px 2px 0">
                                 <div class="dropdown">
                                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Team
+                                        Teams
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Create">Create a Team</a>
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Memberships">Teams Membership</a>
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Create"><small>Create a Team</small></a>
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Memberships"><small>Membership</small></a>
                                     </div>
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Memberships">Tournamets</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Summoner" asp-action="Add">Add Summoner</a>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Tournaments
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Tournament" asp-action="Create"><small>Create a Tournament</small></a>
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Tournament" asp-action="Upcoming"><small>Upcoming Tournaments</small></a>
+                                    </div>
+                                </div>
                             </li>
                         }
                     </ul>
@@ -54,11 +58,19 @@
         </nav>
     </header>
     <div class="container">
+        @if (TempData.ContainsKey(WebConstants.GlobalMessageKey))
+        {
+            <div class="alert alert-success text-center" role="alert">
+                @TempData[WebConstants.GlobalMessageKey]
+            </div>
+        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
+    @*asd*@
+    <div class="bg"></div>
+    @*asd*@
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; @DateTime.UtcNow.Year - GameSpace

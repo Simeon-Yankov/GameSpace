@@ -13,6 +13,8 @@ using GameSpace.Services.Sumonners;
 using GameSpace.Services.Sumonners.Contracts;
 using GameSpace.Services.Teams;
 using GameSpace.Services.Teams.Contracts;
+using GameSpace.Services.Tournaments;
+using GameSpace.Services.Tournaments.Contracts;
 using GameSpace.Services.Users;
 using GameSpace.Services.Users.Contracts;
 
@@ -66,6 +68,7 @@ namespace GameSpace
             services.AddTransient<IMessageService, MessageService>();
             services.AddTransient<ISummonerService, SummonerService>();
             services.AddTransient<IRegionService, RegionService>();
+            services.AddTransient<ITournamentService, TournamentService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -96,10 +99,11 @@ namespace GameSpace
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
-            {
-                endpoints.MapDefaultControllerRoute();
-                endpoints.MapRazorPages();
-            });
+                {
+                    endpoints.MapDefaultAreaRoute();
+                    endpoints.MapDefaultControllerRoute();
+                    endpoints.MapRazorPages();
+                });
         }
     }
 }

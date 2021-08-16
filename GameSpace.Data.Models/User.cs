@@ -14,6 +14,7 @@ namespace GameSpace.Data.Models
     {
         public User()
         {
+            this.HostTournaments = new HostTournaments();
             this.Friends = new HashSet<User>();
             this.GameAccounts = new HashSet<GameAccount>();
             this.Teams = new HashSet<UserTeam>();
@@ -30,6 +31,11 @@ namespace GameSpace.Data.Models
         public string ProfileInfoId { get; init; }
 
         public virtual ProfileInfo ProfileInfo { get; set; }
+
+        [ForeignKey(nameof(HostTournaments))]
+        public int HostedTournamentsId { get; init; }
+
+        public virtual HostTournaments HostTournaments { get; init; }
 
         public virtual ICollection<User> Friends { get; init; }
 

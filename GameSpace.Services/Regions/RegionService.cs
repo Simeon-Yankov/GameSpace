@@ -4,6 +4,7 @@ using System.Linq;
 using GameSpace.Data;
 using GameSpace.Data.Models;
 using GameSpace.Services.Regions.Contracts;
+using GameSpace.Services.Regions.Models;
 
 namespace GameSpace.Services.Regions
 {
@@ -43,10 +44,17 @@ namespace GameSpace.Services.Regions
 
         public Region GetRegion(int regionId) => GetRegionQueryable(regionId).FirstOrDefault();
 
-        public IEnumerable<Region> AllRegions()
+        public IEnumerable<RegionServiceModel> AllRegions()
             => this.data
                 .Regions
+                .Select(r => new RegionServiceModel 
+                { 
+                    Id = r.Id,
+                    Name = r.Name
+                })
                 .ToList();
+
+        public bool RegionExists(int regionId) => this.data.Regions.Any(r => r.Id == regionId);
 
         private IQueryable<Region> GetRegionQueryable(int regionId)
             => this.data

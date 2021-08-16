@@ -1,0 +1,35 @@
+﻿@model AddSummonerFormModel
+
+@{
+    ViewData["Title"] = "Add a Summoner";
+}
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <h3 class="heading-margin text-center">Add League of Legends Account</h3>
+        <br />
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" placeholder="Enter a summoner name">
+                <span asp-validation-for="Name" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegionId"></label>
+                <select asp-for="RegionId" class="form-control">
+                    @foreach (var region in Model.Regions)
+                    {
+                        <option value="@region.Id">@region.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="RegionId" class="small text-danger"></span>
+            </div>
+            <hr />
+            <button type="submit" class="btn btn-outline-primary">Add Summoner</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }

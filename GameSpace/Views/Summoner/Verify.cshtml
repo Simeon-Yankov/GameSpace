@@ -1,0 +1,21 @@
+﻿@model VerifySummonerServiceModel
+
+@{
+    ViewData["Title"] = "Verify the Summoner";
+}
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <h3 class="heading-margin text-center">Verify your account</h3>
+        <br />
+        <form method="post" enctype="multipart/form-data">
+            <text>You need to select the given icon with your League of Legends profile.</text>
+            <hr />
+            <div class="col-auto">
+                <img src="data:image;base64,@System.Convert.ToBase64String(Model.Icon)" class="img-fluid" alt="">
+            </div>
+            <br />
+            <button type="submit" asp-route-iconId="@Model.IconId" asp-route-accountId="@Model.AccountId" asp-route-regionName="@Model.RegionName" class="btn btn-outline-primary">Verify</button>
+        </form>
+    </div>
+</div>

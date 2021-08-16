@@ -37,6 +37,21 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("Appearances");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.BracketType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BracketTypes");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.GameAccount", b =>
                 {
                     b.Property<int>("Id")
@@ -46,7 +61,8 @@ namespace GameSpace.Data.Migrations
 
                     b.Property<string>("AccountId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(56)
+                        .HasColumnType("nvarchar(56)");
 
                     b.Property<byte[]>("Icon")
                         .IsRequired()
@@ -84,6 +100,18 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("GameAccounts");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.HostTournaments", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.HasKey("id");
+
+                    b.ToTable("HostsTournaments");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.Language", b =>
                 {
                     b.Property<int>("Id")
@@ -99,6 +127,80 @@ namespace GameSpace.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Languages");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Map", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Maps");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Match", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BlueSideId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RedSideId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamsTournamentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WinnerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeamsTournamentId");
+
+                    b.ToTable("Matches");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.MaximumTeamsFormat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MaximumTeamsFormats");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Mode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Modes");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.Notification", b =>
@@ -311,6 +413,127 @@ namespace GameSpace.Data.Migrations
                     b.ToTable("Teams");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.TeamSize", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Format")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TeamSizes");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.TeamsTournament", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BracketTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("BronzeMatch")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CheckInPeriod")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GoToGamePeriod")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HosterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Information")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFinished")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPending")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MapId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaximumTeamsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinimumTeams")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ModeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal>("PrizePool")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartsOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TeamSizeId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TicketPrize")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BracketTypeId");
+
+                    b.HasIndex("HosterId");
+
+                    b.HasIndex("MapId");
+
+                    b.HasIndex("MaximumTeamsId");
+
+                    b.HasIndex("ModeId");
+
+                    b.HasIndex("RegionId");
+
+                    b.HasIndex("TeamSizeId");
+
+                    b.ToTable("TeamsTournaments");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.TeamsTournamentTeam", b =>
+                {
+                    b.Property<int>("TeamsTournamentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEliminated")
+                        .HasColumnType("bit");
+
+                    b.HasKey("TeamsTournamentId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("TeamsTournamentsTeams");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -332,6 +555,9 @@ namespace GameSpace.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("HostedTournamentsId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -379,6 +605,9 @@ namespace GameSpace.Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HostedTournamentsId")
+                        .IsUnique();
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -570,6 +799,17 @@ namespace GameSpace.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.Match", b =>
+                {
+                    b.HasOne("GameSpace.Data.Models.TeamsTournament", "TeamsTournament")
+                        .WithMany("Matches")
+                        .HasForeignKey("TeamsTournamentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TeamsTournament");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.ProfileInfo", b =>
                 {
                     b.HasOne("GameSpace.Data.Models.Appearance", "Appearance")
@@ -619,8 +859,92 @@ namespace GameSpace.Data.Migrations
                     b.Navigation("SocialNetwork");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.TeamsTournament", b =>
+                {
+                    b.HasOne("GameSpace.Data.Models.BracketType", "BracketType")
+                        .WithMany("TeamsTournaments")
+                        .HasForeignKey("BracketTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.HostTournaments", "Hoster")
+                        .WithMany("TeamsTournaments")
+                        .HasForeignKey("HosterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.Map", "Map")
+                        .WithMany("TeamsTournaments")
+                        .HasForeignKey("MapId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.MaximumTeamsFormat", "MaximumTeamsFormat")
+                        .WithMany("TeamsTournaments")
+                        .HasForeignKey("MaximumTeamsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.Mode", "Mode")
+                        .WithMany("TeamsTournaments")
+                        .HasForeignKey("ModeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.Region", "Region")
+                        .WithMany("TeamsTournaments")
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.TeamSize", "TeamSize")
+                        .WithMany("TeamsTournaments")
+                        .HasForeignKey("TeamSizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BracketType");
+
+                    b.Navigation("Hoster");
+
+                    b.Navigation("Map");
+
+                    b.Navigation("MaximumTeamsFormat");
+
+                    b.Navigation("Mode");
+
+                    b.Navigation("Region");
+
+                    b.Navigation("TeamSize");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.TeamsTournamentTeam", b =>
+                {
+                    b.HasOne("GameSpace.Data.Models.Team", "Team")
+                        .WithMany("Tournaments")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GameSpace.Data.Models.TeamsTournament", "TeamsTournament")
+                        .WithMany("RegisteredTeams")
+                        .HasForeignKey("TeamsTournamentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+
+                    b.Navigation("TeamsTournament");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.User", b =>
                 {
+                    b.HasOne("GameSpace.Data.Models.HostTournaments", "HostTournaments")
+                        .WithOne("User")
+                        .HasForeignKey("GameSpace.Data.Models.User", "HostedTournamentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("GameSpace.Data.Models.ProfileInfo", "ProfileInfo")
                         .WithOne("User")
                         .HasForeignKey("GameSpace.Data.Models.User", "ProfileInfoId");
@@ -628,6 +952,8 @@ namespace GameSpace.Data.Migrations
                     b.HasOne("GameSpace.Data.Models.User", null)
                         .WithMany("Friends")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("HostTournaments");
 
                     b.Navigation("ProfileInfo");
                 });
@@ -709,9 +1035,36 @@ namespace GameSpace.Data.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("GameSpace.Data.Models.BracketType", b =>
+                {
+                    b.Navigation("TeamsTournaments");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.HostTournaments", b =>
+                {
+                    b.Navigation("TeamsTournaments");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GameSpace.Data.Models.Language", b =>
                 {
                     b.Navigation("ProfilesInfo");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Map", b =>
+                {
+                    b.Navigation("TeamsTournaments");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.MaximumTeamsFormat", b =>
+                {
+                    b.Navigation("TeamsTournaments");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.Mode", b =>
+                {
+                    b.Navigation("TeamsTournaments");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.ProfileInfo", b =>
@@ -729,6 +1082,8 @@ namespace GameSpace.Data.Migrations
             modelBuilder.Entity("GameSpace.Data.Models.Region", b =>
                 {
                     b.Navigation("GameAccounts");
+
+                    b.Navigation("TeamsTournaments");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.SocialNetwork", b =>
@@ -741,6 +1096,20 @@ namespace GameSpace.Data.Migrations
             modelBuilder.Entity("GameSpace.Data.Models.Team", b =>
                 {
                     b.Navigation("Mombers");
+
+                    b.Navigation("Tournaments");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.TeamSize", b =>
+                {
+                    b.Navigation("TeamsTournaments");
+                });
+
+            modelBuilder.Entity("GameSpace.Data.Models.TeamsTournament", b =>
+                {
+                    b.Navigation("Matches");
+
+                    b.Navigation("RegisteredTeams");
                 });
 
             modelBuilder.Entity("GameSpace.Data.Models.User", b =>

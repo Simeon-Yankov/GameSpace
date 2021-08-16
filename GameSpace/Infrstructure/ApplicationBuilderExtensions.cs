@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using GameSpace.Data;
 using GameSpace.Data.Models;
 
-using static GameSpace.WebConstants;
+using static GameSpace.Areas.Admin.AdminConstants;
 
 
 namespace GameSpace.Infrstructure
@@ -29,6 +29,11 @@ namespace GameSpace.Infrstructure
             await SeedLanguages(serviceProvider);
             await SeedRegions(serviceProvider);
             await SeedRanks(serviceProvider);
+            await SeedBracketTypes(serviceProvider);
+            await SeedMaximumTeamsFormats(serviceProvider);
+            await SeedTeamSizes(serviceProvider);
+            await SeedMaps(serviceProvider);
+            await SeedModes(serviceProvider);
             await SeedAdministrator(serviceProvider);
 
             return app;
@@ -111,6 +116,101 @@ namespace GameSpace.Infrstructure
                 new Rank { Name = "Master" },
                 new Rank { Name = "MasterGuardian" },
                 new Rank { Name = "Challanger" }
+            });
+
+            await data.SaveChangesAsync();
+        }
+
+        private static async Task SeedBracketTypes(IServiceProvider services)
+        {
+            var data = services.GetRequiredService<GameSpaceDbContext>();
+
+            if (data.BracketTypes.Any())
+            {
+                return;
+            }
+
+            data.BracketTypes.AddRange(new[]
+            {
+                new BracketType { Name = "Single Elimination" }
+            });
+
+            await data.SaveChangesAsync();
+        }
+
+        private static async Task SeedMaximumTeamsFormats(IServiceProvider services)
+        {
+            var data = services.GetRequiredService<GameSpaceDbContext>();
+
+            if (data.MaximumTeamsFormats.Any())
+            {
+                return;
+            }
+
+            data.MaximumTeamsFormats.AddRange(new[]
+            {
+                new MaximumTeamsFormat { Capacity = 8 },
+                new MaximumTeamsFormat { Capacity = 16 },
+                new MaximumTeamsFormat { Capacity = 32 },
+                new MaximumTeamsFormat { Capacity = 64 }
+            });
+
+            await data.SaveChangesAsync();
+        }
+
+        private static async Task SeedTeamSizes(IServiceProvider services)
+        {
+            var data = services.GetRequiredService<GameSpaceDbContext>();
+
+            if (data.TeamSizes.Any())
+            {
+                return;
+            }
+
+            data.TeamSizes.AddRange(new[]
+            {
+                new TeamSize { Format = "5v5" },
+                new TeamSize { Format = "4v4" },
+                new TeamSize { Format = "3v3" },
+                new TeamSize { Format = "2v2" }
+            });
+
+            await data.SaveChangesAsync();
+        }
+
+        private static async Task SeedMaps(IServiceProvider services)
+        {
+            var data = services.GetRequiredService<GameSpaceDbContext>();
+
+            if (data.Maps.Any())
+            {
+                return;
+            }
+
+            data.Maps.AddRange(new[]
+            {
+                new Map { Name = "Howling Abyss" },
+                new Map { Name = "Summoner's Rift" }
+            });
+
+            await data.SaveChangesAsync();
+        }
+
+        private static async Task SeedModes(IServiceProvider services)
+        {
+            var data = services.GetRequiredService<GameSpaceDbContext>();
+
+            if (data.Modes.Any())
+            {
+                return;
+            }
+
+            data.Modes.AddRange(new[]
+            {
+                new Mode { Name = "Tournament Draft" },
+                new Mode { Name = "All Random" },
+                new Mode { Name = "Draft Mode" },
+                new Mode { Name = "Blind Pick" }
             });
 
             await data.SaveChangesAsync();

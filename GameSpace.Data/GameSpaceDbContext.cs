@@ -39,9 +39,25 @@ namespace GameSpace.Data
 
         public DbSet<ProfileInfoLanguage> ProfileInfosLanguages { get; init; }
 
+        public DbSet<HostTournaments> HostsTournaments { get; init; }
+
+        public DbSet<TeamsTournament> TeamsTournaments { get; init; }
+
+        public DbSet<BracketType> BracketTypes { get; init; }
+
+        public DbSet<MaximumTeamsFormat> MaximumTeamsFormats { get; init; }
+
+        public DbSet<TeamSize> TeamSizes { get; init; }
+
+        public DbSet<Map> Maps { get; init; }
+
+        public DbSet<Mode> Modes { get; init; }
+
+        public DbSet<Match> Matches { get; init; }
+
+        public DbSet<TeamsTournamentTeam> TeamsTournamentsTeams { get; init; }
+
         //public DbSet<Stat> Stats { get; init; }
-
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=DESKTOP-OI0L4BE\SQLEXPRESS;Database=GameSpace;Integrated Security=true;");
@@ -59,12 +75,16 @@ namespace GameSpace.Data
                 entity.HasKey(pil => new { pil.ProfileInfoId, pil.LanguageId });
             });
 
+            modelBuilder.Entity<TeamsTournamentTeam>(entity =>
+            {
+                entity.HasKey(ttt => new { ttt.TeamsTournamentId, ttt.TeamId });
+            });
+
             //modelBuilder.Entity<UserTeam>()
             //    .HasOne<User>()
             //    .WithMany()
             //    .HasForeignKey(ut => ut.UserId)
             //    .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<UserTeam>()
                 .HasOne(ut => ut.Team)
                 .WithMany(t => t.Mombers)
@@ -75,6 +95,18 @@ namespace GameSpace.Data
                 .HasOne(ga => ga.User)
                 .WithMany(u => u.GameAccounts)
                 .HasForeignKey(ga => ga.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TeamsTournamentTeam>()
+                .HasOne(tt => tt.TeamsTournament)
+                .WithMany(ttt => ttt.RegisteredTeams)
+                .HasForeignKey(ttt => ttt.TeamsTournamentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TeamsTournamentTeam>()
+                .HasOne(tt => tt.Team)
+                .WithMany(t => t.Tournaments)
+                .HasForeignKey(ttt => ttt.TeamId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);

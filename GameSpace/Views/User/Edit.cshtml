@@ -1,0 +1,49 @@
+﻿@model EditUserFormModel
+
+@{
+    ViewData["Title"] = "Edit the Team";
+}
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <h2 class="heading-margin text-center">Edit Profile</h2>
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="Nickname"></label>
+                <input asp-for="Nickname" class="form-control">
+                <span asp-validation-for="Nickname" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Biography"></label>
+                <textarea asp-for="Biography" class="form-control"><</textarea>
+                <span asp-validation-for="Biography" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SocialNetwork.YoutubeUrl"></label>
+                <input asp-for="SocialNetwork.YoutubeUrl" class="form-control">
+                <span asp-validation-for="SocialNetwork.YoutubeUrl" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SocialNetwork.TwitterUrl"></label>
+                <input asp-for="SocialNetwork.TwitterUrl" class="form-control">
+                <span asp-validation-for="SocialNetwork.TwitterUrl" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SocialNetwork.TwitchUrl"></label>
+                <input asp-for="SocialNetwork.TwitchUrl" class="form-control">
+                <span asp-validation-for="SocialNetwork.TwitchUrl" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SocialNetwork.FacebookUrl"></label>
+                <input asp-for="SocialNetwork.FacebookUrl" class="form-control">
+                <span asp-validation-for="SocialNetwork.FacebookUrl" class="small text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            @*<input class="btn btn-primary mt-3" type="submit" value="Save" />*@
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

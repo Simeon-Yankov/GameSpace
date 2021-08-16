@@ -19,7 +19,7 @@ namespace GameSpace.Data.Models
         public string ReceiverId { get; init; }
 
         [Required]
-        [MaxLength(MaxTeamName)]
+        [MaxLength(TeamNameMaxLength)]
         public string TeamName { get; init; }
 
         public DateTime CreatedOn { get; init; }

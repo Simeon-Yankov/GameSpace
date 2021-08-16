@@ -1,0 +1,128 @@
+﻿@model UserProfileServiceModel
+
+@using System.Globalization;
+
+@{
+    ViewData["Title"] = "Profile";
+
+    const int unit = 1;
+}
+@*<div class="page-header header-filter" data-parallax="true" style="background-image: url('https://www.rcsdk8.org/sites/main/files/main-images/camera_lense_0.jpeg');"></div>*@
+
+<div class="row">
+    <div class="col-md-6 ml-auto mr-auto">
+
+        <div class="col-md-6 ml-auto mr-auto">
+            <div class="avatar">
+                <img src="/images//Profile.jpg" alt="Circle Image" class="img-raised rounded-circle img-fluid">
+            </div>
+            <div class="name">
+                <h3 class="title text-center">@Model.Nickname</h3>
+                <h6 class="text-center">Created on @Model.CreatedOn.ToString("y")</h6>
+                <div class="text-center">
+                    <a href="@Model.SocialNetwork.YoutubeUrl" class="btn btn-just-icon btn-link btn-youtube"><i class="fa fa-youtube"></i></a>
+                    <a href="@Model.SocialNetwork.TwitterUrl" class="btn btn-just-icon btn-link btn-twitter"><i class="fa fa-twitter"></i></a>
+                    <a href="@Model.SocialNetwork.TwitchUrl" class="btn btn-just-icon btn-link btn-twitch"><i class="fa fa-twitch"></i></a>
+                    <a href="@Model.SocialNetwork.FacebookUrl" class="btn btn-just-icon btn-link btn-facebook"><i class="fa fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+@if (Model.Biography is not null)
+{
+    <h6>@nameof(Model.Biography)</h6>
+    <hr />
+    <div class="description text-center">
+        <p>@Model.Biography</p>
+    </div>
+}
+@*@foreach (var language in Model.Languages)
+    {
+        <p>@language</p>
+    }*@
+<br />
+<div class="row">
+    <div class="col-md-6 ml-auto mr-auto text-center">
+        @if (Model.Id == this.User.Id())
+        {
+            <a class="btn btn-outline-dark" asp-area="" asp-controller="Summoner" asp-action="Add">Add Summoner</a>
+            <a asp-controller="User" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning">Edit Profile</a>
+            <br />
+        }
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-6 ml-auto mr-auto text-center">
+        <div class="card-deck">
+            @foreach (var gameAccount in Model.GameAccounts)
+            {
+            <div class="card">
+                <div class="row no-gutters">
+                    <div class="col-auto">
+                        <img src="data:image;base64,@System.Convert.ToBase64String(gameAccount.Icon)" class="img-fluid" alt="">
+                    </div>
+                    <div class="col">
+                        <div class="card-block px-2">
+                            <h4 class="card-title">@gameAccount.Name</h4>
+                            <p class="card-text">Region - @gameAccount.RegionName</p>
+                            @if (gameAccount.IsVerified)
+                            {
+                                <p class="card-text text-success"><strong>Verified</strong></p>
+                            }
+                            else
+                            {
+                                <p class="card-text text-danger"><strong>Not Verified</strong></p>
+                            }
+                            <a asp-controller="Summoner" asp-action="Refresh" asp-route-accountId="@gameAccount.AccountId" asp-route-regionName="@gameAccount.RegionName" asp-route-userId="@Model.Id" asp-route-timer="@gameAccount.LastUpdate" class="btn btn-outline-success">Refresh</a>
+                            @if (Model.Id == this.User.Id())
+                            {
+
+                                @if (!gameAccount.IsVerified)
+                                {
+                                    <a asp-controller="Summoner" asp-action="Verify" asp-route-accountId="@gameAccount.AccountId" asp-route-regionName="@gameAccount.RegionName" class="btn btn-outline-success">Verify</a>
+                                }
+
+                                <a asp-controller="Summoner" asp-action="Remove" asp-route-accountId="@gameAccount.AccountId" class="btn btn-outline-danger">Remove</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="card-footer w-100 text-muted">
+                    @if (@gameAccount.LastUpdateDiff.Minutes < unit)
+                    {
+                        <span>Last updated: a few secounds ago</span>
+                    }
+                    else if (@gameAccount.LastUpdateDiff.Minutes == unit)
+                    {
+                        <span>Last updated: a minute ago</span>
+                    }
+                    else if (@gameAccount.LastUpdateDiff.Hours < unit)
+                    {
+                        <span>Last updated: @gameAccount.LastUpdateDiff.Minutes minutes ago</span>
+                    }
+                    else if (@gameAccount.LastUpdateDiff.Hours == unit)
+                    {
+                        <span>Last updated: an hour ago</span>
+                    }
+                    else if (@gameAccount.LastUpdateDiff.Days < unit)
+                    {
+                        <span>Last updated: @gameAccount.LastUpdateDiff.Hours hours ago</span>
+                    }
+                    else if (@gameAccount.LastUpdateDiff.Days == unit)
+                    {
+                        <span>Last updated: a day ago</span>
+                    }
+                    else
+                    {
+                        <span>Last updated: @gameAccount.LastUpdateDiff.Days days ago</span>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>

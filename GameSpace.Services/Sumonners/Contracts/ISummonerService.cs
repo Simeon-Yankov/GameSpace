@@ -16,11 +16,9 @@ namespace GameSpace.Services.Sumonners.Contracts
 
         Task<ImportSummonerService> GetJsonInfoByAccountId(string accountId, string regionName);
 
-        bool AccountExcists(string userId, string accountId);
+        bool AccountExists(string userId, string accountId);
 
-        bool AlreadyAdded(string summonerName, string userId);
-
-        bool RegionExcists(int regionId);
+        bool AlreadyAdded(string summonerName, string regionName, string userId);
 
         bool AlreadySummonerWithRegion(string regionName);
 

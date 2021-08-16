@@ -20,9 +20,7 @@ namespace GameSpace.Services.Sumonners
         private readonly GameSpaceDbContext data;
         private readonly IRegionService regions;
 
-        private const string ApiKey = "xXXXXXXx-XXXXXXX-XXXXXX_XXXXXX"; //TODO: Hide ApiKey
-        private const int DefaultMaxIconId = 28;
-        private const int DefaultMinIconId = 1;
+        private const string ApiKey = "XXXX-xXXXxx_XxXXXxx_XXXXx"; //TODO: Make api key be changed in run time
 
         public SummonerService(GameSpaceDbContext data, IRegionService regions)
         {
@@ -32,6 +30,9 @@ namespace GameSpace.Services.Sumonners
 
         public async Task<VerifySummonerServiceModel> RandomDefaultIcon(string accountId, string regionName, int currentIconId)
         {
+            const int DefaultMaxIconId = 28;
+            const int DefaultMinIconId = 1;
+
             var random = new Random(); //TODO: not sure
 
             int rendomDefaultIconId = default;
@@ -147,21 +148,19 @@ namespace GameSpace.Services.Sumonners
             await this.data.SaveChangesAsync();
         }
 
-        public bool AccountExcists(string userId, string accountId)
+        public bool AccountExists(string userId, string accountId)
             => GetUserQuery(userId)
                 .Any(u => u
                         .GameAccounts
                         .Any(ga => ga.AccountId == accountId));
 
-        public bool AlreadyAdded(string summonerName, string userId)
+        public bool AlreadyAdded(string summonerName, string regionName, string userId)
             => GetUserQuery(userId)
                 .Any(u => u
                         .GameAccounts
-                        .Any(ga => ga.SummonerName == summonerName));
+                        .Any(ga => ga.SummonerName == summonerName && ga.Region.Name == regionName));
 
-        public bool RegionExcists(int regionId) => this.data.Regions.Any(r => r.Id == regionId);
-
-        public bool AlreadySummonerWithRegion(string regionName) 
+        public bool AlreadySummonerWithRegion(string regionName)
             => this.data
                 .GameAccounts
                 .Any(ga => ga.Region.Name == regionName);

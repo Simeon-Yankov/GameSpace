@@ -1,0 +1,17 @@
+﻿@using GameSpace.Areas.Admin.Models
+
+@model InformationViewModel
+
+@{
+    ViewData["Title"] = "Tournament Information";
+}
+
+<h1 class="text-center">Information</h1>
+<br />
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <div >
+            <textarea rows="4" class="form-control">@Model.Information</textarea>
+        </div>
+    </div>
+</div>

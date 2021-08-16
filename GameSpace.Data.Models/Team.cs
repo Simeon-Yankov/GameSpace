@@ -16,7 +16,7 @@ namespace GameSpace.Data.Models
         public int Id { get; init; }
 
         [Required]
-        [MaxLength(MaxTeamName)]
+        [MaxLength(TeamNameMaxLength)]
         public string Name { get; set; }
 
         [MaxLength(IdMaxLength)]
@@ -47,5 +47,7 @@ namespace GameSpace.Data.Models
         public virtual SocialNetwork SocialNetwork { get; init; }
 
         public virtual ICollection<UserTeam> Mombers { get; init; }
+
+        public virtual ICollection<TeamsTournamentTeam> Tournaments { get; init; }
     }
 }

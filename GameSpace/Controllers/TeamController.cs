@@ -163,7 +163,7 @@ namespace GameSpace.Controllers
         {
             await this.messages.Delete(requestId);
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(MessageController.All), "Message");
         }
 
         [Authorize]

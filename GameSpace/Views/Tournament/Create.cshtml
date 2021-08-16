@@ -1,0 +1,139 @@
+﻿@model CreateTournamentFormModel
+
+@{
+    ViewData["Title"] = "Create a Tournament";
+}
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <h3 class="heading-margin text-center">Create League of Legends Tournament</h3>
+        <br />
+        <form method="post" enctype="multipart/form-data">
+            <br />
+            <h4 class="heading-margin text-center">Create Tournament</h4>
+            <hr />
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" placeholder="Enter a tournament name">
+                <span asp-validation-for="Name" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegionId"></label>
+                <select asp-for="RegionId" class="form-control">
+                    @foreach (var region in Model.Regions)
+                    {
+                        <option value="@region.Id">@region.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="RegionId" class="small text-danger"></span>
+            </div>
+            <br />
+            <h4 class="heading-margin text-center">Brackets</h4>
+            <hr />
+            <div class="form-group">
+                <label asp-for="BracketTypeId"></label>
+                <select asp-for="BracketTypeId" class="form-control">
+                    @foreach (var bracketType in Model.BracketTypes)
+                    {
+                        <option value="@bracketType.Id">@bracketType.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="BracketTypeId" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaximumTeamsId"></label>
+                <select asp-for="MaximumTeamsId" class="form-control">
+                    @foreach (var maximumTeamsFormat in Model.MaximumTeamsFormats)
+                    {
+                        <option value="@maximumTeamsFormat.Id">@maximumTeamsFormat.Capacity</option>
+                    }
+                </select>
+                <span asp-validation-for="MaximumTeamsId" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MinimumTeams"></label>
+                <input asp-for="MinimumTeams" class="form-control" value="4" placeholder="Enter number between 4 and 8">
+                <span asp-validation-for="MinimumTeams" class="small text-danger"></span>
+            </div>
+            <div class="bootstrap-switch-square form-group">
+                <input asp-for="BronzeMatch" type="checkbox" data-toggle="switch" />
+                <label asp-for="BronzeMatch"></label>
+            </div>
+            <br />
+            <h4 class="heading-margin text-center">Game</h4>
+            <hr />
+            <div class="form-group">
+                <label asp-for="TeamSizeId"></label>
+                <select asp-for="TeamSizeId" class="form-control">
+                    @foreach (var teamSize in Model.TeamSizes)
+                    {
+                        <option value="@teamSize.Id">@teamSize.Format</option>
+                    }
+                </select>
+                <span asp-validation-for="BronzeMatch" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ModeId"></label>
+                <select asp-for="ModeId" class="form-control">
+                    @foreach (var mode in Model.Modes)
+                    {
+                        <option value="@mode.Id">@mode.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="ModeId" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MapId"></label>
+                <select asp-for="MapId" class="form-control">
+                    @foreach (var map in Model.Maps)
+                    {
+                        <option value="@map.Id">@map.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="MapId" class="small text-danger"></span>
+            </div>
+            <br />
+            <h4 class="heading-margin text-center">Format</h4>
+            <hr />
+            <div class="form-group">
+                <label asp-for="Information"></label>
+                <textarea asp-for="Information" class="form-control"><</textarea>
+                <span asp-validation-for="Information" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrizePool"></label>
+                <input asp-for="PrizePool" class="form-control" value="0">
+                <span asp-validation-for="PrizePool" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TicketPrize"></label>
+                <input asp-for="TicketPrize" class="form-control" value="0">
+                <span asp-validation-for="TicketPrize" class="small text-danger"></span>
+            </div>
+            <br />
+            <h4 class="heading-margin text-center">Schedule</h4>
+            <hr />
+            <div lass="form-group">
+                <label asp-for="StartsOn"></label>
+                <input class="form-control" asp-for="StartsOn" asp-format="{0:yyyy-MM-ddTHH:mm}" value="@DateTime.UtcNow" />
+                <span asp-validation-for="StartsOn" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CheckInPeriod"></label>
+                <input asp-for="CheckInPeriod" class="form-control" value="5">
+                <span asp-validation-for="CheckInPeriod" class="small text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GoToGamePeriod"></label>
+                <input asp-for="GoToGamePeriod" class="form-control" value="5" placeholder="Enter number between 5 and 15">
+                <span asp-validation-for="PrizePool" class="small text-danger"></span>
+            </div>
+            <br />
+            <button type="submit" class="btn btn-outline-primary">Create Tournament</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

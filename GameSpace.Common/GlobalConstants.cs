@@ -20,6 +20,24 @@
             public const int PasswordMinLength = 6;
         }
 
+        public class Tournament
+        {
+            public const int NameMaxLength = 20;
+            public const int NameMinLength = 6;
+
+            public const int TeamsMaxCount = 8;
+            public const int TeamsMinCount = 4;
+
+            public const int CheckInPeriodMaxMinutes = 15;
+            public const int CheckInPeriodMinMinutes = 5;
+
+            public const int GoToGamePeriodMaxMinutes = 15;
+            public const int GoToGamePeriodMinMinutes = 5;
+
+            public const int MaxDifferenceDaysInSchedule = 40;
+            public const int MinDifferenceDaysInSchedule = 2;
+        }
+
         //ProfileInfo
         public const int BiographyMaxLength = 120;
 
@@ -38,8 +56,8 @@
 
         //Team
         public const int MaxPlayersCount = 8;
-        public const int MaxTeamName = 20;
-        public const int MinTeamName = 2;
+        public const int TeamNameMaxLength = 20;
+        public const int TeamNameMinLength = 2;
 
         //TeamInfo
         public const int MaxDescriptionLength = 100;

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-using static GameSpace.WebConstants;
+using static GameSpace.Areas.Admin.AdminConstants;
 
 namespace GameSpace.Infrstructure
 {
