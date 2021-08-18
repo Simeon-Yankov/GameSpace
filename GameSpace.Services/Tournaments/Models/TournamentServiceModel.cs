@@ -22,13 +22,21 @@ namespace GameSpace.Services.Tournaments.Models
 
         public int RegionId { get; init; }
 
+        public string RegionName { get; init; }
+
         public int BracketTypeId { get; init; }
 
+        public string BracketTypeFormat { get; init; }
+
         public int MaximumTeamsId { get; init; }
+
+        public int MaximumTeams { get; init; }
 
         public int MinimumTeams { get; init; }
 
         public int TeamSizeId { get; init; }
+
+        public string TeamSizeFormat { get; init; }
 
         public int MapId { get; init; }
 
@@ -41,5 +49,7 @@ namespace GameSpace.Services.Tournaments.Models
         public int HosterId { get; init; }
 
         public string HosterName { get; init; }
+
+        public string StartsInMessage { get; init; }
     }
 }

@@ -17,45 +17,43 @@ namespace GameSpace.Models.Tournaments
 
         public string Information { get; init; }
 
-        //[Display(Name = "Starts On")]
         [BindProperty, DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mmZ}", ApplyFormatInEditMode = true)]
         public DateTime StartsOn { get; set; }
 
-        //[Display(Name = "Prize Pool")]
         public decimal PrizePool { get; init; }
 
-        //[Display(Name = "Ticket Prize")]
         public decimal TicketPrize { get; init; }
 
-        //[Display(Name = "Check-In Timer")]
         public int CheckInPeriod { get; init; }
 
-        //[Display(Name = "Go-To-Game Timer")]
         public int GoToGamePeriod { get; init; }
 
-        //[Display(Name = "Region")]
         public int RegionId { get; init; }
+
+        public string RegionName { get; init; }
 
         public IEnumerable<RegionServiceModel> Regions { get; set; }
 
-        //[Display(Name = "Bracket Type")]
         public int BracketTypeId { get; init; }
+
+        public string BracketTypeFormat { get; init; }
 
         public IEnumerable<BracketTypeServiceModel> BracketTypes { get; set; }
 
-        //[Display(Name = "Maximum Teams")]
         public int MaximumTeamsId { get; init; }
+
+        public int MaximumTeams { get; init; }
 
         public IEnumerable<MaximumTeamsFormatServiceModle> MaximumTeamsFormats { get; set; }
 
         public int MinimumTeams { get; init; }
 
-        //[Display(Name = "Team Size")]
         public int TeamSizeId { get; init; }
+
+        public string TeamSizeFormat { get; init; }
 
         public IEnumerable<TeamSizeServiceModel> TeamSizes { get; set; }
 
-        //[Display(Name = "Map")]
         public int MapId { get; init; }
 
         public IEnumerable<MapServiceModel> Maps { get; set; }
@@ -65,13 +63,12 @@ namespace GameSpace.Models.Tournaments
 
         public IEnumerable<ModeServiceModel> Modes { get; set; }
 
-        //[Display(Name = "Play Bronze Match")]
         public bool BronzeMatch { get; init; }
 
-        //[Display(Name = "Is Verified")]
         public bool IsVerified { get; set; }
 
-        //[Display(Name = "Hoster Name")]
         public string HosterName { get; init; }
+
+        public string StartsInMessage { get; init; }
     }
 }

@@ -114,7 +114,7 @@ namespace GameSpace.Services.Teams
             await this.data.SaveChangesAsync();
         }
 
-        public IEnumerable<TeamServiceModel> ByUser(string userId) // Get Owner Teams
+        public IEnumerable<TeamServiceModel> ByOwner(string userId) // Get Owner Teams
             => this.data
                .Teams
                .Where(t => t.OwnerId == userId)

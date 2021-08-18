@@ -8,6 +8,7 @@
         //public const double MaxDoublelValue = double.MaxValue;
         //public const int MaxIntValue = int.MaxValue;
         //public const int MaxRate = 100;
+        public const int Unit = 1;
         public const int NonNegative = 0;
 
         public class User

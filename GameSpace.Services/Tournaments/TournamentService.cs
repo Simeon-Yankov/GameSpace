@@ -8,6 +8,7 @@ using GameSpace.Data.Models;
 using GameSpace.Services.Tournaments.Contracts;
 using GameSpace.Services.Tournaments.Models;
 
+using static GameSpace.Common.GlobalConstants;
 using static GameSpace.Common.GlobalConstants.Tournament;
 
 namespace GameSpace.Services.Tournaments
@@ -19,11 +20,40 @@ namespace GameSpace.Services.Tournaments
         public TournamentService(GameSpaceDbContext data)
             => this.data = data;
 
-        public void All()
+
+        public TournamentServiceModel Details(int tournamentId)
         {
+           var tournament = GetQueryableTournament(tournamentId).FirstOrDefault();
 
+            return new TournamentServiceModel
+            {
+                Id = tournament.Id,
+                Name = tournament.Name,
+                Information = tournament.Information,
+                StartsOn = tournament.StartsOn,
+                PrizePool = tournament.PrizePool,
+                TicketPrize = tournament.TicketPrize,
+                BronzeMatch = tournament.BronzeMatch,
+                MinimumTeams = tournament.MinimumTeams,
+                CheckInPeriod = tournament.CheckInPeriod,
+                GoToGamePeriod = tournament.GoToGamePeriod,
+                RegionId = tournament.RegionId,
+                BracketTypeId = tournament.BracketTypeId,
+                MapId = tournament.MapId,
+                MaximumTeamsId = tournament.MaximumTeamsId,
+                ModeId = tournament.ModeId,
+                TeamSizeId = tournament.TeamSizeId,
+                IsVerified = tournament.IsVerified,
+                HosterId = tournament.HosterId,
+                HosterName = GetHosterName(tournament.HosterId), //TODO: CASE FOR VALIDATION
+                RegionName = GetRegionName(tournament.RegionId),
+                MaximumTeams = GetCapacity(tournament.MaximumTeamsId),
+                TeamSizeFormat = GetFormat(tournament.TeamSizeId),
+                BracketTypeFormat = GetBracketType(tournament.BracketTypeId),
+                StartsInMessage = GetStartsInMessage(tournament.StartsOn)
+            };
         }
-
+                 
         //TODO: INTRODUCE AUTOMAP IN SERVICE LAYER
         public IEnumerable<TournamentServiceModel> AllUpcomingTournaments(
             int daysFrom = default,
@@ -67,12 +97,79 @@ namespace GameSpace.Services.Tournaments
                     TeamSizeId = tt.TeamSizeId,
                     IsVerified = tt.IsVerified,
                     HosterId = tt.HosterId,
-                    HosterName = GetHosterName(tt.HosterId) //TODO: CASE FOR VALIDATION
+                    HosterName = GetHosterName(tt.HosterId), //TODO: CASE FOR VALIDATION
+                    RegionName = GetRegionName(tt.RegionId),
+                    MaximumTeams = GetCapacity(tt.MaximumTeamsId),
+                    TeamSizeFormat = GetFormat(tt.TeamSizeId),
+                    BracketTypeFormat = GetBracketType(tt.BracketTypeId),
+                    StartsInMessage = GetStartsInMessage(tt.StartsOn)
                 })
                 .AsEnumerable();
 
             return OrderTournament(tournamentsService, orderBy);
         }
+
+        public string GetStartsInMessage(DateTime startsOn)
+        {
+            var diff = startsOn.Subtract(DateTime.UtcNow);
+
+            if (diff.Days > Unit)
+            {
+                return $"Starts in {diff.Days} days";
+            }
+            else if (diff.Days == Unit)
+            {
+                var ending = ReturnEndingIfPlural(diff.Hours);
+
+                return $"Starts in a day and {diff.Hours} hour{ending}";
+            }
+            else if (diff.Hours > Unit)
+            {
+                return $"Starts in {diff.Hours} hours";
+            }
+            else if (diff.Hours == Unit)
+            {
+                var ending = ReturnEndingIfPlural(diff.Minutes);
+
+                return $"Starts in a hour and {diff.Minutes} minute{ending}";
+            }
+            else if (diff.Minutes > Unit)
+            {
+                return $"Starts in {diff.Minutes} minutes";
+            }
+            else
+            {
+                return $"Starts in a minute";
+            }
+        }
+
+        public string GetBracketType(int bracketType)
+            => this.data
+                .BracketTypes
+                .Where(bt => bt.Id == bracketType)
+                .Select(bt => bt.Name)
+                .FirstOrDefault();
+
+        public int GetCapacity(int capacityId)
+            => this.data
+                .MaximumTeamsFormats
+                .Where(mtf => mtf.Id == capacityId)
+                .Select(mtf => mtf.Capacity)
+                .FirstOrDefault();
+
+        public string GetFormat(int formatId)
+            => this.data
+                .TeamSizes
+                .Where(f => f.Id == formatId)
+                .Select(f => f.Format)
+                .FirstOrDefault();
+
+        public string GetRegionName(int regionId) 
+            => this.data
+                .Regions
+                .Where(r => r.Id == regionId)
+                .Select(r => r.Name)
+                .FirstOrDefault();
 
         public string GetHosterName(int hosterId)
             => this.data
@@ -88,11 +185,9 @@ namespace GameSpace.Services.Tournaments
                 .Select(u => u.HostTournaments.id)
                 .FirstOrDefault();
 
-        public string GetInformation(int id)
-            => this.data
-                .TeamsTournaments
-                .Where(tt => tt.Id == id)
-                .Select(u => u.Information)
+        public string GetInformation(int tournamentId)
+            => GetQueryableTournament(tournamentId)
+                .Select(tt => tt.Information)
                 .FirstOrDefault();
 
         public async Task AddInPending(
@@ -140,9 +235,24 @@ namespace GameSpace.Services.Tournaments
             await AddTournamentToHoster(userId, tournament);
         }
 
+        public async Task RegisterTeam(int tournamentId, int teamId)
+        {
+            var tournament = GetQueryableTournament(tournamentId).FirstOrDefault();
+
+            var relation = new TeamsTournamentTeam
+            {
+                TeamId = teamId,
+                TeamsTournamentId = tournamentId
+            };
+
+            tournament.RegisteredTeams.Add(relation);
+
+            await this.data.SaveChangesAsync();
+        }
+
         public async Task Verify(int tournamentId)
         {
-            var tournamentData = GetQueryableTournament(tournamentId);
+            var tournamentData = GetQueryableTournament(tournamentId).FirstOrDefault();
 
             tournamentData.IsVerified = true;
 
@@ -151,7 +261,7 @@ namespace GameSpace.Services.Tournaments
 
         public async Task Unverify(int tournamentId)
         {
-            var tournamentData = GetQueryableTournament(tournamentId);
+            var tournamentData = GetQueryableTournament(tournamentId).FirstOrDefault();
 
             tournamentData.IsVerified = false;
 
@@ -162,6 +272,24 @@ namespace GameSpace.Services.Tournaments
             => this.data
             .BracketTypes
             .Any(bt => bt.Id == bracketTypeId);
+
+        public bool HasAlreadyStarted(int tournamentId)
+            => GetQueryableTournament(tournamentId)
+                .Select(tt => tt.StartsOn > DateTime.UtcNow)
+                .FirstOrDefault();
+
+        public bool IsFull(int tournamentId)
+        {
+            return GetQueryableTournament(tournamentId)
+                    .Select(tt => tt.RegisteredTeams.Count > tt.MaximumTeamsFormat.Capacity)
+                    .FirstOrDefault();
+        }
+
+        public bool IsTeamAlreadyRegistrated(int tournamentId, int teamId)
+            => GetQueryableTournament(tournamentId)
+                .Select(tt => tt.RegisteredTeams
+                                .Any(rt => rt.TeamId == teamId))
+                .FirstOrDefault();
 
         public bool MapExists(int mapId) => this.data.Maps.Any(m => m.Id == mapId);
 
@@ -266,11 +394,11 @@ namespace GameSpace.Services.Tournaments
             return false;
         }
 
-        private TeamsTournament GetQueryableTournament(int tournamentId)
+        private IQueryable<TeamsTournament> GetQueryableTournament(int tournamentId)
             => this.data
                     .TeamsTournaments
                     .Where(tt => tt.Id == tournamentId)
-                    .FirstOrDefault();
+                    .AsQueryable();
 
         private IEnumerable<TournamentServiceModel> OrderTournament(IEnumerable<TournamentServiceModel> tournament, string orderBy)
         {
@@ -295,5 +423,7 @@ namespace GameSpace.Services.Tournaments
                 return tournament.OrderBy(t => t.StartsOn);
             }
         }
+
+        private string ReturnEndingIfPlural(int quantity) => quantity == 1 ? string.Empty : "s";
     }
 }

@@ -1,0 +1,116 @@
+﻿@model TournamentViewModel
+
+@{
+    ViewData["Title"] = "Tournament Details";
+}
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <h1 class="text-center">@Model.Name</h1>
+        <br />
+        <div class="profile-tabs">
+            <ul class="nav nav-pills nav-pills-icons justify-content-center" role="tablist">
+                <li class="nav-item active">
+                    <a class="nav-link active" href="#details" role="tab" data-toggle="tab">
+                        Details
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#rules" role="tab" data-toggle="tab">
+                        Rules
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#prizes" role="tab" data-toggle="tab">
+                        Prizes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#participants" role="tab" data-toggle="tab">
+                        Participants
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#media" role="tab" data-toggle="tab">
+                        Media
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contacts" role="tab" data-toggle="tab">
+                        Contacts
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <hr />
+        <br />
+        <div class="tab-content tab-space">
+            <div class="tab-pane active gallery" id="details">
+                <div class="row">
+                    <article class="w-100 p-2">
+                        <p class="text-black-50">Region</p>
+                        <p>@Model.RegionName</p>
+                        <hr>
+                        <p class="text-black-50">Date & Time</p>
+                        <p>@Model.StartsOn</p>
+                        <hr>
+                        <p class="text-black-50">Format</p>
+                        <p> @Model.TeamSizeFormat</p>
+                        <hr>
+                        <p class="text-black-50">Game Map & Type</p>
+                        <p>
+                            @Model.MapId<br>
+                            @Model.ModeId
+                        </p>
+                        <a asp-controller="Tournament" asp-action="Participation" asp-route-tournamentId="@Model.Id" class="btn btn-danger float-md-right">Participate</a>
+                    </article>
+                </div>
+            </div>
+            <div class="tab-pane text-center gallery" id="rules">
+                <div class="row">
+                    <article class="w-100 p-2">
+                        <p style="text-align: left; display:flex; flex-direction: column; align-items: center">@Model.Information</p>
+                    </article>
+                </div>
+            </div>
+            <div class="tab-pane gallery" id="prizes">
+                <div class="row">
+                    <article class="w-100">
+                        @if (Model.PrizePool == 0)
+                        {
+                            <h3>There are no Prizes</h3>
+                        }
+                        else
+                        {
+                            <p class="text-black-50">Prize Pool</p>
+                            <h5>@Model.PrizePool Coin</h5>
+                            <hr>
+                            <p class="text-black-50">Distribution</p>
+                            <p @*style="text-align: left; display:flex; flex-direction: column;  align-items: center"*@>
+                                1st place: @(Model.PrizePool / 2) Coin<br>
+                                2nd place: @(Model.PrizePool / 2 / 2) Coin <br>
+                                3rd & 4th places: @(Model.PrizePool / 2 / 2 / 2) Coin<br>
+                            </p>
+                        }
+                    </article>
+                </div>
+            </div>
+            <div class="tab-pane text-center gallery" id="participants">
+                <div class="row">
+                </div>
+            </div>
+            <div class="tab-pane text-center gallery" id="media">
+                <div class="row">
+                    <p style="text-align: left; display:flex; flex-direction: column; align-items: center">
+                        &emsp;Follow us on:<br>
+
+                    </p>
+                </div>
+            </div>
+            <div class="tab-pane text-center gallery" id="contacts">
+                <div class="row">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

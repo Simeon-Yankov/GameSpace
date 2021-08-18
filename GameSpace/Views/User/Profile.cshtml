@@ -1,7 +1,5 @@
 ﻿@model UserProfileServiceModel
 
-@using System.Globalization;
-
 @{
     ViewData["Title"] = "Profile";
 
@@ -76,16 +74,14 @@
                             {
                                 <p class="card-text text-danger"><strong>Not Verified</strong></p>
                             }
-                            <a asp-controller="Summoner" asp-action="Refresh" asp-route-accountId="@gameAccount.AccountId" asp-route-regionName="@gameAccount.RegionName" asp-route-userId="@Model.Id" asp-route-timer="@gameAccount.LastUpdate" class="btn btn-outline-success">Refresh</a>
+                            <a asp-controller="Summoner" asp-action="Refresh" asp-route-accountId="@gameAccount.AccountId" asp-route-regionName="@gameAccount.RegionName" asp-route-userId="@Model.Id" asp-route-timer="@gameAccount.LastUpdate" class="btn btn-outline-success m-1">Refresh</a>
                             @if (Model.Id == this.User.Id())
                             {
-
                                 @if (!gameAccount.IsVerified)
                                 {
                                     <a asp-controller="Summoner" asp-action="Verify" asp-route-accountId="@gameAccount.AccountId" asp-route-regionName="@gameAccount.RegionName" class="btn btn-outline-success">Verify</a>
                                 }
-
-                                <a asp-controller="Summoner" asp-action="Remove" asp-route-accountId="@gameAccount.AccountId" class="btn btn-outline-danger">Remove</a>
+                                <a asp-controller="Summoner" asp-action="Remove" asp-route-accountId="@gameAccount.AccountId" class="btn btn-outline-danger m-1">Remove</a>
                             }
                         </div>
                     </div>

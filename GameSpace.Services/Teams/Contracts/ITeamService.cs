@@ -19,7 +19,7 @@ namespace GameSpace.Services.Teams.Contracts
 
         Task RemoveMember(int teamId, string userId);
 
-        IEnumerable<TeamServiceModel> ByUser(string userId);
+        IEnumerable<TeamServiceModel> ByOwner(string userId);
 
         IEnumerable<TeamServiceModel> UserMemberships(string userId);
 

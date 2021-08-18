@@ -1,4 +1,4 @@
-﻿@*@model 
+﻿@model List<TournamentViewModel>
 
 @{
     ViewData["Title"] = "Upcoming tournaments";
@@ -6,12 +6,49 @@
 
 <div class="row">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
-        <h3 class="heading-margin text-center">All Upcoming League of Legends Tournaments</h3>
+        <h3 class="heading-margin text-center"><strong>Upcoming LoL Tournaments</strong></h3>
         <br />
+        <div class="card-deck flex-column-reverse">
+            @foreach (var tournament in Model)
+            {
+                var prizePool = (int)tournament.PrizePool;
+                <div class="card">
+                    <div class="row no-gutters">
+                        <div class="col-auto p-3">
+                            <img src="/images/LoLogo.png" class="img-fluid" alt="Tournament image">
+                        </div>
+                        <div class="col">
+                            <div class="card-block px-2">
+                                <h4 class="card-title">
+                                    @tournament.Name
+                                    <span class="float-lg-right p-2">
+                                        <small class="text-black-50">@(tournament.TicketPrize == 0 ? "Free" : $"Ticket - {@tournament.TicketPrize} Coin")</small>
+                                    </span>
+                                </h4>
+                                <p class="card-text">
+                                    <small>Region -</small> @tournament.RegionName <i class="fa fa-globe"></i>
+                                    <span class="text-right">
+                                        &emsp;<small>Capacity -</small> @tournament.MaximumTeams slots
+                                    </span>
+                                </p>
+                                
+                            <p class="card-text">
+                                <small>Format -</small> @tournament.TeamSizeFormat &emsp; <small> Prize Pool -</small> @(prizePool == 0 ? "None" : prizePool + " Coin") &emsp; <a asp-controller="Tournament" asp-action="Details" asp-route-tournamentId="@tournament.Id" class="btn btn-success m-2 float-lg-right">Details</a>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer w-100 text-muted p-sm-1 ">
+                        <small class="p-1">Hosted by <strong>@tournament.HosterName</strong> <span class="float-right p-1"><i class="fa fa-hourglass-end"></i> <strong>@tournament.StartsInMessage</strong></span></small>
+                    </div>
+                </div>
+                <br />
+            }
 
+        </div>
     </div>
-</div>*@
+</div>
 
 @*@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}*@
+        <partial name="_ValidationScriptsPartial" />
+    }*@
