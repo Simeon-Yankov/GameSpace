@@ -52,6 +52,12 @@
                                 </div>
                             </li>
                         }
+                        @if (User.IsAdmin())
+                        {
+                            <li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Tournament" asp-action="Upcoming">Upcoming Tournaments</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -65,9 +71,9 @@
                 @TempData[WebConstants.GlobalMessageKey]
             </div>
         }
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
     <br />
     <br />

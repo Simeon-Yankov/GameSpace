@@ -18,6 +18,7 @@ namespace GameSpace.Data.Models
             this.Friends = new HashSet<User>();
             this.GameAccounts = new HashSet<GameAccount>();
             this.Teams = new HashSet<UserTeam>();
+            this.InvitedToTournament = new HashSet<UserTeamsTournamentTeam>();
         }
 
         [Required]
@@ -42,5 +43,7 @@ namespace GameSpace.Data.Models
         public virtual ICollection<GameAccount> GameAccounts { get; init; }
 
         public virtual ICollection<UserTeam> Teams { get; init; }
+
+        public virtual ICollection<UserTeamsTournamentTeam> InvitedToTournament { get; init; }
     }
 }

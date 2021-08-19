@@ -155,7 +155,7 @@ namespace GameSpace.Controllers
 
             await SendNotification(messageData, teamName);
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(MessageController.All), "Message");
         }
 
         [Authorize]

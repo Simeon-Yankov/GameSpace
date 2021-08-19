@@ -11,7 +11,7 @@ namespace GameSpace.Services.Tournaments.Contracts
 {
     public interface ITournamentService
     {
-        Task CheckInParticipant(int tournamentId, int teamId);
+        Task CheckInParticipant(int tournamentId, int teamId, string userId);
 
         TournamentServiceModel Details(int tournamentId);
 
@@ -22,6 +22,10 @@ namespace GameSpace.Services.Tournaments.Contracts
             bool onlyVerified = false);
 
         IEnumerable<TeamServiceModel> TournamentParticipants(int tournamentId);
+
+        IEnumerable<RegisteredMemberServiceModel> RegisteredMembers(int tournamentTeamId);
+
+        IEnumerable<RegisteredMemberServiceModel> RegisteredMembers(int tournamentId, int teamId);
 
         string GetBracketType(int bracketType);
 
@@ -58,15 +62,21 @@ namespace GameSpace.Services.Tournaments.Contracts
             int teamSizeId,
             string userId);
 
-        Task RegisterTeam(int tournamentId, int teamId);
+        Task RegisterTeam(int tournamentId, int teamId, IEnumerable<string> usersId);
 
         Task Verify(int tournamentId);
 
         Task Unverify(int tournamentId);
 
+        int GetTeamSize(int tournamentId);
+
+        bool IsHoster(string userId, string hosterName);
+
         bool IsFull(int tournamentId);
 
-        bool IsTeamAlreadyRegistrated(int tournamentId , int teamId);
+        bool IsTeamAlreadyRegistered(int tournamentId , int teamId);
+
+        bool IsTeamChecked(int tournamentId, int registeredTeamId);
 
         bool HasAlreadyStarted(int tournamentId);
 
@@ -79,6 +89,8 @@ namespace GameSpace.Services.Tournaments.Contracts
         bool ModeExists(int modeId);
 
         bool TeamSizeExists(int teamSizeId);
+
+        bool IsUserChecked(int tournamentId, int teamId, string userId);
 
         IEnumerable<BracketTypeServiceModel> AllBracketTypes();
 

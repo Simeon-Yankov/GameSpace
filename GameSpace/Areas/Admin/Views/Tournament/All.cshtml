@@ -24,37 +24,37 @@
     <tbody>
         @foreach (var tournament in Model)
         {
-        <tr>
-            <td scope="col" class="text-center">@tournament.Id</td>
-            <td scope="col" class="text-center">@tournament.Name</td>
-            <td scope="col" class="text-center"><button class="test btn btn-primary disabled">View</button></td>
-            <td scope="col" class="text-center">
-                @if (tournament.Information is not null)
-                {
-                    <a asp-area="Admin" asp-controller="Tournament" asp-action="Information" asp-route-tournamentId="@tournament.Id" class="btn btn-primary">View</a>
-                }
-                else
-                {
-                    <button class="test btn btn-primary disabled">View</button>
-                }
-            </td>
-            <td scope="col" class="text-center">@tournament.StartsOn.ToLocalTime()</td>
-            <td scope="col" class="text-center">@tournament.PrizePool</td>
-            <td scope="col" class="text-center">@tournament.TicketPrize</td>
-            <td scope="col" class="text-center">@tournament.HosterName</td>
-            <td scope="col" class="text-center">@(tournament.IsVerified ? "Yes" : "No")</td>
+            <tr>
+                <td scope="col" class="text-center">@tournament.Id</td>
+                <td scope="col" class="text-center">@tournament.Name</td>
+                <td scope="col" class="text-center"><button class="test btn btn-primary disabled">View</button></td>
+                <td scope="col" class="text-center">
+                    @if (tournament.Information is not null)
+                    {
+                        <a asp-area="Admin" asp-controller="Tournament" asp-action="Information" asp-route-tournamentId="@tournament.Id" class="btn btn-primary">View</a>
+                    }
+                    else
+                    {
+                        <button class="test btn btn-primary disabled">View</button>
+                    }
+                </td>
+                <td scope="col" class="text-center">@tournament.StartsOn.ToLocalTime()</td>
+                <td scope="col" class="text-center">@tournament.PrizePool</td>
+                <td scope="col" class="text-center">@tournament.TicketPrize</td>
+                <td scope="col" class="text-center">@tournament.HosterName</td>
+                <td scope="col" class="text-center">@(tournament.IsVerified ? "Yes" : "No")</td>
 
-            <td scope="col">
-                @if (!tournament.IsVerified)
-                {
-                    <a asp-area="Admin" asp-controller="Tournament" asp-action="Verify" asp-route-tournamentId="@tournament.Id" class="btn btn-info float-right ml-3">Verify</a>
-                }
-                else
-                {
-                    <a asp-area="Admin" asp-controller="Tournament" asp-action="Unverify" asp-route-tournamentId="@tournament.Id" class="btn btn-info float-right ml-3">Unverify</a>
-                }
-            </td>
-        </tr>
+                <td scope="col">
+                    @if (!tournament.IsVerified)
+                    {
+                        <a asp-area="Admin" asp-controller="Tournament" asp-action="Verify" asp-route-tournamentId="@tournament.Id" class="btn btn-info float-right ml-3">Verify</a>
+                    }
+                    else
+                    {
+                        <a asp-area="Admin" asp-controller="Tournament" asp-action="Unverify" asp-route-tournamentId="@tournament.Id" class="btn btn-info float-right ml-3">Unverify</a>
+                    }
+                </td>
+            </tr>
         }
     </tbody>
 </table>

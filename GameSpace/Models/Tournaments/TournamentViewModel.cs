@@ -77,6 +77,14 @@ namespace GameSpace.Models.Tournaments
 
         public bool IsRegistrated { get; set; }
 
+        public bool IsUserChecked { get; set; }
+
+        public bool IsHoster { get; set; }
+
+        public bool IsTeamChecked { get; set; }
+
         public IEnumerable<TeamServiceModel> Participants { get; set; }
+
+        public IEnumerable<RegisteredMemberServiceModel> RegisteredMembers { get; set; }
     }
 }

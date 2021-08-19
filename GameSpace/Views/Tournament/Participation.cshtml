@@ -22,36 +22,15 @@
                         {
                             <img class="card-img-top" src="data:image;base64,@System.Convert.ToBase64String(team.Image)" alt="Team @team.Name's image">
                         }
-                        <div class="card-body">
-                            <h5 class="card-title">@team.Name</h5>
-                            <p class="card-text"></p>
-                            <button asp-route-tournamentId="@Model.Id" asp-route-selectedTeamId="@team.Id" type="submit" class="btn btn-outline-primary">Select</button>
-                        </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@team.Name</h5>
+                        <p class="card-text"></p>
+                        <a asp-controller="Tournament" asp-action="Selection" asp-route-tournamentId="@Model.Id" asp-route-selectedTeamId="@team.Id" class="btn btn-outline-primary">Select</a>
+                        @*<button asp-route-tournamentId="@Model.Id" asp-route-selectedTeamId="@team.Id" type="submit" class="btn btn-outline-primary">Select</button>*@
+                    </div>
                     </div>
                 </form>
             }
         </div>
     </div>
 </div>
-
-@*<div class="row">
-        <div class="card-deck">
-            @foreach (var team in Model.Participants)
-            {
-                    <div class="card mb-3 container-fluid" style="width: 10rem;">
-                        @if (team.IsDefaultImage)
-                        {
-                            <img class="card-img-top" src="/images/12422580181795848664NYCS-bull-trans-T.svg.med.png" alt="Team @team.Name's image">
-                        }
-                        else
-                        {
-                            <img class="card-img-top" src="data:image;base64,@System.Convert.ToBase64String(team.Image)" alt="Team @team.Name's image">
-                        }
-                        <div class="card-body">
-                            <h5 class="card-title">@team.Name</h5>
-                            <p class="card-text"></p>
-                        </div>
-                    </div>
-            }
-        </div>
-    </div>*@

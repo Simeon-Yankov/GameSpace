@@ -1,0 +1,145 @@
+﻿@model TeamMembersServiceModel
+
+@{
+    ViewData["Title"] = "Select Members";
+
+    var members = Model.Members.ToArray();
+
+    var membersCount = members.Count();
+}
+
+<div class="row">
+    <div class="card-deck">
+        @foreach (var member in Model.Members)
+        {
+            <div class="card mb-2 container-fluid stand" style="width: 16rem;">
+                @if (member.IsDefaultImage)
+                {
+                    <img src="/images/Profile.jpg" class="card-img-top" alt="Profile picture">
+                }
+                else
+                {
+                    <img src="data:image;base64,@System.Convert.ToBase64String(member.Image)" class="card-img-top" alt="Profile picture">
+                }
+                <div class="card-body text-center ">
+                    <h5 class="card-title mb-0">@member.Nickname</h5>
+                    @if (member.IsMemberOwner)
+                    {
+                        <div class="card-text text-black-50">Team Lead</div>
+                        <br />
+                        @if (member.Id != this.User.Id())@*x2 partial*@
+                        {
+                            <div class="accordion">
+                                <a asp-controller="User" asp-action="Profile" asp-route-userId="@member.Id" class="btn btn-outline-primary">View Profile</a>
+                            </div>
+                        }
+                    }
+                    @if (!member.IsMemberOwner)
+                    {
+                        <div class="card-text text-black-50">Member</div>
+                        <br />
+                        @if (member.Id != this.User.Id())@*x2 partial*@
+                        {
+                            <div class="accordion">
+                                <a asp-controller="User" asp-action="Profile" asp-route-userId="@member.Id" class="btn btn-outline-primary">View Profile</a>
+                            </div>
+                        }
+                        @if (this.Model.IsOwner)
+                        {
+                            <div class="accordion">
+
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<br />
+<div asp-validation-summary="All" class="small text-danger"></div>
+<form method="post" class="form-inline">
+    <div class="row">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    @foreach (var member in Model.Members.ToArray().OrderBy(m => m.Nickname))
+                    {
+                        <th scope="col" class="text-center">@member.Nickname</th>
+                    }
+                    <th scope="col" class="text-center"></th>
+                    <th scope="col" class="text-center"></th>
+                    <th scope="col" class="text-center"></th>
+                    <th scope="col" class="text-center"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+
+                    <td scope="col" class="text-center">
+                        <div class="hide" id="1">
+                            <div class="bootstrap-switch-square form-group">
+                                <input asp-for="@Model.IsFirstMemberSelected" type="checkbox" data-toggle="switch" />
+                                <label class="p-1">invite</label>
+                            </div>
+                        </div>
+                    </td>
+                    <td scope="col" class="text-center">
+                        <div class="hide" id="2">
+                            <div class="bootstrap-switch-square form-group">
+                                <input asp-for="@Model.IsSecondMemberSelected" type="checkbox" data-toggle="switch" />
+                                <label class="p-1">invite</label>
+                            </div>
+                        </div>
+                    </td>
+                    <td scope="col" class="text-center">
+                        <div class="hide" id="3">
+                            <div class="bootstrap-switch-square form-group">
+                                <input asp-for="@Model.IsThirdMemberSelected" type="checkbox" data-toggle="switch" />
+                                <label class="p-1">invite</label>
+                            </div>
+                        </div>
+                    </td>
+                    <td scope="col" class="text-center">
+                        <div class="hide" id="4">
+                            <div class="bootstrap-switch-square form-group">
+                                <input asp-for="@Model.IsForthMemberSelected" type="checkbox" data-toggle="switch" />
+                                <label class="p-1">invite</label>
+                            </div>
+                        </div>
+                    </td>
+                    <td scope="col" class="text-center">
+                        <div class="hide" id="5">
+                            <div class="bootstrap-switch-square form-group">
+                                <input asp-for="@Model.IsFifthMemberSelected" type="checkbox" data-toggle="switch" />
+                                <label class="p-1">invite</label>
+                            </div>
+                        </div>
+                    </td>
+                    <td scope="col" class="text-center">
+                        <div class="hide" id="6">
+                            <div class="bootstrap-switch-square form-group">
+                                <input asp-for="@Model.IsSixthMemberSelected" type="checkbox" data-toggle="switch" />
+                                <label class="p-1">invite</label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="submit" asp-route-tournamentId="@Model.TournamentId" asp-route-selectedTeamId="@Model.TeamId" class="btn btn-outline-primary">Register Team</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        let mumbersCount = @membersCount;
+
+        for (var i = 1; i <= mumbersCount; i++) {
+
+            let button = document.getElementById(i);
+
+            button.className = "bootstrap-switch-square form-group";
+        }
+    </script>
+}

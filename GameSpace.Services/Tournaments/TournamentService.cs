@@ -26,7 +26,7 @@ namespace GameSpace.Services.Tournaments
             this.teams = teams;
         }
 
-        public async Task CheckInParticipant(int tournamentId, int teamId)
+        public async Task CheckInParticipant(int tournamentId, int teamId, string userId)
         {
             var tournament = GetQueryableTournament(tournamentId)
                                 .Select(t => t.RegisteredTeams
@@ -34,7 +34,14 @@ namespace GameSpace.Services.Tournaments
                                               .FirstOrDefault())
                                 .FirstOrDefault();
 
-            tournament.IsChecked = true;
+            var member = tournament.InvitedMembers.FirstOrDefault(m => m.UserId == userId);
+
+            member.IsChecked = true;
+
+            if (tournament.InvitedMembers.All(t => t.IsChecked))
+            {
+                tournament.IsChecked = true;
+            }
 
             await this.data.SaveChangesAsync();
         }
@@ -70,7 +77,7 @@ namespace GameSpace.Services.Tournaments
                 BracketTypeFormat = GetBracketType(tournament.BracketTypeId),
                 StartsInMessage = GetStartsInMessage(tournament.StartsOn),
                 MapName = GetMapName(tournament.MapId),
-                ModeName = GetModeName(tournament.ModeId)
+                ModeName = GetModeName(tournament.ModeId),
             };
         }
 
@@ -141,12 +148,54 @@ namespace GameSpace.Services.Tournaments
                                          Id = rt.Team.Id,
                                          Name = rt.Team.Name,
                                          Image = rt.Team.Appearance.Image,
-                                         Banner = rt.Team.Appearance.Banner
+                                         Banner = rt.Team.Appearance.Banner,
+                                         RegistratedMembers = rt.InvitedMembers
+                                                                .Select(m => new RegisteredMemberServiceModel
+                                                                {
+                                                                    TeamTournamentId = m.TeamsTournamentTeamId,
+                                                                    UserId = m.UserId,
+                                                                    IsChecked = false
+                                                                })
+                                                                .AsEnumerable()
                                      })
                                      .ToList()
                 })
                 .FirstOrDefault()
                 .Participants;
+
+        public IEnumerable<RegisteredMemberServiceModel> RegisteredMembers(int tournamentTeamId)
+            => this.data
+                .TeamsTournamentsTeams
+                .Where(ttt => ttt.Id == tournamentTeamId)
+                .Select(ttt => new
+                {
+                    RegisteredMembers = ttt
+                                            .InvitedMembers
+                                            .Select(m => new RegisteredMemberServiceModel
+                                            {
+                                                UserId = m.UserId,
+                                                TeamTournamentId = m.TeamsTournamentTeamId,
+                                                IsChecked = m.IsChecked
+                                            })
+                                            .AsEnumerable()
+                })
+                .FirstOrDefault()
+                .RegisteredMembers;
+
+        public IEnumerable<RegisteredMemberServiceModel> RegisteredMembers(int tournamentId, int teamId)
+            => this.data
+                .TeamsTournamentsTeams
+                .Where(ttt => ttt.TeamsTournamentId == tournamentId && ttt.TeamId == teamId)
+                .Select(ttt => ttt.InvitedMembers
+                                                .Select(m => new RegisteredMemberServiceModel
+                                                {
+                                                    UserId = m.UserId,
+                                                    TeamTournamentId = m.TeamsTournamentTeamId,
+                                                    IsChecked = m.IsChecked
+                                                })
+                                                .AsEnumerable()
+                       )
+                        .FirstOrDefault();
 
         public string GetStartsInMessage(DateTime startsOn)
         {
@@ -286,7 +335,7 @@ namespace GameSpace.Services.Tournaments
             await AddTournamentToHoster(userId, tournament);
         }
 
-        public async Task RegisterTeam(int tournamentId, int teamId)
+        public async Task RegisterTeam(int tournamentId, int teamId, IEnumerable<string> usersId)
         {
             var tournament = GetQueryableTournament(tournamentId).FirstOrDefault();
 
@@ -295,6 +344,17 @@ namespace GameSpace.Services.Tournaments
                 TeamId = teamId,
                 TeamsTournamentId = tournamentId
             };
+
+            foreach (var userId in usersId)
+            {
+                var member = new UserTeamsTournamentTeam
+                {
+                    TeamsTournamentTeamId = relation.Id,
+                    UserId = userId
+                };
+
+                relation.InvitedMembers.Add(member);
+            }
 
             tournament.RegisteredTeams.Add(relation);
 
@@ -319,6 +379,17 @@ namespace GameSpace.Services.Tournaments
             await this.data.SaveChangesAsync();
         }
 
+        //public bool IsUserAlreadyRegistrated(int tournamentId, userId)
+        //{
+
+        //}
+
+        public bool IsHoster(string userId, string hosterName)
+            => this.data
+                .TeamsTournaments
+                .Where(tt => tt.Hoster.User.Nickname == hosterName)
+                .Any(tt => tt.Hoster.User.Id == userId);
+
         public bool BracketTypeExists(int bracketTypeId)
             => this.data
             .BracketTypes
@@ -336,20 +407,47 @@ namespace GameSpace.Services.Tournaments
                     .FirstOrDefault();
         }
 
-        public bool IsTeamAlreadyRegistrated(int tournamentId, int teamId) 
+        public bool IsTeamAlreadyRegistered(int tournamentId, int teamId)
             => GetQueryableTournament(tournamentId)
                .Select(tt => tt.RegisteredTeams
                                .Any(rt => rt.TeamId == teamId))
                .FirstOrDefault();
 
-        //public bool IsPlayerAlreadyRegistrated(string userId)
-        //{
-        //    this.data
-        //        .Users
-        //        .Where(u => u.Id == userId)
-        //        .
+        public bool IsTeamChecked(int tournamentId, int teamId)
+            => this.data
+                .TeamsTournamentsTeams
+                .Where(ttt => ttt.TeamsTournamentId == tournamentId && ttt.TeamId == teamId)
+                .Select(ttt => ttt.IsChecked)
+                .FirstOrDefault();
 
-        //}
+        public int GetTeamSize(int tournamentId)
+        {
+            var teamSize = this.data
+                .TeamsTournaments
+                .Where(tt => tt.Id == tournamentId)
+                .Select(tt => tt.TeamSize)
+                .FirstOrDefault()
+                .Format[0].ToString();
+
+            return int.Parse(teamSize);
+        }
+
+        public bool IsUserChecked(int tournamentId, int teamId, string userId)
+            => this.data
+                .TeamsTournamentsTeams
+                .Where(ttt => ttt.TeamsTournamentId == tournamentId && ttt.TeamId == teamId)
+                .Select(ttt => ttt
+                                    .InvitedMembers
+                                    .Where(m => m.UserId == userId)
+                                    .Select(m => new
+                                    {
+                                        IsChecked = m.IsChecked
+                                    })
+                                    .FirstOrDefault()
+                                    .IsChecked
+                       )
+                       .FirstOrDefault();
+
 
         public bool MapExists(int mapId) => this.data.Maps.Any(m => m.Id == mapId);
 

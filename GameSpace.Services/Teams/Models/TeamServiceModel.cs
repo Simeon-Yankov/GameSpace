@@ -1,4 +1,8 @@
-﻿namespace GameSpace.Services.Teams.Models
+﻿using System.Collections.Generic;
+
+using GameSpace.Services.Tournaments.Models;
+
+namespace GameSpace.Services.Teams.Models
 {
     public class TeamServiceModel
     {
@@ -13,6 +17,8 @@
         //public bool IsCheckedIn { get; init; }
 
         //public bool IsEliminated { get; init; }
+
+        public IEnumerable<RegisteredMemberServiceModel> RegistratedMembers { get; init; }
 
         public bool IsDefaultImage => Image is null ? true : false;
     }

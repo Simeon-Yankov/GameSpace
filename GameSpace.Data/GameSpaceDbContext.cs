@@ -57,6 +57,8 @@ namespace GameSpace.Data
 
         public DbSet<TeamsTournamentTeam> TeamsTournamentsTeams { get; init; }
 
+        public DbSet<UserTeamsTournamentTeam> UsersTeamsTournamentTeams { get; init; }
+
         //public DbSet<Stat> Stats { get; init; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -75,9 +77,14 @@ namespace GameSpace.Data
                 entity.HasKey(pil => new { pil.ProfileInfoId, pil.LanguageId });
             });
 
-            modelBuilder.Entity<TeamsTournamentTeam>(entity =>
+            //modelBuilder.Entity<TeamsTournamentTeam>(entity =>
+            //{
+            //    entity.HasKey(ttt => new { ttt.TeamsTournamentId, ttt.TeamId });
+            //});
+
+            modelBuilder.Entity<UserTeamsTournamentTeam>(entity =>
             {
-                entity.HasKey(ttt => new { ttt.TeamsTournamentId, ttt.TeamId });
+                entity.HasKey(uttt => new { uttt.TeamsTournamentTeamId, uttt.UserId });
             });
 
             //modelBuilder.Entity<UserTeam>()
@@ -107,6 +114,18 @@ namespace GameSpace.Data
                 .HasOne(tt => tt.Team)
                 .WithMany(t => t.Tournaments)
                 .HasForeignKey(ttt => ttt.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserTeamsTournamentTeam>()
+                .HasOne(tt => tt.User)
+                .WithMany(t => t.InvitedToTournament)
+                .HasForeignKey(ttt => ttt.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserTeamsTournamentTeam>()
+                .HasOne(tt => tt.TeamsTournamentTeam)
+                .WithMany(t => t.InvitedMembers)
+                .HasForeignKey(ttt => ttt.TeamsTournamentTeamId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);

@@ -31,10 +31,10 @@
                                         &emsp;<small>Capacity -</small> @tournament.MaximumTeams slots
                                     </span>
                                 </p>
-                                
-                            <p class="card-text">
-                                <small>Format -</small> @tournament.TeamSizeFormat &emsp; <small> Prize Pool -</small> @(prizePool == 0 ? "None" : prizePool + " Coin") &emsp; <a asp-controller="Tournament" asp-action="Details" asp-route-tournamentId="@tournament.Id" class="btn btn-success m-2 float-lg-right">Details</a>
-                            </p>
+
+                                <p class="card-text">
+                                    <small>Format -</small> @tournament.TeamSizeFormat &emsp; <small> Prize Pool -</small> @(prizePool == 0 ? "None" : prizePool + " Coin") &emsp; <a asp-controller="Tournament" asp-action="Details" asp-route-tournamentId="@tournament.Id" class="btn btn-success m-2 float-lg-right">Details</a>
+                                </p>
                             </div>
                         </div>
                     </div>

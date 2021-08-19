@@ -139,7 +139,7 @@ namespace GameSpace.Services.Teams
                                 Id = m.UserId,
                                 Nickname = m.User.Nickname,
                                 Image = m.User.ProfileInfo.Appearance.Image,
-                                IsMemberOwner = m.UserId == m.Team.OwnerId,
+                                IsMemberOwner = m.UserId == m.Team.OwnerId
                             })
                 })
                 .FirstOrDefault();
@@ -271,7 +271,7 @@ namespace GameSpace.Services.Teams
                 .First()
                 .MembersCount;
 
-            if (membersCount >= MaxTeamSize)
+            if (membersCount > MaxTeamSize)
             {
                 return true;
             }

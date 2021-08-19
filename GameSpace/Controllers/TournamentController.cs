@@ -43,23 +43,16 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> CheckIn(int tournamentId)
         {
-            var (participants, memberships) = GetParticipantsAndMemberships(tournamentId);
-
-            var teamId = memberships.Where(m => participants.FirstOrDefault(p => p.Id == m.Id).Id == m.Id).FirstOrDefault().Id;
+            int teamId = GetRegistratedTeam(tournamentId).Id;
 
             if (teamId == 0)
             {
                 return BadRequest();
             }
 
-            if (this.tournaments.IsTeamAlreadyRegistrated(tournamentId, teamId))
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
+            await this.tournaments.CheckInParticipant(tournamentId, teamId, this.User.Id());
 
-            await this.tournaments.CheckInParticipant(tournamentId, teamId);
-
-            TempData[GlobalMessageKey] = "Your Team Was Successfully Checked In";
+            TempData[GlobalMessageKey] = "You Have Successfully Checked In";
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
@@ -83,7 +76,20 @@ namespace GameSpace.Controllers
 
             tournamentsView.Participants = this.tournaments.TournamentParticipants(tournamentId);
 
-            tournamentsView.IsRegistrated = IsUserAlreadyRegistrated(tournamentId);
+            var isUserAlreadyRegistered = IsUserAlreadyRegistered(tournamentId);
+
+            if (isUserAlreadyRegistered)
+            {
+                var registeredTeamId = GetRegistratedTeam(tournamentId).Id;
+
+                tournamentsView.IsTeamChecked = this.tournaments.IsTeamChecked(tournamentId, registeredTeamId);
+
+                tournamentsView.IsUserChecked = this.tournaments.IsUserChecked(tournamentId, registeredTeamId, this.User.Id());
+            }
+
+            tournamentsView.IsRegistrated = isUserAlreadyRegistered;
+
+            tournamentsView.IsHoster = this.tournaments.IsHoster(this.User.Id(), tournamentsView.HosterName);
 
             return View(tournamentsView);
         }
@@ -102,21 +108,75 @@ namespace GameSpace.Controllers
             }); ;
         }
 
+        [Authorize]
+        public IActionResult Selection(int tournamentId, int selectedTeamId)
+        {
+            var teamMembersService = this.teams.Members(this.User.Id(), selectedTeamId);
+
+            teamMembersService.TournamentId = tournamentId;
+
+            return View(teamMembersService);
+        }
+
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Participation(int tournamentId, int selectedTeamId)
+        public async Task<IActionResult> Selection(int tournamentId, int selectedTeamId, TeamMembersServiceModel teamMembers)
         {
-            if (IsUserAlreadyRegistrated(tournamentId))
+            var teamMembersService = this.teams.Members(this.User.Id(), selectedTeamId);
+
+            var members = teamMembersService.Members.ToList().OrderBy(m => m.Nickname).ToList();
+
+            var listIsSelected = new List<bool>()
             {
-                this.ModelState.AddModelError("All", "You are already registrated");
+                teamMembers.IsFirstMemberSelected,
+                teamMembers.IsSecondMemberSelected,
+                teamMembers.IsThirdMemberSelected,
+                teamMembers.IsForthMemberSelected,
+                teamMembers.IsFifthMemberSelected,
+                teamMembers.IsSixthMemberSelected
+            };
+
+            var dic = new Dictionary<TeamMemberServiceModel, bool>();
+
+            for (int i = 0; i < members.Count(); i++)
+            {
+                dic.Add(members[i], listIsSelected[i]);
             }
-            else if (!this.teams.Excists(selectedTeamId))
+
+            var teamSize = this.tournaments.GetTeamSize(tournamentId);
+
+            var owner = members.Where(k => k.IsMemberOwner == true).FirstOrDefault();
+
+            if (dic[owner] == false)
+            {
+                this.ModelState.AddModelError("All", $"Owner must be involved.");
+            }
+
+            if (listIsSelected.Count(x => x == true) != teamSize)
+            {
+                this.ModelState.AddModelError("All", $"You need exact '{teamSize}' members selected.");
+            }
+
+            foreach (var member in members)
+            {
+                if (dic[member] == true)
+                {
+                    if (IsUserAlreadyRegistered(tournamentId, member.Id))
+                    {
+                        var message = member.Id == this.User.Id() ? "You are already registrated." : $"'{member.Nickname}' is already registrated in the Tournament.";
+
+                        this.ModelState.AddModelError("All", message);
+                    }
+                }
+            }
+
+            if (!this.teams.Excists(selectedTeamId))
             {
                 this.ModelState.AddModelError("All", "Team does not exists.");
             }
             else if (this.tournaments.IsFull(tournamentId))
             {
-                this.ModelState.AddModelError("All", "Tournament is full");
+                this.ModelState.AddModelError("All", "Tournament is full.");
             }
             else if (!this.tournaments.HasAlreadyStarted(tournamentId))
             {
@@ -125,23 +185,75 @@ namespace GameSpace.Controllers
 
             if (!this.ModelState.IsValid)
             {
-                var teamsService = this.teams.ByOwner(this.User.Id());
+                teamMembersService.TournamentId = tournamentId;
 
-                var teamsView = this.mapper.Map<List<TeamViewModel>>(teamsService);
+                teamMembersService.IsFirstMemberSelected = teamMembers.IsFirstMemberSelected;
+                teamMembersService.IsSecondMemberSelected = teamMembers.IsSecondMemberSelected;
+                teamMembersService.IsThirdMemberSelected = teamMembers.IsThirdMemberSelected;
+                teamMembersService.IsForthMemberSelected = teamMembers.IsForthMemberSelected;
+                teamMembersService.IsFifthMemberSelected = teamMembers.IsFifthMemberSelected;
+                teamMembersService.IsSixthMemberSelected = teamMembers.IsSixthMemberSelected;
 
-                return View(new ParticipationTournamentViewModel
-                {
-                    Id = tournamentId,
-                    Teams = teamsView
-                });
+                return View(teamMembersService);
             }
 
-            await this.tournaments.RegisterTeam(tournamentId, selectedTeamId);
+            var SelectedMembersId = new List<string>();
+
+            foreach (var member in members)
+            {
+                if (dic[member] == true)
+                {
+                    SelectedMembersId.Add(member.Id);
+                }
+            }
+
+            await this.tournaments.RegisterTeam(tournamentId, selectedTeamId, SelectedMembersId);
 
             TempData[GlobalMessageKey] = $"Successfully registered Team";
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
+
+        //[HttpPost]
+        //[Authorize]
+        //public async Task<IActionResult> Participation(int tournamentId, int selectedTeamId)
+        //{
+        //    if (IsUserAlreadyRegistrated(tournamentId))
+        //    {
+        //        this.ModelState.AddModelError("All", "You are already registrated");
+        //    }
+        //    else if (!this.teams.Excists(selectedTeamId))
+        //    {
+        //        this.ModelState.AddModelError("All", "Team does not exists.");
+        //    }
+        //    else if (this.tournaments.IsFull(tournamentId))
+        //    {
+        //        this.ModelState.AddModelError("All", "Tournament is full");
+        //    }
+        //    else if (!this.tournaments.HasAlreadyStarted(tournamentId))
+        //    {
+        //        this.ModelState.AddModelError("All", "The event has already started.");
+        //    }
+
+        //    if (!this.ModelState.IsValid)
+        //    {
+        //        var teamsService = this.teams.ByOwner(this.User.Id());
+
+        //        var teamsView = this.mapper.Map<List<TeamViewModel>>(teamsService);
+
+        //        return View(new ParticipationTournamentViewModel
+        //        {
+        //            Id = tournamentId,
+        //            Teams = teamsView
+        //        });
+        //    }
+
+        //    await this.tournaments.RegisterTeam(tournamentId, selectedTeamId);
+
+        //    TempData[GlobalMessageKey] = $"Successfully registered Team";
+
+        //    return RedirectToAction(nameof(HomeController.Index), "Home");
+        //}
 
         public IActionResult Upcoming()
         {
@@ -242,22 +354,58 @@ namespace GameSpace.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        private (IEnumerable<TeamServiceModel>, IEnumerable<TeamServiceModel>) GetParticipantsAndMemberships(int tournamentId)
+        private (IEnumerable<TeamServiceModel>, IEnumerable<TeamServiceModel>) GetParticipantsAndMemberships(int tournamentId, string userId = null)
         {
+            if (userId is null)
+            {
+                userId = this.User.Id();
+            }
+
             var participants = this.tournaments.TournamentParticipants(tournamentId);
 
-            var currUser = this.User.Id();
-
-            var memberships = this.teams.UserMemberships(currUser).ToList();
+            var memberships = this.teams.UserMemberships(userId).ToList();
 
             return (participants, memberships);
         }
 
-        private bool IsUserAlreadyRegistrated(int tournamentId)
+        private TeamServiceModel GetRegistratedTeam(int tournamentId)
         {
             var (participants, memberships) = GetParticipantsAndMemberships(tournamentId);
 
-            return participants.Any(p => memberships.Any(m => m.Id == p.Id));
+            var userRegisteredTeams = participants
+                                        .Where(p => memberships.Any(m => m.Id == p.Id))
+                                        .Select(p => new
+                                        {
+                                            Id = p.Id,
+                                            RegisteredMembers = p.RegistratedMembers
+                                        })
+                                        .ToList();
+
+            var teamService = memberships.Where(m => participants.FirstOrDefault(p => p.Id == m.Id).Id == m.Id).FirstOrDefault();
+
+            return teamService;
+        }
+
+        private bool IsUserAlreadyRegistered(int tournamentId, string userId = null)
+        {
+            if (userId is null)
+            {
+                userId = this.User.Id();
+            }
+
+            var (participants, memberships) = GetParticipantsAndMemberships(tournamentId, userId);
+
+            var userRegisteredTeams = participants
+                                        .Where(p => memberships.Any(m => m.Id == p.Id))
+                                        .Select(p => new
+                                        {
+                                            Id = p.Id,
+                                            RegisteredMembers = p.RegistratedMembers
+                                        })
+                                        .ToList();
+
+            return userRegisteredTeams.Any(x => x.RegisteredMembers.Any(m => m.UserId == userId));
+            //return participants.Any(p => memberships.Any(m => m.Id == p.Id));
         }
     }
 }

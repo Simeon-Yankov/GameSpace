@@ -1,5 +1,10 @@
 ﻿@model TournamentViewModel
 
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
 @{
     ViewData["Title"] = "Tournament Details";
 
@@ -69,16 +74,34 @@
                             </p>
                             @if (Model.IsRegistrated)
                             {
-                                <div class="float-md-right">
-                                    <strong>Starts in </strong>
-                                    <p id="timer"></p>
-                                    @*<small>Check In starts 45 min before start</small>*@
-                                    <a asp-controller="Tournament" asp-action="CheckIn" asp-route-tournamentId="@Model.Id" id="check-in" class="btn btn-danger disabled">Check In</a>
-                                </div>
+                                <hr>
+                                <p class="text-black-50">Status</p>
+                                @if (Model.IsTeamChecked)
+                                {
+                                    <p>Team is Checked In</p><i class="material-icons text-black-50 float-right m-1">Done</i>
+                                }
+                                else
+                                {
+                                    <p>Team is not Checked In yet</p>
+                                    <br />
+                                    @if (Model.IsUserChecked)
+                                    {
+                                        <div class="float-md-right">
+                                            <strong>Starts in </strong>
+                                            <p id="timer"></p>
+                                            <a asp-controller="Tournament" asp-action="CheckIn" asp-route-tournamentId="@Model.Id" id="check-in" class="btn btn-danger disabled">Check In</a>
+                                        </div>
+                                    }
+                                }
                             }
-                            else
+                            else if (!User.IsAdmin())
                             {
+                                <br />
                                 <a asp-controller="Tournament" asp-action="Participation" asp-route-tournamentId="@Model.Id" class="btn btn-danger float-md-right">Participate</a>
+                            }
+                            @if (Model.IsHoster || User.IsAdmin())
+                            {
+                                <a asp-controller="Tournament" asp-action="Participation" asp-route-tournamentId="@Model.Id" class="btn btn-primary">Administration</a>
                             }
                         </article>
                     </div>
@@ -86,7 +109,7 @@
                 <div class="tab-pane text-center gallery" id="rules">
                     <div class="row">
                         <article class="w-100 p-2">
-                            <p style="text-align: left; display:flex; flex-direction: column; align-items: center">@Model.Information</p>
+                            <textarea class="w-100" style="height: 400px">@Model.Information</textarea>
                         </article>
                     </div>
                 </div>
@@ -166,28 +189,19 @@
 
 @section Scripts {
     <script>
-        // Set the date we're counting down to
-
-        /**/
         var countDownDate = new Date("@Model.StartsOn").getTime();
-        /**/
 
-        // Update the count down every 1 second
         var x = setInterval(function () {
 
-            // Get today's date and time
             var now = new Date().getTime();
 
-            // Find the distance between now and the count down date
             var distance = countDownDate - now;
 
-            // Time calculations for days, hours, minutes and seconds
             var days = Math.floor(distance / (1000 * 60 * 60 * 24));
             var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Display the result in the element with id="demo"
             document.getElementById("timer").innerHTML = days + "d " + hours + "h "
                 + minutes + "m " + seconds + "s ";
 
@@ -195,7 +209,7 @@
             //clearInterval(x);
             //document.getElementById("timer").innerHTML = "Time to Check";
 
-            if (/*minutes <= 45 && hours == 0 &&*/ days == 0) {
+            if (minutes <= 45 && hours == 0 && days == 0) {
 
                 let button = document.getElementById("check-in");
 

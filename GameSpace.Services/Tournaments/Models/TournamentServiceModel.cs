@@ -10,15 +10,15 @@ namespace GameSpace.Services.Tournaments.Models
 
         public string Information { get; init; }
 
-        public DateTime StartsOn { get; init; } //
+        public DateTime StartsOn { get; init; }
 
-        public decimal PrizePool { get; init; } //
+        public decimal PrizePool { get; init; }
 
-        public decimal TicketPrize { get; init; } //
+        public decimal TicketPrize { get; init; }
 
-        public int CheckInPeriod { get; init; } //
+        public int CheckInPeriod { get; init; }
 
-        public int GoToGamePeriod { get; init; } //
+        public int GoToGamePeriod { get; init; }
 
         public int RegionId { get; init; }
 

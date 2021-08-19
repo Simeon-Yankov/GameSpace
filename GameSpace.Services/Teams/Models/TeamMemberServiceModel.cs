@@ -11,5 +11,7 @@
         public bool IsDefaultImage => Image is null;
 
         public bool IsMemberOwner { get; init; }
+
+        //public bool IsSelected { get; set; }
     }
 }
