@@ -33,10 +33,6 @@ namespace GameSpace.Models.Tournaments
         [Range(0, (double)decimal.MaxValue)]
         public decimal TicketPrize { get; init; }
 
-        [Display(Name = "Check-In Timer")]
-        [Range(CheckInPeriodMinMinutes, CheckInPeriodMaxMinutes)]
-        public int CheckInPeriod { get; init; }
-
         [Display(Name = "Go-To-Game Timer")]
         [Range(GoToGamePeriodMinMinutes, GoToGamePeriodMaxMinutes)]
         public int GoToGamePeriod { get; init; }

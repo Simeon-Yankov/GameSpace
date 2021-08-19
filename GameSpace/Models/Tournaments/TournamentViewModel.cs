@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 using GameSpace.Services.Regions.Models;
+using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Tournaments.Models;
 
 using Microsoft.AspNetCore.Mvc;
@@ -56,10 +57,13 @@ namespace GameSpace.Models.Tournaments
 
         public int MapId { get; init; }
 
+        public string MapName { get; init; }
+
         public IEnumerable<MapServiceModel> Maps { get; set; }
 
-        //[Display(Name = "Mode")]
         public int ModeId { get; init; }
+
+        public string ModeName { get; init; }
 
         public IEnumerable<ModeServiceModel> Modes { get; set; }
 
@@ -70,5 +74,9 @@ namespace GameSpace.Models.Tournaments
         public string HosterName { get; init; }
 
         public string StartsInMessage { get; init; }
+
+        public bool IsRegistrated { get; set; }
+
+        public IEnumerable<TeamServiceModel> Participants { get; set; }
     }
 }

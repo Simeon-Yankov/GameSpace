@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 using GameSpace.Data;
 using GameSpace.Data.Models;
+using GameSpace.Services.Teams.Contracts;
+using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Tournaments.Contracts;
 using GameSpace.Services.Tournaments.Models;
 
@@ -16,14 +18,30 @@ namespace GameSpace.Services.Tournaments
     public class TournamentService : ITournamentService
     {
         private readonly GameSpaceDbContext data;
+        private readonly ITeamService teams;
 
-        public TournamentService(GameSpaceDbContext data)
-            => this.data = data;
+        public TournamentService(GameSpaceDbContext data, ITeamService teams)
+        {
+            this.data = data;
+            this.teams = teams;
+        }
 
+        public async Task CheckInParticipant(int tournamentId, int teamId)
+        {
+            var tournament = GetQueryableTournament(tournamentId)
+                                .Select(t => t.RegisteredTeams
+                                              .Where(rt => rt.TeamId == teamId)
+                                              .FirstOrDefault())
+                                .FirstOrDefault();
+
+            tournament.IsChecked = true;
+
+            await this.data.SaveChangesAsync();
+        }
 
         public TournamentServiceModel Details(int tournamentId)
         {
-           var tournament = GetQueryableTournament(tournamentId).FirstOrDefault();
+            var tournament = GetQueryableTournament(tournamentId).FirstOrDefault();
 
             return new TournamentServiceModel
             {
@@ -50,10 +68,12 @@ namespace GameSpace.Services.Tournaments
                 MaximumTeams = GetCapacity(tournament.MaximumTeamsId),
                 TeamSizeFormat = GetFormat(tournament.TeamSizeId),
                 BracketTypeFormat = GetBracketType(tournament.BracketTypeId),
-                StartsInMessage = GetStartsInMessage(tournament.StartsOn)
+                StartsInMessage = GetStartsInMessage(tournament.StartsOn),
+                MapName = GetMapName(tournament.MapId),
+                ModeName = GetModeName(tournament.ModeId)
             };
         }
-                 
+
         //TODO: INTRODUCE AUTOMAP IN SERVICE LAYER
         public IEnumerable<TournamentServiceModel> AllUpcomingTournaments(
             int daysFrom = default,
@@ -108,6 +128,25 @@ namespace GameSpace.Services.Tournaments
 
             return OrderTournament(tournamentsService, orderBy);
         }
+
+        public IEnumerable<TeamServiceModel> TournamentParticipants(int tournamentId)
+            => this.data
+                .TeamsTournaments
+                .Where(tt => tt.Id == tournamentId)
+                .Select(tt => new
+                {
+                    Participants = tt.RegisteredTeams
+                                     .Select(rt => new TeamServiceModel
+                                     {
+                                         Id = rt.Team.Id,
+                                         Name = rt.Team.Name,
+                                         Image = rt.Team.Appearance.Image,
+                                         Banner = rt.Team.Appearance.Banner
+                                     })
+                                     .ToList()
+                })
+                .FirstOrDefault()
+                .Participants;
 
         public string GetStartsInMessage(DateTime startsOn)
         {
@@ -164,7 +203,21 @@ namespace GameSpace.Services.Tournaments
                 .Select(f => f.Format)
                 .FirstOrDefault();
 
-        public string GetRegionName(int regionId) 
+        public string GetMapName(int mapId)
+            => this.data
+                .Maps
+                .Where(m => m.Id == mapId)
+                .Select(m => m.Name)
+                .FirstOrDefault();
+
+        public string GetModeName(int modeId)
+            => this.data
+                .Modes
+                .Where(m => m.Id == modeId)
+                .Select(m => m.Name)
+                .FirstOrDefault();
+
+        public string GetRegionName(int regionId)
             => this.data
                 .Regions
                 .Where(r => r.Id == regionId)
@@ -198,7 +251,6 @@ namespace GameSpace.Services.Tournaments
             decimal ticketPrize,
             bool bronzeMatch,
             int minimumTeams,
-            int checkInPeriod,
             int goToGamePeriod,
             int regionId,
             int bracketId,
@@ -220,7 +272,6 @@ namespace GameSpace.Services.Tournaments
                 TicketPrize = ticketPrize,
                 BronzeMatch = bronzeMatch,
                 MinimumTeams = minimumTeams,
-                CheckInPeriod = checkInPeriod,
                 GoToGamePeriod = goToGamePeriod,
                 RegionId = regionId,
                 BracketTypeId = bracketId,
@@ -285,11 +336,20 @@ namespace GameSpace.Services.Tournaments
                     .FirstOrDefault();
         }
 
-        public bool IsTeamAlreadyRegistrated(int tournamentId, int teamId)
+        public bool IsTeamAlreadyRegistrated(int tournamentId, int teamId) 
             => GetQueryableTournament(tournamentId)
-                .Select(tt => tt.RegisteredTeams
-                                .Any(rt => rt.TeamId == teamId))
-                .FirstOrDefault();
+               .Select(tt => tt.RegisteredTeams
+                               .Any(rt => rt.TeamId == teamId))
+               .FirstOrDefault();
+
+        //public bool IsPlayerAlreadyRegistrated(string userId)
+        //{
+        //    this.data
+        //        .Users
+        //        .Where(u => u.Id == userId)
+        //        .
+
+        //}
 
         public bool MapExists(int mapId) => this.data.Maps.Any(m => m.Id == mapId);
 

@@ -20,7 +20,7 @@ namespace GameSpace.Services.Sumonners
         private readonly GameSpaceDbContext data;
         private readonly IRegionService regions;
 
-        private const string ApiKey = "XxxxXXxX-XXXXXXXxxxX-XXXX=XXXXXXxXXX"; //TODO: Make api key be changed in run time
+        private const string ApiKey = "RGAPI-d2a1d458-3136-4858-b290-0208663973da"; //TODO: Make api key be changed in run time
 
         public SummonerService(GameSpaceDbContext data, IRegionService regions)
         {

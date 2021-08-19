@@ -4,16 +4,16 @@
     ViewData["Title"] = "Choose a Team";
 }
 
-<div class="row">
-    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-4 col-xl-4">
-        <h2 class="heading-margin text-center">Choose a Team</h2>
+<div class="offset-xl-3 col-xl-6">
+    <h2 class="heading-margin text-center">Choose a Team</h2>
+    <div class="row">
         <br />
         <div asp-validation-summary="All" class="small text-danger"></div>
-        <div class="card-deck">
+        <div class="card-deck p-2">
             @foreach (var team in Model.Teams)
             {
                 <form method="post">
-                    <div class="card mb-3 container-fluid" style="width: 18rem;">
+                    <div class="card mb-3 container-fluid" style="width: 15rem;">
                         @if (team.IsDefaultImage)
                         {
                             <img class="card-img-top" src="/images/12422580181795848664NYCS-bull-trans-T.svg.med.png" alt="Team @team.Name's image">
@@ -33,3 +33,25 @@
         </div>
     </div>
 </div>
+
+@*<div class="row">
+        <div class="card-deck">
+            @foreach (var team in Model.Participants)
+            {
+                    <div class="card mb-3 container-fluid" style="width: 10rem;">
+                        @if (team.IsDefaultImage)
+                        {
+                            <img class="card-img-top" src="/images/12422580181795848664NYCS-bull-trans-T.svg.med.png" alt="Team @team.Name's image">
+                        }
+                        else
+                        {
+                            <img class="card-img-top" src="data:image;base64,@System.Convert.ToBase64String(team.Image)" alt="Team @team.Name's image">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@team.Name</h5>
+                            <p class="card-text"></p>
+                        </div>
+                    </div>
+            }
+        </div>
+    </div>*@

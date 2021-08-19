@@ -62,22 +62,6 @@ namespace GameSpace.Services.Teams
             .First()
             .OwnerId;
 
-        //public IEnumerable<TeamMemberServiceModel> AllMembers(int teamId) //TODO: FIRST USER ACCESS NEEDED
-        //{
-        //    this.data
-        //        .Teams
-        //        .Where(t => t.Id == teamId)
-        //        .Select(t => new
-        //        {
-        //            Members = t.Mombers
-        //                        .Select(m => new TeamMemberServiceModel
-        //                        {
-        //                            Id = m.UserId,
-        //                            Username = m.
-        //                        })
-        //        })
-        //}
-
         public async Task SendInvitation(string senderId, string reciverId, string teamName) //TODO: in mesage controller
         {
             var requestData = new PendingTeamRequest

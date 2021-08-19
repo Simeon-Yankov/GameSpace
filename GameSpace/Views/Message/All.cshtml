@@ -8,13 +8,14 @@
     @if (this.Model.Any())
     {
         <h2 class="heading-margin text-center">Your Messages:</h2>
+        <br />
     }
     <div class="card-deck">
         @foreach (var message in this.Model)
         {
             if (message.IsSender)
             {
-                <div class="card mb-3" style="width: 18rem;">
+                <div class="card mb-3 stand" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title">You have invited @message.ReciverUsername.Split('@')[0] in Team @message.TeamName</h5>
                         <p class="card-text"></p>

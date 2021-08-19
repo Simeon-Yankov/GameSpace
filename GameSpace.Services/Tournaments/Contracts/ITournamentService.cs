@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Tournaments.Models;
 
 using static GameSpace.Common.GlobalConstants.Tournament;
@@ -10,6 +11,8 @@ namespace GameSpace.Services.Tournaments.Contracts
 {
     public interface ITournamentService
     {
+        Task CheckInParticipant(int tournamentId, int teamId);
+
         TournamentServiceModel Details(int tournamentId);
 
         IEnumerable<TournamentServiceModel> AllUpcomingTournaments(
@@ -18,11 +21,17 @@ namespace GameSpace.Services.Tournaments.Contracts
             string orderBy = "date",
             bool onlyVerified = false);
 
+        IEnumerable<TeamServiceModel> TournamentParticipants(int tournamentId);
+
         string GetBracketType(int bracketType);
+
+        int GetCapacity(int capacityId);
 
         public string GetFormat(int formatId);
 
-        int GetCapacity(int capacityId);
+        string GetMapName(int mapId);
+
+        string GetModeName(int modeId);
 
         string GetHosterName(int hosterId);
 
@@ -40,7 +49,6 @@ namespace GameSpace.Services.Tournaments.Contracts
             decimal ticketPrize,
             bool bronzeMatch,
             int minimumTeams,
-            int checkInPeriod,
             int goToGamePeriod,
             int regionId,
             int bracketId,

@@ -10,6 +10,10 @@
 
         public byte[] Banner { get; init; }
 
+        //public bool IsCheckedIn { get; init; }
+
+        //public bool IsEliminated { get; init; }
+
         public bool IsDefaultImage => Image is null ? true : false;
     }
 }

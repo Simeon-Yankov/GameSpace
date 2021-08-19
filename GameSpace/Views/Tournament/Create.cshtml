@@ -52,7 +52,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="MinimumTeams"></label>
-                <input asp-for="MinimumTeams" class="form-control" value="4" placeholder="Enter number between 4 and 8">
+                <input asp-for="MinimumTeams" class="form-control" placeholder="Enter number between 4 and 8">
                 <span asp-validation-for="MinimumTeams" class="small text-danger"></span>
             </div>
             <div class="bootstrap-switch-square form-group">
@@ -70,7 +70,7 @@
                         <option value="@teamSize.Id">@teamSize.Format</option>
                     }
                 </select>
-                <span asp-validation-for="BronzeMatch" class="small text-danger"></span>
+                <span asp-validation-for="TeamSizeId" class="small text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ModeId"></label>
@@ -102,31 +102,26 @@
             </div>
             <div class="form-group">
                 <label asp-for="PrizePool"></label>
-                <input asp-for="PrizePool" class="form-control" value="0">
+                <input asp-for="PrizePool" class="form-control">
                 <span asp-validation-for="PrizePool" class="small text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="TicketPrize"></label>
-                <input asp-for="TicketPrize" class="form-control" value="0">
+                <input asp-for="TicketPrize" class="form-control">
                 <span asp-validation-for="TicketPrize" class="small text-danger"></span>
             </div>
             <br />
             <h4 class="heading-margin text-center">Schedule</h4>
             <hr />
-            <div lass="form-group">
-                <label asp-for="StartsOn"></label>
-                <input class="form-control" asp-for="StartsOn" asp-format="{0:yyyy-MM-ddTHH:mm}" value="@DateTime.UtcNow" />
-                <span asp-validation-for="StartsOn" class="small text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CheckInPeriod"></label>
-                <input asp-for="CheckInPeriod" class="form-control" value="5">
-                <span asp-validation-for="CheckInPeriod" class="small text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="GoToGamePeriod"></label>
-                <input asp-for="GoToGamePeriod" class="form-control" value="5" placeholder="Enter number between 5 and 15">
-                <span asp-validation-for="PrizePool" class="small text-danger"></span>
+                <input asp-for="GoToGamePeriod" class="form-control" placeholder="Enter number between 5 and 15">
+                <span asp-validation-for="GoToGamePeriod" class="small text-danger"></span>
+            </div>
+            <div lass="form-group">
+                <label asp-for="StartsOn"></label>
+                <input class="form-control" asp-for="StartsOn" asp-format="{0:yyyy-MM-ddTHH:mm}" value="@DateTime.Now" />
+                <span asp-validation-for="StartsOn" class="small text-danger"></span>
             </div>
             <br />
             <button type="submit" class="btn btn-outline-primary">Create Tournament</button>

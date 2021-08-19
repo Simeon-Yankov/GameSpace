@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using AutoMapper;
@@ -9,6 +10,7 @@ using GameSpace.Models.Teams;
 using GameSpace.Models.Tournaments;
 using GameSpace.Services.Regions.Contracts;
 using GameSpace.Services.Teams.Contracts;
+using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Tournaments.Contracts;
 
 using Microsoft.AspNetCore.Authorization;
@@ -39,6 +41,30 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> CheckIn(int tournamentId)
+        {
+            var (participants, memberships) = GetParticipantsAndMemberships(tournamentId);
+
+            var teamId = memberships.Where(m => participants.FirstOrDefault(p => p.Id == m.Id).Id == m.Id).FirstOrDefault().Id;
+
+            if (teamId == 0)
+            {
+                return BadRequest();
+            }
+
+            if (this.tournaments.IsTeamAlreadyRegistrated(tournamentId, teamId))
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+
+            await this.tournaments.CheckInParticipant(tournamentId, teamId);
+
+            TempData[GlobalMessageKey] = "Your Team Was Successfully Checked In";
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [Authorize]
         public IActionResult Details(int tournamentId)
         {
             var tournament = this.tournaments.Details(tournamentId);
@@ -55,6 +81,10 @@ namespace GameSpace.Controllers
 
             var tournamentsView = this.mapper.Map<TournamentViewModel>(tournament);
 
+            tournamentsView.Participants = this.tournaments.TournamentParticipants(tournamentId);
+
+            tournamentsView.IsRegistrated = IsUserAlreadyRegistrated(tournamentId);
+
             return View(tournamentsView);
         }
 
@@ -66,32 +96,29 @@ namespace GameSpace.Controllers
             var teamsView = this.mapper.Map<List<TeamViewModel>>(teamsService);
 
             return View(new ParticipationTournamentViewModel
-            { 
+            {
                 Id = tournamentId,
                 Teams = teamsView
-            });
+            }); ;
         }
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Participation(int tournamentId, int selectedTeamId)
         {
-            if (!this.teams.Excists(selectedTeamId))
+            if (IsUserAlreadyRegistrated(tournamentId))
+            {
+                this.ModelState.AddModelError("All", "You are already registrated");
+            }
+            else if (!this.teams.Excists(selectedTeamId))
             {
                 this.ModelState.AddModelError("All", "Team does not exists.");
             }
-
-            if (this.tournaments.IsTeamAlreadyRegistrated(tournamentId, selectedTeamId))
+            else if (this.tournaments.IsFull(tournamentId))
             {
-                this.ModelState.AddModelError("All", "Team is already registered.");
+                this.ModelState.AddModelError("All", "Tournament is full");
             }
-
-            if (this.tournaments.IsFull(tournamentId))
-            {
-                this.ModelState.AddModelError("All", "Tournament is already full");
-            }
-
-            if (!this.tournaments.HasAlreadyStarted(tournamentId))
+            else if (!this.tournaments.HasAlreadyStarted(tournamentId))
             {
                 this.ModelState.AddModelError("All", "The event has already started.");
             }
@@ -201,7 +228,6 @@ namespace GameSpace.Controllers
                 tournament.TicketPrize,
                 tournament.BronzeMatch,
                 tournament.MinimumTeams,
-                tournament.CheckInPeriod,
                 tournament.GoToGamePeriod,
                 tournament.RegionId,
                 tournament.BracketTypeId,
@@ -214,6 +240,24 @@ namespace GameSpace.Controllers
             TempData[WebConstants.GlobalMessageKey] = "Your tournament was added and is awaiting for approval!";
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        private (IEnumerable<TeamServiceModel>, IEnumerable<TeamServiceModel>) GetParticipantsAndMemberships(int tournamentId)
+        {
+            var participants = this.tournaments.TournamentParticipants(tournamentId);
+
+            var currUser = this.User.Id();
+
+            var memberships = this.teams.UserMemberships(currUser).ToList();
+
+            return (participants, memberships);
+        }
+
+        private bool IsUserAlreadyRegistrated(int tournamentId)
+        {
+            var (participants, memberships) = GetParticipantsAndMemberships(tournamentId);
+
+            return participants.Any(p => memberships.Any(m => m.Id == p.Id));
         }
     }
 }

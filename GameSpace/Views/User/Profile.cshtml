@@ -57,7 +57,7 @@
         <div class="card-deck">
             @foreach (var gameAccount in Model.GameAccounts)
             {
-            <div class="card">
+            <div class="card mb-3 stand">
                 <div class="row no-gutters">
                     <div class="col-auto">
                         <img src="data:image;base64,@System.Convert.ToBase64String(gameAccount.Icon)" class="img-fluid" alt="">
