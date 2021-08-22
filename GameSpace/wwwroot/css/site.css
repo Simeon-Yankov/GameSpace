@@ -95,4 +95,21 @@ aside {
     display: block;
     color: red;
 }
-/*-----------------------*/
+/*----------Brackets-------------*/
+
+.thd {
+    background: rgb(60,60,60);
+    font: bold 10pt Arial;
+    text-align: center;
+}
+
+.team {color: white; background: rgb(100,100,100); font: bold 10pt Arial; border-right: solid 2px black;}
+.winner {color: white; background: rgb(60,60,60); font: bold 10pt Arial;}
+.vs {font: bold 7pt Arial; border-right: solid 2px black;}
+
+.table-mable ::after td, th {
+    padding: 3px 15px;
+    border-right: dotted 2px rgb(200,200,200);
+    text-align: right;
+}
+h1 {font: bold 14pt Arial; m/*argin-top: 24pt;}*/

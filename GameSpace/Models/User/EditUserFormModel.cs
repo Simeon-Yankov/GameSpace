@@ -3,7 +3,7 @@
 using GameSpace.Models.SocialNetworks;
 using GameSpace.Services.Appearances.Models;
 
-using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.ProfileInfo;
 using static GameSpace.Common.GlobalConstants.User;
 
 namespace GameSpace.Models.User

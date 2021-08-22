@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 using GameSpace.Services.Sumonners.Models;
 
-using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.GamingAccount;
 
 namespace GameSpace.Models.Summoners
 {

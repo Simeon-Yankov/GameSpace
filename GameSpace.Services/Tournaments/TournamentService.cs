@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 using GameSpace.Data;
 using GameSpace.Data.Models;
-using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Tournaments.Contracts;
 using GameSpace.Services.Tournaments.Models;
+
+using Microsoft.EntityFrameworkCore;
 
 using static GameSpace.Common.GlobalConstants;
 using static GameSpace.Common.GlobalConstants.Tournament;
@@ -18,27 +19,43 @@ namespace GameSpace.Services.Tournaments
     public class TournamentService : ITournamentService
     {
         private readonly GameSpaceDbContext data;
-        private readonly ITeamService teams;
 
-        public TournamentService(GameSpaceDbContext data, ITeamService teams)
-        {
-            this.data = data;
-            this.teams = teams;
-        }
+        public TournamentService(GameSpaceDbContext data) 
+            => this.data = data;
 
         public async Task CheckInParticipant(int tournamentId, int teamId, string userId)
         {
             var tournament = GetQueryableTournament(tournamentId)
                                 .Select(t => t.RegisteredTeams
-                                              .Where(rt => rt.TeamId == teamId)
+                                              .Where(rt => rt.TeamId == teamId && rt.TeamsTournamentId == tournamentId)
                                               .FirstOrDefault())
                                 .FirstOrDefault();
 
-            var member = tournament.InvitedMembers.FirstOrDefault(m => m.UserId == userId);
+            var relationTournamentTeamId = await this.data
+                                                  .TeamsTournamentsTeams
+                                                  .Where(ttt => ttt.TeamsTournamentId == tournamentId && ttt.TeamId == teamId)
+                                                  .Select(ttt => ttt.Id)
+                                                  .FirstOrDefaultAsync();
+
+            var member = await this.data
+                                .UsersTeamsTournamentTeams
+                                .Where(uttt => uttt.TeamsTournamentTeamId == relationTournamentTeamId && uttt.UserId == userId)
+                                .FirstOrDefaultAsync();
 
             member.IsChecked = true;
 
-            if (tournament.InvitedMembers.All(t => t.IsChecked))
+            await this.data.SaveChangesAsync();
+
+            var AreMembersCheck = this.data
+                        .UsersTeamsTournamentTeams
+                        .Where(uttt => uttt.TeamsTournamentTeamId == relationTournamentTeamId)
+                        .Select(uttt => new 
+                        {
+                            IsChecked = uttt.IsChecked
+                        })
+                        .ToList();
+
+            if (AreMembersCheck.All(t => t.IsChecked))
             {
                 tournament.IsChecked = true;
             }
@@ -135,6 +152,50 @@ namespace GameSpace.Services.Tournaments
 
             return OrderTournament(tournamentsService, orderBy);
         }
+
+        public IEnumerable<IdNamePairTeamServiceModel> CheckedInTeamsKvp(int tournamentId)
+            => GetQueryableTournament(tournamentId)
+                .Select(t => new
+                {
+                    CheckedInTeamsId = t.RegisteredTeams
+                                      .Where(rt => rt.IsChecked)
+                                      .Select(rt => new IdNamePairTeamServiceModel 
+                                      { 
+                                          Id = rt.Id,
+                                          Name = rt.Team.Name
+                                      })
+                                      .ToList()
+                })
+                .FirstOrDefault()
+                .CheckedInTeamsId;
+
+        public IEnumerable<TeamServiceModel> CheckedInTeams(int tournamentId)
+            => GetQueryableTournament(tournamentId)
+                .Select(t => new
+                {
+                    CheckedInTeams = t.RegisteredTeams
+                                      .Where(rt => rt.IsChecked)
+                                      .Select(rt => new TeamServiceModel
+                                      {
+                                          Id = rt.Id,
+                                          Name = rt.Team.Name,
+                                          Image = rt.Team.Appearance.Image,
+                                          Banner = rt.Team.Appearance.Banner,
+                                          RegistratedMembers = rt.InvitedMembers
+                                                                  .Select(m => new RegisteredMemberServiceModel
+                                                                  {
+                                                                      TeamTournamentId = m.TeamsTournamentTeamId,
+                                                                      UserId = m.UserId,
+                                                                      IsChecked = m.IsChecked
+                                                                  })
+                                                                  .ToList(),
+                                          IsCheckedIn = rt.IsChecked,
+                                          IsEliminated = rt.IsEliminated
+                                      })
+                                      .ToList()
+                })
+                .FirstOrDefault()
+                .CheckedInTeams;
 
         public IEnumerable<TeamServiceModel> TournamentParticipants(int tournamentId)
             => this.data
@@ -345,6 +406,16 @@ namespace GameSpace.Services.Tournaments
                 TeamsTournamentId = tournamentId
             };
 
+            await this.data.TeamsTournamentsTeams.AddAsync(relation);
+            await this.data.SaveChangesAsync();
+
+            //var teamTournament = this.data
+            //    .TeamsTournamentsTeams
+            //    .Where(ttt => ttt.TeamsTournamentId == tournamentId && ttt.TeamId == teamId)
+            //    .FirstOrDefault();
+
+            var members = new List<UserTeamsTournamentTeam>();
+
             foreach (var userId in usersId)
             {
                 var member = new UserTeamsTournamentTeam
@@ -353,11 +424,10 @@ namespace GameSpace.Services.Tournaments
                     UserId = userId
                 };
 
-                relation.InvitedMembers.Add(member);
+                members.Add(member);
             }
 
-            tournament.RegisteredTeams.Add(relation);
-
+            await this.data.UsersTeamsTournamentTeams.AddRangeAsync(members);
             await this.data.SaveChangesAsync();
         }
 

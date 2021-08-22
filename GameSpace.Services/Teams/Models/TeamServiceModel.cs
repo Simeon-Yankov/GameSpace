@@ -14,9 +14,9 @@ namespace GameSpace.Services.Teams.Models
 
         public byte[] Banner { get; init; }
 
-        //public bool IsCheckedIn { get; init; }
+        public bool IsCheckedIn { get; init; }
 
-        //public bool IsEliminated { get; init; }
+        public bool IsEliminated { get; init; }
 
         public IEnumerable<RegisteredMemberServiceModel> RegistratedMembers { get; init; }
 

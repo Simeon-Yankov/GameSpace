@@ -57,7 +57,7 @@ namespace GameSpace.Controllers
                 this.ModelState.AddModelError(nameof(summoner.Name), $"Summoner is already added");
             }
 
-            if (this.summoners.AlreadySummonerWithRegion(regionName))
+            if (this.summoners.AlreadySummonerWithRegion(this.User.Id(), regionName))
             {
                 this.ModelState.AddModelError(nameof(summoner.RegionId), $"You can have only one summoner per region.");
             }

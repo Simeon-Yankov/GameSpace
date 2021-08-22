@@ -75,21 +75,28 @@
                             @if (Model.IsRegistrated)
                             {
                                 <hr>
-                                <p class="text-black-50">Status</p>
                                 @if (Model.IsTeamChecked)
                                 {
-                                    <p>Team is Checked In</p><i class="material-icons text-black-50 float-right m-1">Done</i>
+                                    <p class="text-black-50">Status <i class="material-icons text-black-50 m-1">done</i></p>
                                 }
                                 else
                                 {
-                                    <p>Team is not Checked In yet</p>
+                                    <p class="text-black-50">Status</p>
+                                }
+                                @if (Model.IsTeamChecked)
+                                {
+                                    <p>Team is Checked In</p>
+                                }
+                                else
+                                {
+                                    <p>Team is not Checked In</p>
                                     <br />
-                                    @if (Model.IsUserChecked)
+                                    @if (!Model.IsUserChecked)
                                     {
                                         <div class="float-md-right">
                                             <strong>Starts in </strong>
                                             <p id="timer"></p>
-                                            <a asp-controller="Tournament" asp-action="CheckIn" asp-route-tournamentId="@Model.Id" id="check-in" class="btn btn-danger disabled">Check In</a>
+                                            <a asp-controller="Tournament" asp-action="CheckIn" asp-route-tournamentId="@Model.Id" asp-route-regionId="@Model.RegionId" id="check-in" class="btn btn-danger disabled">Check In</a>
                                         </div>
                                     }
                                 }
@@ -101,7 +108,7 @@
                             }
                             @if (Model.IsHoster || User.IsAdmin())
                             {
-                                <a asp-controller="Tournament" asp-action="Participation" asp-route-tournamentId="@Model.Id" class="btn btn-primary">Administration</a>
+                                <a asp-controller="Tournament" asp-action="Administration" asp-route-tournamentId="@Model.Id" class="btn btn-primary">Administration</a>
                             }
                         </article>
                     </div>
@@ -209,7 +216,7 @@
             //clearInterval(x);
             //document.getElementById("timer").innerHTML = "Time to Check";
 
-            if (minutes <= 45 && hours == 0 && days == 0) {
+            if (/*minutes <= 45 && hours == 0 && days == 0*/true) {
 
                 let button = document.getElementById("check-in");
 

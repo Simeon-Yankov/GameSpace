@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.GamingAccount;
 
 namespace GameSpace.Data.Models
 {

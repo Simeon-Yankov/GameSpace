@@ -12,7 +12,9 @@ using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Users.Models;
 
-using static GameSpace.Common.GlobalConstants;
+using Team = GameSpace.Data.Models.Team;
+
+using static GameSpace.Common.GlobalConstants.Team;
 
 namespace GameSpace.Services.Teams
 {

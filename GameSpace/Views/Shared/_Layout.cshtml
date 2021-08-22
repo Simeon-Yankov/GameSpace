@@ -71,6 +71,12 @@
                 @TempData[WebConstants.GlobalMessageKey]
             </div>
         }
+        @if (TempData.ContainsKey(WebConstants.GlobalMessageKeyDanger))
+        {
+            <div class="alert alert-danger text-center" role="alert">
+                @TempData[WebConstants.GlobalMessageKeyDanger]
+            </div>
+        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

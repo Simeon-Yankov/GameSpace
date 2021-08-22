@@ -8,10 +8,13 @@ using AutoMapper;
 using GameSpace.Infrstructure;
 using GameSpace.Models.Teams;
 using GameSpace.Models.Tournaments;
+using GameSpace.Services.Algorithms.Contracts;
 using GameSpace.Services.Regions.Contracts;
+using GameSpace.Services.Sumonners.Contracts;
 using GameSpace.Services.Teams.Contracts;
 using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Tournaments.Contracts;
+using GameSpace.Services.Users.Contracts;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,25 +26,78 @@ namespace GameSpace.Controllers
 {
     public class TournamentController : Controller
     {
+        private readonly IAlgorithmService algorithms;
         private readonly IRegionService regions;
         private readonly IMapper mapper;
+        private readonly ISummonerService summoners;
         private readonly ITeamService teams;
         private readonly ITournamentService tournaments;
+        private readonly IUserService users;
 
         public TournamentController(
+            IAlgorithmService algorithms,
             IRegionService regions,
             IMapper mapper,
+            ISummonerService summoners,
             ITeamService teams,
-            ITournamentService tournaments)
+            ITournamentService tournaments,
+            IUserService users)
         {
+            this.algorithms = algorithms;
             this.regions = regions;
             this.mapper = mapper;
+            this.summoners = summoners;
             this.teams = teams;
             this.tournaments = tournaments;
+            this.users = users;
         }
 
         [Authorize]
-        public async Task<IActionResult> CheckIn(int tournamentId)
+        public IActionResult Administration(int tournamentId)
+        {
+            var detailsService = this.tournaments.Details(tournamentId);
+
+            var nickname = this.users.GetNickname(this.User.Id());
+
+            var isHoster = nickname != detailsService.HosterName;
+
+            if (isHoster)
+            {
+                return BadRequest();
+            }
+
+            if (/*!detailsService.HasBegun*/false) //TODO: VERY IMPORTANT FOR TESTING PUR
+            {
+                return BadRequest();
+            }
+
+            var checkedInTeams = this.tournaments.CheckedInTeams(tournamentId);
+
+            var checkedInTeamsIdNamePair = this.tournaments.CheckedInTeamsKvp(tournamentId);
+
+            var teamsSeeds = algorithms.SingleEliminationFirstRoundSeeds(checkedInTeamsIdNamePair.OrderBy(t => t.Id).ToList());
+
+            teamsSeeds.TeamsSeeds[3].IsEliminated = true;
+            teamsSeeds.TeamsSeeds[1].IsEliminated = true;
+
+            teamsSeeds = this.algorithms.SingleEliminationSecondRound(teamsSeeds);
+
+            teamsSeeds.TeamsSeeds[0].IsEliminated = true;
+
+            teamsSeeds = this.algorithms.SingleEliminationThirdRound(teamsSeeds);
+
+            return View(new AdministrationTournamentViewModel
+            {
+                IsHoster = isHoster,
+                Details = detailsService,
+                CheckedInTeams = checkedInTeams,
+                CheckedInTeamsIdNamePair = checkedInTeamsIdNamePair.OrderBy(t => t.Id).ToList(),
+                TeamSeeds = teamsSeeds
+            });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> CheckIn(int tournamentId, int regionId)
         {
             int teamId = GetRegistratedTeam(tournamentId).Id;
 
@@ -50,7 +106,27 @@ namespace GameSpace.Controllers
                 return BadRequest();
             }
 
-            await this.tournaments.CheckInParticipant(tournamentId, teamId, this.User.Id());
+            var userId = this.User.Id();
+
+            var regionName = this.regions.GetRegionName(regionId);
+
+            if (!this.summoners.AccountExistsByRegionId(userId, regionId))
+            {
+                TempData[GlobalMessageKeyDanger] = $"You must have summoner in {regionName} first to check in.";
+
+                return RedirectToAction(nameof(TournamentController.Details), "Tournament", new { tournamentId = tournamentId });
+            }
+
+            if (!this.summoners.IsVerifiedByRegion(userId, regionId))
+            {
+                TempData[GlobalMessageKeyDanger] = $"You must verify your summoner first.";
+
+                var accountId = this.summoners.GetIdByRegion(userId, regionId);
+
+                return RedirectToAction(nameof(SummonerController.Verify), "Summoner", new { accountId = accountId, regionName = regionName });
+            }
+
+            await this.tournaments.CheckInParticipant(tournamentId, teamId, userId);
 
             TempData[GlobalMessageKey] = "You Have Successfully Checked In";
 
@@ -214,47 +290,6 @@ namespace GameSpace.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        //[HttpPost]
-        //[Authorize]
-        //public async Task<IActionResult> Participation(int tournamentId, int selectedTeamId)
-        //{
-        //    if (IsUserAlreadyRegistrated(tournamentId))
-        //    {
-        //        this.ModelState.AddModelError("All", "You are already registrated");
-        //    }
-        //    else if (!this.teams.Excists(selectedTeamId))
-        //    {
-        //        this.ModelState.AddModelError("All", "Team does not exists.");
-        //    }
-        //    else if (this.tournaments.IsFull(tournamentId))
-        //    {
-        //        this.ModelState.AddModelError("All", "Tournament is full");
-        //    }
-        //    else if (!this.tournaments.HasAlreadyStarted(tournamentId))
-        //    {
-        //        this.ModelState.AddModelError("All", "The event has already started.");
-        //    }
-
-        //    if (!this.ModelState.IsValid)
-        //    {
-        //        var teamsService = this.teams.ByOwner(this.User.Id());
-
-        //        var teamsView = this.mapper.Map<List<TeamViewModel>>(teamsService);
-
-        //        return View(new ParticipationTournamentViewModel
-        //        {
-        //            Id = tournamentId,
-        //            Teams = teamsView
-        //        });
-        //    }
-
-        //    await this.tournaments.RegisterTeam(tournamentId, selectedTeamId);
-
-        //    TempData[GlobalMessageKey] = $"Successfully registered Team";
-
-        //    return RedirectToAction(nameof(HomeController.Index), "Home");
-        //}
-
         public IActionResult Upcoming()
         {
             var tournamentsService = this.tournaments.AllUpcomingTournaments(onlyVerified: true);
@@ -374,14 +409,19 @@ namespace GameSpace.Controllers
 
             var userRegisteredTeams = participants
                                         .Where(p => memberships.Any(m => m.Id == p.Id))
-                                        .Select(p => new
-                                        {
-                                            Id = p.Id,
-                                            RegisteredMembers = p.RegistratedMembers
-                                        })
+                                        //.Select(p => new 
+                                        //{
+                                        //    Id = p.Id,
+                                        //    RegisteredMembers = p.RegistratedMembers
+                                        //})
                                         .ToList();
 
-            var teamService = memberships.Where(m => participants.FirstOrDefault(p => p.Id == m.Id).Id == m.Id).FirstOrDefault();
+            //var teamService = memberships.Where(m => participants.FirstOrDefault(p => p.Id == m.Id).Id == m.Id).FirstOrDefault();
+
+            var teamService = userRegisteredTeams
+                                .Where(t => t.RegistratedMembers
+                                .Any(m => m.UserId == this.User.Id()))
+                                .FirstOrDefault();
 
             return teamService;
         }
@@ -405,7 +445,6 @@ namespace GameSpace.Controllers
                                         .ToList();
 
             return userRegisteredTeams.Any(x => x.RegisteredMembers.Any(m => m.UserId == userId));
-            //return participants.Any(p => memberships.Any(m => m.Id == p.Id));
         }
     }
 }

@@ -21,6 +21,10 @@ namespace GameSpace.Services.Tournaments.Contracts
             string orderBy = "date",
             bool onlyVerified = false);
 
+        IEnumerable<IdNamePairTeamServiceModel> CheckedInTeamsKvp(int tournamentId);
+
+        IEnumerable<TeamServiceModel> CheckedInTeams(int tournamentId);
+
         IEnumerable<TeamServiceModel> TournamentParticipants(int tournamentId);
 
         IEnumerable<RegisteredMemberServiceModel> RegisteredMembers(int tournamentTeamId);

@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using GameSpace.Data;
 using GameSpace.Data.Models;
 using GameSpace.Infrstructure;
+using GameSpace.Services.Algorithms;
+using GameSpace.Services.Algorithms.Contracts;
 using GameSpace.Services.Appearances;
 using GameSpace.Services.Appearances.Contracts;
 using GameSpace.Services.Messages;
@@ -69,6 +71,7 @@ namespace GameSpace
             services.AddTransient<ISummonerService, SummonerService>();
             services.AddTransient<IRegionService, RegionService>();
             services.AddTransient<ITournamentService, TournamentService>();
+            services.AddTransient<IAlgorithmService, AlgorithmService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

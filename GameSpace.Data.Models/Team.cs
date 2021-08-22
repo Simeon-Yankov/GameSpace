@@ -4,13 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.Team;
 
 namespace GameSpace.Data.Models
 {
     public class Team
     {
-        public Team() 
-            => this.Mombers = new HashSet<UserTeam>();
+        public Team()
+        {
+            this.Mombers = new HashSet<UserTeam>();
+            this.Tournaments = new HashSet<TeamsTournamentTeam>();
+        }
 
         [Key]
         public int Id { get; init; }

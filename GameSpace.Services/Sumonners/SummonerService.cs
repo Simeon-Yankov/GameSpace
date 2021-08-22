@@ -20,7 +20,7 @@ namespace GameSpace.Services.Sumonners
         private readonly GameSpaceDbContext data;
         private readonly IRegionService regions;
 
-        private const string ApiKey = "RGAPI-d2a1d458-3136-4858-b290-0208663973da"; //TODO: Make api key be changed in run time
+        private const string ApiKey = "RGAPI-6ca57f63-04d4-49b0-ae5e-ba4fa9fca94b"; //TODO: Make api key be changed in run time
 
         public SummonerService(GameSpaceDbContext data, IRegionService regions)
         {
@@ -148,6 +148,30 @@ namespace GameSpace.Services.Sumonners
             await this.data.SaveChangesAsync();
         }
 
+        public SummonerServiceModel GetAccountByRegion(string userId, int regionId)
+            => GetGameAccountByUserAndRegionQuery(userId, regionId)
+                .Select(ga => new SummonerServiceModel
+                {
+                    Id = ga.Id,
+                    AccountId = ga.AccountId,
+                    Icon = ga.Icon,
+                    IsVerified = ga.IsVerified,
+                    LastUpdate = ga.LastUpdated,
+                    Name = ga.SummonerName,
+                    RegionName = ga.Region.Name
+                })
+                .FirstOrDefault();
+
+        public string GetIdByRegion(string userId, int regionId)
+            => GetGameAccountByUserAndRegionQuery(userId, regionId)
+                .Select(ga => ga.AccountId)
+                .FirstOrDefault();
+
+        public bool AccountExistsByRegionId(string userId, int regionId)
+            => this.data
+                .GameAccounts
+                .Any(ga => ga.UserId == userId && ga.Region.Id == regionId);
+
         public bool AccountExists(string userId, string accountId)
             => GetUserQuery(userId)
                 .Any(u => u
@@ -160,10 +184,15 @@ namespace GameSpace.Services.Sumonners
                         .GameAccounts
                         .Any(ga => ga.SummonerName == summonerName && ga.Region.Name == regionName));
 
-        public bool AlreadySummonerWithRegion(string regionName)
+        public bool AlreadySummonerWithRegion(string userId, string regionName)
             => this.data
                 .GameAccounts
-                .Any(ga => ga.Region.Name == regionName);
+                .Any(ga => ga.UserId == userId && ga.Region.Name == regionName);
+
+        public bool IsVerifiedByRegion(string userId, int regionId)
+            => this.data
+                .GameAccounts
+                .Any(ga => ga.UserId == userId && ga.Region.Id == regionId && ga.IsVerified == true);
 
         public async Task Verify(string accountId)
         {
@@ -176,6 +205,12 @@ namespace GameSpace.Services.Sumonners
 
             await this.data.SaveChangesAsync();
         }
+
+        private IQueryable<GameAccount> GetGameAccountByUserAndRegionQuery(string userId, int regionId)
+            => this.data
+                .GameAccounts
+                .Where(ga => ga.UserId == userId && ga.Region.Id == regionId)
+                .AsQueryable();
 
         private IQueryable<User> GetUserQuery(string userId)
             => this.data

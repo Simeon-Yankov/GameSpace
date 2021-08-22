@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.ProfileInfo;
 
 namespace GameSpace.Data.Models
 {

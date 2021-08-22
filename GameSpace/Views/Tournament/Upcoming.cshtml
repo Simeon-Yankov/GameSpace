@@ -9,7 +9,7 @@
         <h3 class="heading-margin text-center"><strong>Upcoming LoL Tournaments</strong></h3>
         <br />
         <div class="card-deck flex-column-reverse">
-            @foreach (var tournament in Model)
+            @foreach (var tournament in Model.OrderByDescending(t => t.StartsOn))
             {
                 var prizePool = (int)tournament.PrizePool;
                 <div class="card stand">

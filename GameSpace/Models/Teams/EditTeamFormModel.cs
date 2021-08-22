@@ -2,7 +2,7 @@
 
 using GameSpace.Models.SocialNetworks;
 
-using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.Team;
 
 namespace GameSpace.Models.Teams
 {

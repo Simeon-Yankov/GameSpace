@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-using static GameSpace.Common.GlobalConstants;
+using static GameSpace.Common.GlobalConstants.Team;
 
 namespace GameSpace.Data.Models
 {
