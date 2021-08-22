@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using GameSpace.Data;
 using GameSpace.Data.Models;
+using GameSpace.Services.HttpClients.Contracts;
 using GameSpace.Services.Regions.Contracts;
 using GameSpace.Services.Sumonners.Contracts;
 using GameSpace.Services.Sumonners.Models;
@@ -15,15 +15,15 @@ namespace GameSpace.Services.Sumonners
 {
     public class SummonerService : ISummonerService
     {
-        static readonly HttpClient client = new HttpClient();
-
+        private readonly IClientService clients;
         private readonly GameSpaceDbContext data;
         private readonly IRegionService regions;
 
-        private const string ApiKey = "RGAPI-6ca57f63-04d4-49b0-ae5e-ba4fa9fca94b"; //TODO: Make api key be changed in run time
+        private const string RiotAPI = "RiotAPI";
 
-        public SummonerService(GameSpaceDbContext data, IRegionService regions)
+        public SummonerService(IClientService clients, GameSpaceDbContext data, IRegionService regions)
         {
+            this.clients = clients;
             this.data = data;
             this.regions = regions;
         }
@@ -77,7 +77,7 @@ namespace GameSpace.Services.Sumonners
 
             var profileIconUrl = $"https://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{profileIconId}.png";
 
-            var profileIcon = await client.GetByteArrayAsync(profileIconUrl);
+            var profileIcon = await this.clients.ReadByteArray(profileIconUrl);
 
             return profileIcon;
         }
@@ -86,9 +86,9 @@ namespace GameSpace.Services.Sumonners
         {                                                                       //TODO: What will happend if request overload
             var regionNameFormated = this.regions.FormatName(regionName);
 
-            var url = $"https://{regionNameFormated}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summonerName}?api_key={ApiKey}";
+            var url = $"https://{regionNameFormated}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summonerName}?api_key={RiotAPI}";
 
-            var response = await client.GetAsync(url);
+            var response = await clients.ReadMessage(url, RiotAPI);
 
             var jsonString = await response.Content.ReadAsStringAsync();
 
@@ -101,9 +101,9 @@ namespace GameSpace.Services.Sumonners
         {                                                                       //TODO: What will happend if request overload
             var regionNameFormated = this.regions.FormatName(regionName);
 
-            var url = $"https://{regionNameFormated}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}?api_key={ApiKey}";
+            var url = $"https://{regionNameFormated}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}?api_key={RiotAPI}";
 
-            var response = await client.GetAsync(url);
+            var response = await this.clients.ReadMessage(url);
 
             var jsonString = await response.Content.ReadAsStringAsync();
 

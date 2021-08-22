@@ -59,6 +59,8 @@ namespace GameSpace.Data
 
         public DbSet<UserTeamsTournamentTeam> UsersTeamsTournamentTeams { get; init; }
 
+        public DbSet<API> APIs { get; init; }
+
         //public DbSet<Stat> Stats { get; init; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

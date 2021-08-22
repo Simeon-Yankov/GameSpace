@@ -12,19 +12,20 @@ using GameSpace.Services.Sumonners.Models;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Configuration;
 
 namespace GameSpace.Controllers
 {
     public class SummonerController : Controller
     {
+        private IConfiguration configuration;
         private readonly ISummonerService summoners;
         private readonly IRegionService regions;
         private readonly IMapper mapper;
 
-
-        public SummonerController(ISummonerService summoners, IRegionService regions, IMapper mapper)
+        public SummonerController(IConfiguration configuration, ISummonerService summoners, IRegionService regions, IMapper mapper)
         {
+            this.configuration = configuration;
             this.summoners = summoners;
             this.regions = regions;
             this.mapper = mapper;
@@ -45,6 +46,9 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Add(AddSummonerFormModel summoner)
         {
+            var riotApiKey = this.configuration.GetValue(typeof(string), "RiotApiKey");
+
+
             if (!this.regions.RegionExists(summoner.RegionId))
             {
                 this.ModelState.AddModelError(nameof(summoner.RegionId), $"Region does not exist.");

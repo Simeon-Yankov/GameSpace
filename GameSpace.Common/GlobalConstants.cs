@@ -6,6 +6,11 @@
         public const int Unit = 1;
         public const int NonNegative = 0;
 
+        public class API
+        {
+            public const int NameMaxLength = 20;
+        }
+
         public class User
         {
             public const int NicknameMaxLength = 30;

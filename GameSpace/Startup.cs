@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 using GameSpace.Data;
 using GameSpace.Data.Models;
 using GameSpace.Infrstructure;
@@ -7,6 +5,8 @@ using GameSpace.Services.Algorithms;
 using GameSpace.Services.Algorithms.Contracts;
 using GameSpace.Services.Appearances;
 using GameSpace.Services.Appearances.Contracts;
+using GameSpace.Services.HttpClients;
+using GameSpace.Services.HttpClients.Contracts;
 using GameSpace.Services.Messages;
 using GameSpace.Services.Messages.Contracts;
 using GameSpace.Services.Regions;
@@ -72,17 +72,12 @@ namespace GameSpace
             services.AddTransient<IRegionService, RegionService>();
             services.AddTransient<ITournamentService, TournamentService>();
             services.AddTransient<IAlgorithmService, AlgorithmService>();
+            services.AddTransient<IClientService, ClientService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Task
-                .Run(async () =>
-                {
-                    await app.PrepareDataBase();
-                })
-                .GetAwaiter()
-                .GetResult();
+            app.PrepareDataBase();
 
             if (env.IsDevelopment())
             {

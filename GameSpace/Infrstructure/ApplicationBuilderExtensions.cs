@@ -18,7 +18,7 @@ namespace GameSpace.Infrstructure
     public static class ApplicationBuilderExtensions
     {
 
-        public static async Task<IApplicationBuilder> PrepareDataBase(
+        public static IApplicationBuilder PrepareDataBase(
             this IApplicationBuilder app)
         {
             using var scopeServices = app.ApplicationServices.CreateScope();
@@ -26,15 +26,22 @@ namespace GameSpace.Infrstructure
 
             MigrateDatabase(serviceProvider);
 
-            await SeedLanguages(serviceProvider);
-            await SeedRegions(serviceProvider);
-            await SeedRanks(serviceProvider);
-            await SeedBracketTypes(serviceProvider);
-            await SeedMaximumTeamsFormats(serviceProvider);
-            await SeedTeamSizes(serviceProvider);
-            await SeedMaps(serviceProvider);
-            await SeedModes(serviceProvider);
-            await SeedAdministrator(serviceProvider);
+            Task
+                .Run(async () =>
+                {
+                    await SeedLanguages(serviceProvider);
+                    await SeedRegions(serviceProvider);
+                    await SeedRanks(serviceProvider);
+                    await SeedBracketTypes(serviceProvider);
+                    await SeedMaximumTeamsFormats(serviceProvider);
+                    await SeedTeamSizes(serviceProvider);
+                    await SeedMaps(serviceProvider);
+                    await SeedModes(serviceProvider);
+                    await SeedAdministrator(serviceProvider);
+                    await SeedAPIs(serviceProvider);
+                })
+                .GetAwaiter()
+                .GetResult();
 
             return app;
         }
@@ -211,6 +218,23 @@ namespace GameSpace.Infrstructure
                 new Mode { Name = "All Random" },
                 new Mode { Name = "Draft Mode" },
                 new Mode { Name = "Blind Pick" }
+            });
+
+            await data.SaveChangesAsync();
+        }
+
+        private static async Task SeedAPIs(IServiceProvider services)
+        {
+            var data = services.GetRequiredService<GameSpaceDbContext>();
+
+            if (data.APIs.Any())
+            {
+                return;
+            }
+
+            data.APIs.AddRange(new[]
+            {
+                new API { Key = "RiotAPI", Value = "", LastUpdate = DateTime.UtcNow}
             });
 
             await data.SaveChangesAsync();
