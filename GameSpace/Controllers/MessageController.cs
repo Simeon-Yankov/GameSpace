@@ -67,15 +67,9 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Clear(int notificationId)
         {
-            var notification = this.data
-                 .Notifications
-                 .First(n => n.Id == notificationId && n.IsDeleted == false);
+            await this.messages.Clear(notificationId);
 
-            notification.IsDeleted = true;
-
-            await this.data.SaveChangesAsync();
-
-            return RedirectToAction(nameof(MessageController.All), "Message");
+            return RedirectToAction(nameof(MessageController.All));
         }
     }
 }

@@ -103,7 +103,7 @@ namespace GameSpace.Services.Sumonners
 
             var url = $"https://{regionNameFormated}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}?api_key={RiotAPI}";
 
-            var response = await this.clients.ReadMessage(url);
+            var response = await this.clients.ReadMessage(url, RiotAPI);
 
             var jsonString = await response.Content.ReadAsStringAsync();
 

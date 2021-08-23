@@ -62,10 +62,10 @@ namespace GameSpace.Data
         public DbSet<API> APIs { get; init; }
 
         //public DbSet<Stat> Stats { get; init; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=DESKTOP-OI0L4BE\SQLEXPRESS;Database=GameSpace;Integrated Security=true;");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(@"Server=DESKTOP-OI0L4BE\SQLEXPRESS;Database=GameSpace;Integrated Security=true;");
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

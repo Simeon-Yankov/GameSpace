@@ -22,6 +22,17 @@ namespace GameSpace.Services.Messages
             this.users = users;
         }
 
+        public async Task Clear(int notificationId)
+        {
+            var notification = this.data
+                 .Notifications
+                 .First(n => n.Id == notificationId && n.IsDeleted == false);
+
+            notification.IsDeleted = true;
+
+            await this.data.SaveChangesAsync();
+        }
+
         public IEnumerable<NotificationMessageServiceModel> GetNotifications(string userId)
             => this.data
                 .Notifications

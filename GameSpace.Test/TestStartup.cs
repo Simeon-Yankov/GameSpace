@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using GameSpace.Services.Messages.Contracts;
+using GameSpace.Services.Users.Contracts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using MyTested.AspNetCore.Mvc;
 
 namespace GameSpace.Test
 {
@@ -14,7 +18,9 @@ namespace GameSpace.Test
         {
             base.ConfigureServices(services);
 
-            //services.ReplaceTransient<IDateTimeProvider>(_ => DateTimeProviderMock.Create);
+            services.ReplaceDbContext();
+            services.ReplaceTransient<IMessageService>(_ => Mocks.MessageServiceMock.Instance);
+            services.ReplaceTransient<IUserService>(_ => Mocks.UserServiceMock.Instance);
         }
     }
 }

@@ -40,6 +40,7 @@ namespace GameSpace
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services
                 .AddDbContext<GameSpaceDbContext>(options => options
                 .UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));

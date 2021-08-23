@@ -7,6 +7,8 @@ namespace GameSpace.Services.Messages.Contracts
 {
     public interface IMessageService
     {
+        Task Clear(int notificationId);
+
         IEnumerable<NotificationMessageServiceModel> GetNotifications(string userId);
 
         Task SendNotification(string recipientId, string message);

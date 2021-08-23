@@ -198,7 +198,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> PromoteToOwner(int teamId, string memberId)
         {
-            if (!this.users.ExcistsById(memberId)) //TODO: when you del you adc
+            if (!this.users.ExcistsById(memberId)) //TODO: when you del you acc
             {
                 return RedirectToAction(nameof(TeamController.Memberships), "Team"); //TODO: maybe throw bad request 3x
             }
