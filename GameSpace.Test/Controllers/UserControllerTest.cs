@@ -1,4 +1,5 @@
 ﻿using GameSpace.Controllers;
+using GameSpace.Models.User;
 using GameSpace.Services.Users.Models;
 
 using MyTested.AspNetCore.Mvc;
@@ -28,19 +29,35 @@ namespace GameSpace.Test.Controllers
                     .WithModelOfType<UserProfileServiceModel>());
 
         [Theory]
-        [InlineData(2)]
-        public void GetClearShouldBeAuthorizedUserAndRedirect(
-            int notificationId)
-            => MyController<MessageController>
+        [InlineData("TestData")]
+        public void GetEditShouldBeAuthorizedUserAndRedirect(
+            string id)
+            => MyController<UserController>
                 .Instance(controller => controller
                     .WithUser())
-                .Calling(c => c.Clear(notificationId))
+                .Calling(c => c.Edit(id))
                 .ShouldHave()
                 .ActionAttributes(attributes => attributes
                     .RestrictingForAuthorizedRequests())
                 .AndAlso()
                 .ShouldReturn()
-                .Redirect(redirect => redirect
-                    .To<MessageController>(m => m.All()));
+                .View(view => view
+                    .WithModelOfType<EditUserFormModel>());
+
+        [Theory]
+        [InlineData("TestData")]
+        public void PostEditShouldBeAuthorizedUserAndRedirect(
+            string id)
+            => MyController<UserController>
+                .Instance(controller => controller
+                    .WithUser())
+                .Calling(c => c.Edit(id))
+                .ShouldHave()
+                .ActionAttributes(attributes => attributes
+                    .RestrictingForAuthorizedRequests())
+                .AndAlso()
+                .ShouldReturn()
+                .View(view => view
+                    .WithModelOfType<EditUserFormModel>());
     }
 }
