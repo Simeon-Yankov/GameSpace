@@ -32,6 +32,7 @@ namespace GameSpace.Infrstructure
             this.CreateMap<TournamentServiceModel, CreateTournamentFormModel>();
             this.CreateMap<TournamentServiceModel, TournamentViewModel>();
             this.CreateMap<TeamServiceModel, TeamViewModel>();
+            this.CreateMap<AllTournamentsServiceModel, AllTournamentsQueryModel>();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model List<TournamentViewModel>
+﻿@model AllTournamentsQueryModel
 
 @{
     ViewData["Title"] = "All tournaments";
@@ -22,7 +22,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var tournament in Model)
+        @foreach (var tournament in Model.Tournaments)
         {
             <tr>
                 <td scope="col" class="text-center">@tournament.Id</td>

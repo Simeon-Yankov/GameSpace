@@ -123,10 +123,10 @@ namespace GameSpace.Test.Controllers
                    .WithEntities(entities => entities.AddRange(
                        new User { Id = UserTestId })))
                .WithUser(UserTestId)
-               .Calling(c => c.Upcoming())
+               .Calling(c => c.Upcoming(new AllTournamentsQueryModel { }))
                .ShouldReturn()
                .View(view => view
-                   .WithModelOfType<List<TournamentViewModel>>());
+                   .WithModelOfType<AllTournamentsQueryModel>());
 
         [Fact]
         public void GetCreateShouldBeAuthorizedUserAndReturnView()

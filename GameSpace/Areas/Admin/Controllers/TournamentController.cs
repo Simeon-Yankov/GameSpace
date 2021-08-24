@@ -26,7 +26,7 @@ namespace GameSpace.Areas.Admin.Controllers
         {
             var tournamentsData = this.tournaments.AllUpcomingTournaments(orderBy: orderBy);
 
-            var tournamentsForm = mapper.Map<List<TournamentViewModel>>(tournamentsData);
+            var tournamentsForm = mapper.Map<AllTournamentsQueryModel>(tournamentsData);
 
             return View(tournamentsForm);
         }

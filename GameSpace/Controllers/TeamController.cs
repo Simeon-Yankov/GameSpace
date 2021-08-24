@@ -294,7 +294,7 @@ namespace GameSpace.Controllers
                 team.VideoUrl,
                 team.WebsiteUrl);
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(TeamController.Details), "Team", new { teamId = team.Id });
         }
 
         [Authorize]

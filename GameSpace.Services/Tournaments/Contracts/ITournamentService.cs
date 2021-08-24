@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Tournaments.Models;
-
+using GameSpace.Services.Tournaments.Models.Enum;
 using static GameSpace.Common.GlobalConstants.Tournament;
 
 namespace GameSpace.Services.Tournaments.Contracts
@@ -15,11 +15,15 @@ namespace GameSpace.Services.Tournaments.Contracts
 
         TournamentServiceModel Details(int tournamentId);
 
-        IEnumerable<TournamentServiceModel> AllUpcomingTournaments(
+        AllTournamentsServiceModel AllUpcomingTournaments(
             int daysFromNow = default,
             int daysToNow = MaxDifferenceDaysInSchedule,
             string orderBy = "date",
-            bool onlyVerified = false);
+            bool onlyVerified = false,
+            int currentPage = 1,
+            int carsPerPage = int.MaxValue,
+            string searchTerm = null,
+            TournamentSorting sorting = 0);
 
         IEnumerable<IdNamePairTeamServiceModel> CheckedInTeamsKvp(int tournamentId);
 

@@ -29,7 +29,7 @@ namespace GameSpace.Models.Tournaments
         [Range(0, (double)decimal.MaxValue)]
         public decimal PrizePool { get; init; }
 
-        [Display(Name = "Ticket Prize")]
+        [Display(Name = "Ticket Price")]
         [Range(0, (double)decimal.MaxValue)]
         public decimal TicketPrize { get; init; }
 

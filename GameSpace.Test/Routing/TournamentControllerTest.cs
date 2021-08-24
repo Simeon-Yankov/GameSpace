@@ -58,7 +58,7 @@ namespace GameSpace.Test.Routing
             => MyRouting
                 .Configuration()
                 .ShouldMap("/Tournament/Upcoming")
-                .To<TournamentController>(c => c.Upcoming());
+                .To<TournamentController>(c => c.Upcoming(new AllTournamentsQueryModel { }));
 
         [Fact]
         public void GetCreateShouldBeMapped()

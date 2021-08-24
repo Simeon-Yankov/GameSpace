@@ -8,7 +8,7 @@ using GameSpace.Data.Models;
 using GameSpace.Services.Teams.Models;
 using GameSpace.Services.Tournaments.Contracts;
 using GameSpace.Services.Tournaments.Models;
-
+using GameSpace.Services.Tournaments.Models.Enum;
 using Microsoft.EntityFrameworkCore;
 
 using static GameSpace.Common.GlobalConstants;
@@ -20,7 +20,7 @@ namespace GameSpace.Services.Tournaments
     {
         private readonly GameSpaceDbContext data;
 
-        public TournamentService(GameSpaceDbContext data) 
+        public TournamentService(GameSpaceDbContext data)
             => this.data = data;
 
         public async Task CheckInParticipant(int tournamentId, int teamId, string userId)
@@ -49,7 +49,7 @@ namespace GameSpace.Services.Tournaments
             var AreMembersCheck = this.data
                         .UsersTeamsTournamentTeams
                         .Where(uttt => uttt.TeamsTournamentTeamId == relationTournamentTeamId)
-                        .Select(uttt => new 
+                        .Select(uttt => new
                         {
                             IsChecked = uttt.IsChecked
                         })
@@ -99,11 +99,15 @@ namespace GameSpace.Services.Tournaments
         }
 
         //TODO: INTRODUCE AUTOMAP IN SERVICE LAYER
-        public IEnumerable<TournamentServiceModel> AllUpcomingTournaments(
+        public AllTournamentsServiceModel AllUpcomingTournaments(
             int daysFrom = default,
             int daysTo = MaxDifferenceDaysInSchedule,
             string orderBy = "date",
-            bool onlyVerified = false)
+            bool onlyVerified = false,
+            int currentPage = 1,
+            int tournamentsPerPage = int.MaxValue,
+            string searchTerm = null,
+            TournamentSorting sorting = 0)
         {
             var utcNow = DateTime.UtcNow;
 
@@ -116,6 +120,13 @@ namespace GameSpace.Services.Tournaments
             {
                 tournamentsData = tournamentsData
                     .Where(t => t.IsVerified == onlyVerified)
+                    .ToList();
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                tournamentsData = tournamentsData.Where(t =>
+                    t.Name.ToLower().Contains(searchTerm.ToLower()))
                     .ToList();
             }
 
@@ -150,7 +161,23 @@ namespace GameSpace.Services.Tournaments
                 })
                 .AsEnumerable();
 
-            return OrderTournament(tournamentsService, orderBy);
+            var OrderedTournaments = OrderTournament(tournamentsService, orderBy, sorting.ToString());
+
+            var totalTournaments = OrderedTournaments.Count();
+
+            var OrderedTournamentsGroped = OrderedTournaments
+                .Skip((currentPage - 1) * tournamentsPerPage)
+                .Take(tournamentsPerPage);
+
+            var AllTournamentsQueryModle = new AllTournamentsServiceModel
+            {
+                CurrentPage = currentPage,
+                SearchTerm = searchTerm,
+                TotalTournaments = totalTournaments,
+                Tournaments = OrderedTournamentsGroped
+            };
+
+            return AllTournamentsQueryModle;
         }
 
         public IEnumerable<IdNamePairTeamServiceModel> CheckedInTeamsKvp(int tournamentId)
@@ -159,8 +186,8 @@ namespace GameSpace.Services.Tournaments
                 {
                     CheckedInTeamsId = t.RegisteredTeams
                                       .Where(rt => rt.IsChecked)
-                                      .Select(rt => new IdNamePairTeamServiceModel 
-                                      { 
+                                      .Select(rt => new IdNamePairTeamServiceModel
+                                      {
                                           Id = rt.Id,
                                           Name = rt.Team.Name
                                       })
@@ -449,11 +476,6 @@ namespace GameSpace.Services.Tournaments
             await this.data.SaveChangesAsync();
         }
 
-        //public bool IsUserAlreadyRegistrated(int tournamentId, userId)
-        //{
-
-        //}
-
         public bool IsHoster(string userId, string hosterName)
             => this.data
                 .TeamsTournaments
@@ -628,28 +650,64 @@ namespace GameSpace.Services.Tournaments
                     .Where(tt => tt.Id == tournamentId)
                     .AsQueryable();
 
-        private IEnumerable<TournamentServiceModel> OrderTournament(IEnumerable<TournamentServiceModel> tournament, string orderBy)
+        private IEnumerable<TournamentServiceModel> OrderTournament(
+            IEnumerable<TournamentServiceModel> tournament,
+            string orderBy,
+            string sorting)
         {
-            if (orderBy == "date")
+
+            if (sorting == "StartingDate")
             {
-                return tournament.OrderBy(t => t.StartsOn);
-            }
-            else if (orderBy == "verified")
-            {
-                return tournament.OrderBy(t => t.IsVerified);
-            }
-            else if (orderBy == "hoster")
-            {
-                return tournament.OrderBy(t => t.HosterId);
-            }
-            else if (orderBy == "name")
-            {
-                return tournament.OrderBy(t => t.HosterId);
+                if (orderBy == "date")
+                {
+                    return tournament.OrderByDescending(t => t.StartsOn);
+                }
+                else if (orderBy == "verified")
+                {
+                    return tournament.OrderBy(t => t.IsVerified);
+                }
+                else if (orderBy == "hoster")
+                {
+                    return tournament.OrderBy(t => t.HosterId);
+                }
+                else if (orderBy == "name")
+                {
+                    return tournament.OrderBy(t => t.Name);
+                }
+                else
+                {
+                    return tournament.OrderBy(t => t.StartsOn);
+                }
             }
             else
             {
-                return tournament.OrderBy(t => t.StartsOn);
+                if (sorting == "Name")
+                {
+                    return tournament.OrderBy(t => t.Name);
+                }
+                else if (sorting == "TwoVsTwo")
+                {
+                    return tournament.OrderBy(t => t.TeamSizeFormat.Where(f => f.ToString() == "2v2"));
+                }
+                else if (sorting == "ThreeVsThree")
+                {
+                    return tournament.OrderBy(t => t.TeamSizeFormat.Where(f => f.ToString() == "3v3"));
+                }
+                else if (sorting == "FourVsFour")
+                {
+                    return tournament.OrderBy(t => t.TeamSizeFormat.Where(f => f.ToString() == "4v4"));
+                }
+                else if (sorting == "FiveVsFive")
+                {
+                    return tournament.OrderBy(t => t.TeamSizeFormat.Where(f => f.ToString() == "5v5"));
+                }
+                else
+                {
+                    return tournament.OrderByDescending(t => t.StartsOn);
+                }
             }
+
+            return tournament.OrderByDescending(t => t.StartsOn);
         }
 
         private string ReturnEndingIfPlural(int quantity) => quantity == 1 ? string.Empty : "s";

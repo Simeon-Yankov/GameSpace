@@ -10,6 +10,7 @@
 
     var time = @Model.StartsOn.ToString();
 }
+
 <div>
     <div class="row">
         <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
@@ -103,8 +104,11 @@
                             }
                             else if (!User.IsAdmin())
                             {
-                                <br />
-                                <a asp-controller="Tournament" asp-action="Participation" asp-route-tournamentId="@Model.Id" class="btn btn-danger float-md-right">Participate</a>
+                                @if (!Model.IsHoster)
+                                {
+                                    <br />
+                                    <a asp-controller="Tournament" asp-action="Participation" asp-route-tournamentId="@Model.Id" class="btn btn-danger float-md-right">Participate</a>
+                                }
                             }
                             @if (Model.IsHoster || User.IsAdmin())
                             {

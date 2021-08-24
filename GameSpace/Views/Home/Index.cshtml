@@ -4,95 +4,10 @@
 
 
 
-<article>
-    <header>
-        <h2>
-            Article title
-        </h2>
-        <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eaque, minima dolore cumque voluptatibus
-            commodi rerum possimus enim corporis dolorum mollitia omnis excepturi dignissimos vitae natus officia?
-            Alias incidunt veritatis quae?
-        </p>
-    </header>
-    <section>
-        <h2>
-            Heading level 2
-        </h2>
-        <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure asperiores doloremque corrupti facilis
-            fugit rerum quasi, error veritatis magnam consequatur doloribus at tempora repellendus expedita itaque
-            quidem, odit vitae culpa!
-        </p>
+<div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <h1>Welcome, to Game Space</h1>
+    <article>
+        <p>A place where you and your friends can play competative tournaments for all leage tournaments </p>
+    </article>
+</div>
 
-        <ul>
-            <li>Aliquam erat volutpat</li>
-            <li>Donec sodales malesuada purus, a gravida ipsum molestie ac</li>
-            <li>Donec ac luctus leo, eget lobortis sapien</li>
-            <li>Quisque ultricies egestas ipsum, tempor porta nulla facilisis eu</li>
-            <li>Sed fermentum viverra tortor ut lacinia</li>
-        </ul>
-        <p>
-            Phasellus dictum interdum efficitur. Maecenas eleifend sapien felis, quis interdum ex tempor a. Aenean
-            sodales, eros ac fermentum elementum, enim nisi finibus nisi, sed tempus turpis mauris ac quam. Aenean
-            ac leo vel ante sollicitudin consequat in ut augue. Vestibulum ante ipsum primis in faucibus orci luctus
-            et ultrices posuere cubilia Curae; Duis sodales odio diam. Phasellus ultricies faucibus massa sit amet
-            pharetra.
-        </p>
-        <img src="./images/picture.jpg">
-        <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam consectetur, minus tenetur nulla
-            incidunt molestias expedita, sed fugiat nostrum fuga voluptatibus ex vero distinctio ad, dolorum autem
-            illum recusandae ullam.
-        </p>
-    </section>
-    <footer>
-        <p>
-            13 March 2018
-        </p>
-        <p>
-            Blog Layout &copy; All rights reserved
-        </p>
-    </footer>
-</article>
-
-
-@*-------*@
-
-@*--------*@
-
-@section Scripts {
-    <script>
-        // Set the date we're counting down to
-        var countDownDate = new Date("Aug 18, 2021 19:34:25").getTime();
-
-        // Update the count down every 1 second
-        var x = setInterval(function () {
-
-            // Get today's date and time
-            var now = new Date().getTime();
-
-            // Find the distance between now and the count down date
-            var distance = countDownDate - now;
-
-            // Time calculations for days, hours, minutes and seconds
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Display the result in the element with id="demo"
-            document.getElementById("demo").innerHTML = days + "d " + hours + "h "
-                + minutes + "m " + seconds + "s ";
-
-            // If the count down is finished, write some text
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("demo").innerHTML = "Time to Check";
-                let button = document.getElementById("check-in");
-
-                button.disabled = false;
-            }
-        }, 1000);
-    </script>
-}

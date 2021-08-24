@@ -66,7 +66,7 @@ namespace GameSpace.Controllers
                 return BadRequest();
             }
 
-            if (/*!detailsService.HasBegun*/false) //TODO: VERY IMPORTANT FOR TESTING PUR
+            if (!detailsService.HasBegun) //TODO: VERY IMPORTANT FOR TESTING PUR
             {
                 return BadRequest();
             }
@@ -237,7 +237,7 @@ namespace GameSpace.Controllers
 
             if (listIsSelected.Count(x => x == true) != teamSize)
             {
-                this.ModelState.AddModelError("All", $"You need exact '{teamSize}' members selected.");
+                this.ModelState.AddModelError("All", $"You need exact {teamSize} members selected.");
             }
 
             foreach (var member in members)
@@ -297,14 +297,28 @@ namespace GameSpace.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        public IActionResult Upcoming()
+        public IActionResult Upcoming([FromQuery] AllTournamentsQueryModel query)
         {
-            var tournamentsService = this.tournaments.AllUpcomingTournaments(onlyVerified: true);
+            var tournamentsService = this.tournaments.AllUpcomingTournaments(
+                onlyVerified: true,
+                searchTerm: query.SearchTerm,
+                currentPage: query.CurrentPage,
+                carsPerPage: AllTournamentsQueryModel.TournamentsPerPage,
+                sorting: query.Sorting);
 
-            var tournamentsView = this.mapper.Map<List<TournamentViewModel>>(tournamentsService);
+            var tournamentsView = this.mapper.Map<AllTournamentsQueryModel>(tournamentsService);
 
             return View(tournamentsView);
         }
+
+        //public IActionResult Upcoming()
+        //{
+        //    var tournamentsService = this.tournaments.AllUpcomingTournaments(onlyVerified: true);
+
+        //    var tournamentsView = this.mapper.Map<List<TournamentViewModel>>(tournamentsService);
+
+        //    return View(tournamentsView);
+        //}
 
         [Authorize]
         public IActionResult Create()
@@ -391,7 +405,7 @@ namespace GameSpace.Controllers
                 tournament.TeamSizeId,
                 this.User.Id());
 
-            TempData[WebConstants.GlobalMessageKey] = "Your tournament was added and is awaiting for approval!";
+            TempData[WebConstants.GlobalMessageKey] = "Your tournament was added and is waiting for approval!";
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
