@@ -26,7 +26,7 @@
     <button type="submit" class="btn btn-outline-primary offset-8">Search</button>
 </form>
 
-<div class="row">
+<div class="row m-1">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
         <div class="card-deck flex-column-reverse">
             @foreach (var tournament in Model.Tournaments)
@@ -42,7 +42,7 @@
                                 <h4 class="card-title">
                                     @tournament.Name
                                     <span class="float-lg-right p-2">
-                                        <small class="text-black-50">@(tournament.TicketPrize == 0 ? "Free" : $"Ticket - {@tournament.TicketPrize} Coints")</small>
+                                        <small class="text-black-50">@(tournament.TicketPrize == 0 ? "Free" : $"Ticket - {@tournament.TicketPrize} Coins")</small>
                                     </span>
                                 </h4>
                                 <p class="card-text">
@@ -53,7 +53,7 @@
                                 </p>
 
                                 <p class="card-text">
-                                    <small>Format -</small> @tournament.TeamSizeFormat &emsp; <small> Prize Pool -</small> @(prizePool == 0 ? "None" : prizePool + " Coints") &emsp; <a asp-controller="Tournament" asp-action="Details" asp-route-tournamentId="@tournament.Id" class="btn btn-success m-2 float-lg-right">Details</a>
+                                    <small>Format -</small> @tournament.TeamSizeFormat &emsp; <small> Prize Pool -</small> @(prizePool == 0 ? "None" : prizePool + " Coins") &emsp; <a asp-controller="Tournament" asp-action="Details" asp-route-tournamentId="@tournament.Id" class="btn btn-success m-2 float-lg-right">Details</a>
                                 </p>
                             </div>
                         </div>

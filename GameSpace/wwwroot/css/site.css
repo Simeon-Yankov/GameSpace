@@ -27,7 +27,7 @@ a {
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 @media (min-width: 768px) {
@@ -113,3 +113,6 @@ aside {
     text-align: right;
 }
 h1 {font: bold 14pt Arial; m/*argin-top: 24pt;}*/
+
+
+   /* --------------------------------*/
