@@ -49,7 +49,7 @@ namespace GameSpace.Test.Routing
                 .ShouldMap(map => map
                     .WithPath("/Summoner/Verify")
                     .WithMethod(HttpMethod.Get))
-                .To<SummonerController>(c => c.Verify(AccountId, RegionName));
+                .To<SummonerController>(c => c.Verify(With.Any<string>(), With.Any<string>()));
 
         [Fact]
         public void PostVerifyShouldBeMapped()

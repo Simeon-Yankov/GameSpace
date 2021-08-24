@@ -174,7 +174,7 @@ namespace GameSpace.Services.Teams
                    VideoUrl = t.VideoUrl,
                    WebsiteUrl = t.WebsiteUrl,
                })
-               .First();
+               .FirstOrDefault();
 
         public async Task PromoteToOwner(int teamId, string userId)
         {

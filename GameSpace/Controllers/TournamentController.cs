@@ -99,7 +99,14 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> CheckIn(int tournamentId, int regionId)
         {
-            int teamId = GetRegistratedTeam(tournamentId).Id;
+            var team = GetRegistratedTeam(tournamentId);
+
+            int teamId = default;
+
+            if (team is not null)
+            {
+                teamId = team.Id;
+            }
 
             if (teamId == 0)
             {

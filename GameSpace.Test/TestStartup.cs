@@ -18,9 +18,8 @@ namespace GameSpace.Test
         {
             base.ConfigureServices(services);
 
-            services.ReplaceDbContext();
             services.ReplaceTransient<IMessageService>(_ => Mocks.MessageServiceMock.Instance);
-            services.ReplaceTransient<IUserService>(_ => Mocks.UserServiceMock.Instance);
+            //services.ReplaceTransient<IUserService>(_ => Mocks.UserServiceMock.Instance);
         }
     }
 }

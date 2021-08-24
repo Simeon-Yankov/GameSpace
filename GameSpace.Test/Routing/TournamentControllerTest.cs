@@ -18,7 +18,7 @@ namespace GameSpace.Test.Routing
             => MyRouting
                 .Configuration()
                 .ShouldMap("/Tournament/CheckIn")
-                .To<TournamentController>(c => c.CheckIn(1, 1));
+                .To<TournamentController>(c => c.CheckIn(With.Any<int>(), With.Any<int>()));
 
         [Fact]
         public void GetDetailsShouldBeMapped()
@@ -34,41 +34,24 @@ namespace GameSpace.Test.Routing
                 .ShouldMap("/Tournament/Participation")
                 .To<TournamentController>(c => c.Participation(With.Any<int>()));
 
-        [Theory]
-        [InlineData(TournamentId, TeamId)]
-        public void GetSelectionShouldBeMapped(int tournamentId, int teamId)
+        [Fact]
+        public void GetSelectionShouldBeMapped()
             => MyRouting
                 .Configuration()
-                .ShouldMap(request => request
+                .ShouldMap("/Tournament/Selection")
+                .To<TournamentController>(c => c.Selection(With.Any<int>(), With.Any<int>()));
+
+        [Fact]
+        public void PostSelectionShouldBeMapped()
+            => MyRouting
+                .Configuration()
+                .ShouldMap(map => map
                     .WithLocation("/Tournament/Selection")
-                    .WithFormFields(new 
-                    { 
-                        TournamentId = tournamentId,
-                        TeamId = teamId
-                    }))
-                .To<TournamentController>(c => c.Selection(tournamentId, teamId));
-        //[Theory]
-        //[InlineData(TeamId, TournamentId)]
-        //public void GetSelection(int teamId, int tournamentId, IEnumerable<TeamMemberServiceModel> members = new List<TeamMemberServiceModel>())
-        //    => MyRouting
-        //        .Configuration()
-        //        .ShouldMap(request => request
-        //            .WithLocation("/Tournament/Selection")
-        //            .WithFormFields(new 
-        //            {
-        //                TeamId = teamId,
-        //                TournamentId = tournamentId,
-        //                Members = members
-        //            }))
-        //        .To<TournamentController>(c => c.Selection(
-        //            TournamentId,
-        //            TeamId,
-        //            new TeamMembersServiceModel
-        //            {
-        //                TeamId = teamId,
-        //                TournamentId = tournamentId,
-        //                Members = members
-        //            }));
+                    .WithMethod(HttpMethod.Post))
+                .To<TournamentController>(c => c.Selection(
+                    With.Any<int>(),
+                    With.Any<int>(),
+                    With.Any<TeamMembersServiceModel>()));
 
         [Fact]
         public void GetUpcomingShouldBeMapped()

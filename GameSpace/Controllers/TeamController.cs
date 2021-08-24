@@ -37,17 +37,14 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Details(int teamId)
+        public IActionResult Details(int teamId, string userId = null)
         {
-            var teamData = teams.Details(teamId, this.User.Id());
+            userId ??= this.User.Id();
+
+            var teamData = teams.Details(teamId, userId);
 
             return View(teamData);
         }
-
-        //public IActionResult Members(int teamId)
-        //{
-        //    this.teams.Member
-        //}
 
         [Authorize]
         public IActionResult Invite(int teamId)

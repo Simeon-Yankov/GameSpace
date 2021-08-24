@@ -21,7 +21,7 @@ namespace GameSpace.Test.Routing
             => MyRouting
                 .Configuration()
                 .ShouldMap("/Team/Details")
-                .To<TeamController>(c => c.Details(With.Any<int>()));
+                .To<TeamController>(c => c.Details(With.Any<int>(), With.Any<string>()));
 
         [Fact]
         public void GetInviteShouldBeMapped()
@@ -72,30 +72,14 @@ namespace GameSpace.Test.Routing
             => MyRouting
                 .Configuration()
                 .ShouldMap("/Team/Leave")
-                .To<TeamController>(c => c.Leave(TeamId, null));
-
-        //[Theory]
-        //[InlineData(TeamId, UserId)]
-        //public void GetLeaveShouldBeRoutedCorrectly(int teamId, string userId)
-        //    => MyRouting
-        //        .Configuration()
-        //        .ShouldMap(request => request
-        //            .WithMethod(HttpMethod.Post)
-        //            .WithLocation("/Team/Leave")
-        //            .WithFormFields(new
-        //            {
-        //                TeamId = teamId,
-        //                UserId = userId
-        //            }))
-        //        .To<TeamController>(c => c.Leave(TeamId, UserId));
-
+                .To<TeamController>(c => c.Leave(With.Any<int>(), With.Any<string>()));
 
         [Fact]
         public void GetPromoteToOwnerShouldBeMapped()
             => MyRouting
                 .Configuration()
                 .ShouldMap("/Team/PromoteToOwner")
-                .To<TeamController>(c => c.PromoteToOwner(TeamId, UserId));
+                .To<TeamController>(c => c.PromoteToOwner(With.Any<int>(), With.Any<string>()));
 
         [Fact]
         public void GetCreateShouldBeMapped()
@@ -111,11 +95,7 @@ namespace GameSpace.Test.Routing
                 .ShouldMap(map => map
                     .WithPath("/Team/Create")
                     .WithMethod(HttpMethod.Post))
-                .To<TeamController>(c => c.Create(new AddServiceModel
-                {
-                    Name = TeamName
-                },
-                    With.Any<IFormFile>()));
+                .To<TeamController>(c => c.Create(With.Any<AddServiceModel>(), With.Any<IFormFile>()));
 
         [Fact]
         public void GetEditShouldBeMapped()

@@ -48,7 +48,6 @@ namespace GameSpace.Controllers
         {
             var riotApiKey = this.configuration.GetValue(typeof(string), "RiotApiKey");
 
-
             if (!this.regions.RegionExists(summoner.RegionId))
             {
                 this.ModelState.AddModelError(nameof(summoner.RegionId), $"Region does not exist.");
@@ -93,7 +92,7 @@ namespace GameSpace.Controllers
             var timer = summonerQueryModel.Timer;
             var userId = summonerQueryModel.UserId;
 
-            if (timer.Minute < 1 && timer.Second < 15)
+            if (timer.Hour < 1 && timer.Minute < 1 && timer.Second < 15) //TODO: after 1 hor 15 sex pause again (bug)
             {
                 return RedirectToAction(nameof(UserController.Profile), "User", new { userId = userId });
             }
@@ -119,7 +118,7 @@ namespace GameSpace.Controllers
         {
             await this.summoners.Remove(this.User.Id(), accountId);
 
-            return RedirectToAction(nameof(UserController.Profile), "User");
+            return RedirectToAction(nameof(UserController.Profile), "User"/*, new { userId = this.User.Id() }*/);
         }
 
         [Authorize]

@@ -1,4 +1,5 @@
 ﻿using GameSpace.Controllers;
+using GameSpace.Data.Models;
 using GameSpace.Models.User;
 using GameSpace.Services.Users.Models;
 
@@ -6,20 +7,24 @@ using MyTested.AspNetCore.Mvc;
 
 using Xunit;
 
+using GameSpace.Services.Appearances.Models;
+using GameSpace.Models.SocialNetworks;
+
 using static GameSpace.Test.TestConstants.User;
 
 namespace GameSpace.Test.Controllers
 {
     public class UserControllerTest
     {
-        [Theory]
-        [InlineData(UserId)]
-        public void GetProfileShouldBeAuthorizedUserAndReturnView(
-            string userId)
+        [Fact]
+        public void GetProfileShouldBeAuthorizedUserAndReturnView()
             => MyController<UserController>
-                .Instance(controller => controller
-                    .WithUser())
-                .Calling(c => c.Profile(userId))
+                .Instance()
+                .WithData(data => data
+                    .WithEntities(entities => entities.Add(
+                        new User { Id = UserTestId })))
+                .WithUser(UserTestId)
+                .Calling(c => c.Profile(UserTestId))
                 .ShouldHave()
                 .ActionAttributes(attributes => attributes
                     .RestrictingForAuthorizedRequests())
@@ -28,14 +33,15 @@ namespace GameSpace.Test.Controllers
                 .View(view => view
                     .WithModelOfType<UserProfileServiceModel>());
 
-        [Theory]
-        [InlineData("TestData")]
-        public void GetEditShouldBeAuthorizedUserAndRedirect(
-            string id)
+        [Fact]
+        public void GetEditShouldBeAuthorizedUserAndRedirect()
             => MyController<UserController>
-                .Instance(controller => controller
-                    .WithUser())
-                .Calling(c => c.Edit(id))
+                .Instance()
+                .WithData(data => data
+                    .WithEntities(entities => entities.Add(
+                        new User { Id = UserTestId })))
+                .WithUser(UserTestId)
+                .Calling(c => c.Edit(UserTestId))
                 .ShouldHave()
                 .ActionAttributes(attributes => attributes
                     .RestrictingForAuthorizedRequests())
@@ -44,20 +50,28 @@ namespace GameSpace.Test.Controllers
                 .View(view => view
                     .WithModelOfType<EditUserFormModel>());
 
-        [Theory]
-        [InlineData("TestData")]
-        public void PostEditShouldBeAuthorizedUserAndRedirect(
-            string id)
+        [Fact]
+        public void PostEditShouldBeAuthorizedUserAndRedirect()
             => MyController<UserController>
-                .Instance(controller => controller
-                    .WithUser())
-                .Calling(c => c.Edit(id))
+                .Instance()
+                .WithData(data => data
+                    .WithEntities(entities => entities.Add(
+                        new User { Id = UserTestId })))
+                .WithUser(UserTestId)
+                .Calling(c => c.Edit(new EditUserFormModel() 
+                {
+                    Id = UserTestId,
+                    Nickname = TestNickname,
+                    Biography = "",
+                    Appearance = new AppearanceServiceModel(),
+                    SocialNetwork = new SocialNetworkViewModel()
+                }))
                 .ShouldHave()
                 .ActionAttributes(attributes => attributes
                     .RestrictingForAuthorizedRequests())
                 .AndAlso()
                 .ShouldReturn()
-                .View(view => view
-                    .WithModelOfType<EditUserFormModel>());
+                .Redirect(redirect => redirect
+                    .To<UserController>(m => m.Profile(null)));
     }
 }
