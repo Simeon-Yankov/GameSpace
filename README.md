@@ -1,4 +1,11 @@
 # GameSpace
-Web Application using ASP.Net, EF Core, SQL Server, Bootstrap
+This is а defence project for Software University.
 
-API for testing RGAPI-87d3e075-6447-4e08-a3b9-d5e430bc5f38
+# Project Info
+GameSpace is a tournament platform for video games. You can join with your friends and play or host your own tournament. Our goal is to enrich the Riot Games community and provide better player experiences.
+
+# Tech Stack
+- ASP.NET Core MVC
+- Entity Framework
+- SQL Server
+- Bootstrap
