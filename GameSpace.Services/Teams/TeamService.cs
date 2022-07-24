@@ -15,6 +15,7 @@ using GameSpace.Services.Users.Models;
 using Team = GameSpace.Data.Models.Team;
 
 using static GameSpace.Common.GlobalConstants.Team;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameSpace.Services.Teams
 {
@@ -31,38 +32,47 @@ namespace GameSpace.Services.Teams
             this.messages = messages;
         }
 
-        public int GetId(string name)
-            => this.data
+        public async Task<int> GetId(string name)
+        {
+            var result = await this.data
             .Teams
             .Where(t => t.Name == name)
             .Select(t => new
             {
                 Id = t.Id
             })
-            .First()
-            .Id;
+            .FirstAsync();
 
-        public string GetName(int id)
-            => this.data
+            return result.Id;
+        }
+
+        public async Task<string> GetName(int id)
+        {
+            var result = await this.data
             .Teams
             .Where(t => t.Id == id)
             .Select(t => new
             {
                 Name = t.Name
             })
-            .First()
-            .Name;
+            .FirstAsync();
 
-        public string GetOwnerId(string teamName)
-            => this.data
-            .Teams
-            .Where(t => t.Name == teamName)
-            .Select(t => new
-            {
-                OwnerId = t.OwnerId
-            })
-            .First()
-            .OwnerId;
+            return result.Name;
+        }
+
+        public async Task<string> GetOwnerId(string teamName)
+        {
+            var result = await this.data
+                .Teams
+                .Where(t => t.Name == teamName)
+                .Select(t => new
+                {
+                    OwnerId = t.OwnerId
+                })
+                .FirstAsync();
+
+            return result.OwnerId;
+        }
 
         public async Task SendInvitation(string senderId, string reciverId, string teamName) //TODO: in mesage controller
         {
@@ -100,8 +110,8 @@ namespace GameSpace.Services.Teams
             await this.data.SaveChangesAsync();
         }
 
-        public IEnumerable<TeamServiceModel> ByOwner(string userId) // Get Owner Teams
-            => this.data
+        public async Task<IEnumerable<TeamServiceModel>> ByOwner(string userId) // Get Owner Teams
+            => await this.data
                .Teams
                .Where(t => t.OwnerId == userId)
                .Select(t => new TeamServiceModel
@@ -111,10 +121,10 @@ namespace GameSpace.Services.Teams
                    Image = t.Appearance.Image,
                    Banner = t.Appearance.Banner
                })
-               .ToList();
+               .ToListAsync();
 
-        public IEnumerable<TeamServiceModel> UserMemberships(string userId)
-             => this.data
+        public async Task<IEnumerable<TeamServiceModel>> UserMemberships(string userId)
+             => await this.data
                 .Teams
                 .Where(t => t.Mombers.Any(m => m.UserId == userId))
                 .Select(t => new TeamServiceModel
@@ -124,10 +134,10 @@ namespace GameSpace.Services.Teams
                     Image = t.Appearance.Image,
                     Banner = t.Appearance.Banner
                 })
-               .ToList();
+               .ToListAsync();
 
-        public TeamMembersServiceModel Members(string currentUserId, int teamId)
-            => this.data
+        public async Task<TeamMembersServiceModel> Members(string currentUserId, int teamId)
+            => await this.data
                 .Teams
                 .Where(t => t.Id == teamId)
                 .Select(t => new TeamMembersServiceModel
@@ -144,10 +154,10 @@ namespace GameSpace.Services.Teams
                                 IsMemberOwner = m.UserId == m.Team.OwnerId
                             })
                 })
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
-        public TeamDetailsServiceModel Details(int teamId, string userId)
-            => data
+        public async Task<TeamDetailsServiceModel> Details(int teamId, string userId)
+            => await this.data
                .Teams
                .Where(t => t.Id == teamId)
                .Select(t => new TeamDetailsServiceModel
@@ -155,16 +165,15 @@ namespace GameSpace.Services.Teams
                    Id = t.Id,
                    Name = t.Name,
                    CreatedOn = t.CreatedOn.ToString("d"),
-                   Owner = this.data
-                                .Users
-                                .Where(u => u.Id == t.OwnerId)
-                                .Select(u => new UserOwnerServiceModel
-                                {
-                                    Id = u.Id,
-                                    Name = u.Nickname,
-                                    IsOwner = u.Id == userId
-                                })
-                                .First(),
+                   Owner = t.Mombers
+                            .Where(m => m.UserId == t.OwnerId)
+                            .Select(m => new UserOwnerServiceModel
+                            {
+                                Id = m.User.Id,
+                                Name = m.User.Nickname,
+                                IsOwner = m.User.Id == userId
+                            })
+                            .First(),
                    Appearance = new AppearanceServiceModel
                    {
                        Image = t.Appearance.Image,
@@ -174,13 +183,13 @@ namespace GameSpace.Services.Teams
                    VideoUrl = t.VideoUrl,
                    WebsiteUrl = t.WebsiteUrl,
                })
-               .FirstOrDefault();
+               .FirstOrDefaultAsync();
 
         public async Task PromoteToOwner(int teamId, string userId)
         {
-            var teamData = this.data
+            var teamData = await this.data
                             .Teams
-                            .FirstOrDefault(t => t.Id == teamId);
+                            .FirstOrDefaultAsync(t => t.Id == teamId);
 
             teamData.OwnerId = userId;
 
@@ -220,7 +229,7 @@ namespace GameSpace.Services.Teams
         {
             var teamData = this.data.Teams.First(t => t.Id == id);
 
-            var userTeamRelation = this.data.UsersTeams.Where(ut => ut.TeamId == id).ToArray();
+            var userTeamRelation = await this.data.UsersTeams.Where(ut => ut.TeamId == id).ToArrayAsync();
 
             this.data.UsersTeams.RemoveRange(userTeamRelation);
             this.data.Teams.Remove(teamData);
@@ -229,51 +238,48 @@ namespace GameSpace.Services.Teams
             await this.data.SaveChangesAsync();
         }
 
-        public bool Excists(int id) => data.Teams.Any(t => t.Id == id);
+        public async Task<bool> Excists(int id)
+            => await this.data
+            .Teams
+            .AnyAsync(t => t.Id == id);
 
-        public bool Excists(string name) => this.data.Teams.Any(t => t.Name == name);
+        public async Task<bool> Excists(string name)
+            => await this.data
+            .Teams
+            .AnyAsync(t => t.Name == name);
 
-        public bool ExcistsWantedName(string currName, string wantedName)
-            => this.data
+        public async Task<bool> ExcistsWantedName(string currName, string wantedName)
+            => await this.data
                 .Teams
                 .Where(t => t.Name != currName)
-                .Any(t => t.Name == wantedName);
+                .AnyAsync(t => t.Name == wantedName);
 
-        //public bool IsOwner(int teamId, string userId)
-        //    => this.data
-        //        .Teams
-        //        .Where(t => t.Id == teamId)
-        //        .Select(t => new
-        //        {
-        //            IsUserAlreadyMember = t.Mombers.Any(m => m.UserId == userId)
-        //        })
-        //        .FirstOrDefault()
-        //        .IsUserAlreadyMember;
-
-        public bool IsMemberInTeam(int teamId, string userId)
-            => this.data
+        public async Task<bool> IsMemberInTeam(int teamId, string userId)
+        {
+            var result = await this.data
                 .Teams
                 .Where(t => t.Id == teamId)
                 .Select(t => new
                 {
                     IsUserAlreadyMember = t.Mombers.Any(m => m.UserId == userId)
                 })
-                .FirstOrDefault()
-                .IsUserAlreadyMember;
+                .FirstOrDefaultAsync();
 
-        public bool IsTeamFull(int teamId)
+            return result.IsUserAlreadyMember;
+        }
+
+        public async Task<bool> IsTeamFull(int teamId)
         {
-            var membersCount = this.data
+            var membersCount = await this.data
                 .Teams
                 .Where(t => t.Id == teamId)
                 .Select(t => new //TODO: ANONIMUS
                 {
                     MembersCount = t.Mombers.Count,
                 })
-                .First()
-                .MembersCount;
+                .FirstAsync();
 
-            if (membersCount > MaxTeamSize)
+            if (membersCount.MembersCount > MaxTeamSize)
             {
                 return true;
             }

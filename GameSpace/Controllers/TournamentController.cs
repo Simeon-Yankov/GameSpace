@@ -141,7 +141,7 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Details(int tournamentId)
+        public async Task<IActionResult> Details(int tournamentId)
         {
             var tournament = this.tournaments.Details(tournamentId);
 
@@ -159,7 +159,7 @@ namespace GameSpace.Controllers
 
             tournamentsView.Participants = this.tournaments.TournamentParticipants(tournamentId);
 
-            var isUserAlreadyRegistered = IsUserAlreadyRegistered(tournamentId);
+            var isUserAlreadyRegistered = await IsUserAlreadyRegistered(tournamentId);
 
             if (isUserAlreadyRegistered)
             {
@@ -178,9 +178,9 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Participation(int tournamentId)
+        public async Task<IActionResult> Participation(int tournamentId)
         {
-            var teamsService = this.teams.ByOwner(this.User.Id());
+            var teamsService = await this.teams.ByOwner(this.User.Id());
 
             var teamsView = this.mapper.Map<List<TeamViewModel>>(teamsService);
 
@@ -192,9 +192,9 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Selection(int tournamentId, int selectedTeamId)
+        public async Task<IActionResult> Selection(int tournamentId, int selectedTeamId)
         {
-            var teamMembersService = this.teams.Members(this.User.Id(), selectedTeamId);
+            var teamMembersService = await this.teams.Members(this.User.Id(), selectedTeamId);
 
             teamMembersService.TournamentId = tournamentId;
 
@@ -205,7 +205,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Selection(int tournamentId, int selectedTeamId, TeamMembersServiceModel teamMembers)
         {
-            var teamMembersService = this.teams.Members(this.User.Id(), selectedTeamId);
+            var teamMembersService = await this.teams.Members(this.User.Id(), selectedTeamId);
 
             var members = teamMembersService.Members.ToList().OrderBy(m => m.Nickname).ToList();
 
@@ -244,7 +244,7 @@ namespace GameSpace.Controllers
             {
                 if (dic[member] == true)
                 {
-                    if (IsUserAlreadyRegistered(tournamentId, member.Id))
+                    if (await IsUserAlreadyRegistered(tournamentId, member.Id))
                     {
                         var message = member.Id == this.User.Id() ? "You are already registrated." : $"'{member.Nickname}' is already registrated in the Tournament.";
 
@@ -253,7 +253,7 @@ namespace GameSpace.Controllers
                 }
             }
 
-            if (!this.teams.Excists(selectedTeamId))
+            if (!await this.teams.Excists(selectedTeamId))
             {
                 this.ModelState.AddModelError("All", "Team does not exists.");
             }
@@ -410,7 +410,7 @@ namespace GameSpace.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        private (IEnumerable<TeamServiceModel>, IEnumerable<TeamServiceModel>) GetParticipantsAndMemberships(int tournamentId, string userId = null)
+        private async Task<(IEnumerable<TeamServiceModel>, IEnumerable<TeamServiceModel>)> GetParticipantsAndMemberships(int tournamentId, string userId = null)
         {
             if (userId is null)
             {
@@ -419,14 +419,14 @@ namespace GameSpace.Controllers
 
             var participants = this.tournaments.TournamentParticipants(tournamentId);
 
-            var memberships = this.teams.UserMemberships(userId).ToList();
+            var memberships = await this.teams.UserMemberships(userId);
 
             return (participants, memberships);
         }
 
-        private TeamServiceModel GetRegistratedTeam(int tournamentId)
+        private async Task<TeamServiceModel> GetRegistratedTeam(int tournamentId)
         {
-            var (participants, memberships) = GetParticipantsAndMemberships(tournamentId);
+            var (participants, memberships) = await GetParticipantsAndMemberships(tournamentId);
 
             var userRegisteredTeams = participants
                                         .Where(p => memberships.Any(m => m.Id == p.Id))
@@ -447,14 +447,14 @@ namespace GameSpace.Controllers
             return teamService;
         }
 
-        private bool IsUserAlreadyRegistered(int tournamentId, string userId = null)
+        private async Task<bool> IsUserAlreadyRegistered(int tournamentId, string userId = null)
         {
             if (userId is null)
             {
                 userId = this.User.Id();
             }
 
-            var (participants, memberships) = GetParticipantsAndMemberships(tournamentId, userId);
+            var (participants, memberships) = await GetParticipantsAndMemberships(tournamentId, userId);
 
             var userRegisteredTeams = participants
                                         .Where(p => memberships.Any(m => m.Id == p.Id))

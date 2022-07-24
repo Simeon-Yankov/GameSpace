@@ -7,11 +7,11 @@ namespace GameSpace.Services.Teams.Contracts
 {
     public interface ITeamService
     {
-        int GetId(string name);
+        Task<int> GetId(string name);
 
-        string GetName(int id);
+        Task<string> GetName(int id);
 
-        string GetOwnerId(string teamName);
+        Task<string> GetOwnerId(string teamName);
 
         Task SendInvitation(string senderId, string reciverId, string teamName);
 
@@ -19,13 +19,13 @@ namespace GameSpace.Services.Teams.Contracts
 
         Task RemoveMember(int teamId, string userId);
 
-        IEnumerable<TeamServiceModel> ByOwner(string userId);
+        Task<IEnumerable<TeamServiceModel>> ByOwner(string userId);
 
-        IEnumerable<TeamServiceModel> UserMemberships(string userId);
+        Task<IEnumerable<TeamServiceModel>> UserMemberships(string userId);
 
-        TeamMembersServiceModel Members(string currentUserId, int teamId);
+        Task<TeamMembersServiceModel> Members(string currentUserId, int teamId);
 
-        TeamDetailsServiceModel Details(int id, string userId);
+        Task<TeamDetailsServiceModel> Details(int id, string userId);
 
         Task PromoteToOwner(int teamId, string userId);
 
@@ -35,14 +35,14 @@ namespace GameSpace.Services.Teams.Contracts
 
         Task Delete(int id);
 
-        bool Excists(int id);
+        Task<bool> Excists(int id);
 
-        bool Excists(string name);
+        Task<bool> Excists(string name);
 
-        bool ExcistsWantedName(string currName, string wantedName);
+        Task<bool> ExcistsWantedName(string currName, string wantedName);
 
-        bool IsMemberInTeam(int teamId, string userId);
+        Task<bool> IsMemberInTeam(int teamId, string userId);
 
-        bool IsTeamFull(int teamId);
+        Task<bool> IsTeamFull(int teamId);
     }
 }
