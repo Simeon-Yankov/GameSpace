@@ -23,7 +23,11 @@ namespace GameSpace.Controllers
         private readonly IRegionService regions;
         private readonly IMapper mapper;
 
-        public SummonerController(IConfiguration configuration, ISummonerService summoners, IRegionService regions, IMapper mapper)
+        public SummonerController(
+            IConfiguration configuration,
+            ISummonerService summoners,
+            IRegionService regions,
+            IMapper mapper)
         {
             this.configuration = configuration;
             this.summoners = summoners;
@@ -55,17 +59,17 @@ namespace GameSpace.Controllers
 
             var regionName = this.regions.GetRegionName(summoner.RegionId);
 
-            if (this.summoners.AlreadyAdded(summoner.Name, regionName, this.User.Id()))
+            if (await this.summoners.AlreadyAddedAsync(summoner.Name, regionName, this.User.Id()))
             {
                 this.ModelState.AddModelError(nameof(summoner.Name), $"Summoner is already added");
             }
 
-            if (this.summoners.AlreadySummonerWithRegion(this.User.Id(), regionName))
+            if (await this.summoners.AlreadySummonerWithRegionAsync(this.User.Id(), regionName))
             {
                 this.ModelState.AddModelError(nameof(summoner.RegionId), $"You can have only one summoner per region.");
             }
 
-            var summonerData = await this.summoners.GetJsonInfoBySummonerName(summoner.Name, regionName);
+            var summonerData = await this.summoners.GetJsonInfoBySummonerNameAsync(summoner.Name, regionName);
 
             if (summonerData.Status?.StatusCode == HttpStatusCode.NotFound)
             {
@@ -79,9 +83,9 @@ namespace GameSpace.Controllers
                 return View(summoner);
             }
 
-            var profileIcon = await this.summoners.GetProfileImage(summonerData.ProfileIconId);
+            var profileIcon = await this.summoners.GetProfileImageAsync(summonerData.ProfileIconId);
 
-            await this.summoners.Add(this.User.Id(), summonerData.AccountId ,summonerData.Name, summoner.RegionId, profileIcon);
+            await this.summoners.AddAsync(this.User.Id(), summonerData.AccountId ,summonerData.Name, summoner.RegionId, profileIcon);
 
             return RedirectToAction(nameof(UserController.Profile), "User");
         }
@@ -99,16 +103,16 @@ namespace GameSpace.Controllers
 
             var accountId = summonerQueryModel.AccountId;
 
-            if (!this.summoners.AccountExists(userId, accountId))
+            if (!await this.summoners.AccountExistsAsync(userId, accountId))
             {
                 return RedirectToAction(nameof(UserController.Profile), "User");
             }
 
-            var summonerData = await this.summoners.GetJsonInfoByAccountId(accountId, summonerQueryModel.RegionName);
+            var summonerData = await this.summoners.GetJsonInfoByAccountIdAsync(accountId, summonerQueryModel.RegionName);
 
-            var profileIcon = await this.summoners.GetProfileImage(summonerData.ProfileIconId);
+            var profileIcon = await this.summoners.GetProfileImageAsync(summonerData.ProfileIconId);
 
-            await this.summoners.Refresh(userId, accountId, summonerData.Name, profileIcon);//TODO: Verify logic
+            await this.summoners.RefreshAsync(userId, accountId, summonerData.Name, profileIcon);//TODO: Verify logic
 
             return RedirectToAction(nameof(UserController.Profile), "User", new { userId = userId });
         }
@@ -124,9 +128,9 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Verify(string accountId, string regionName)
         {
-            var summonerData = await this.summoners.GetJsonInfoByAccountId(accountId, regionName);
+            var summonerData = await this.summoners.GetJsonInfoByAccountIdAsync(accountId, regionName);
 
-            var summonerServiceModel = await this.summoners.RandomDefaultIcon(accountId, regionName, summonerData.ProfileIconId);
+            var summonerServiceModel = await this.summoners.RandomDefaultIconAsync(accountId, regionName, summonerData.ProfileIconId);
 
             return View(summonerServiceModel);
         }
@@ -135,11 +139,11 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Verify(VerifySummonerServiceModel verifyModel)
         {
-            var sumonerData = await this.summoners.GetJsonInfoByAccountId(verifyModel.AccountId, verifyModel.RegionName);
+            var sumonerData = await this.summoners.GetJsonInfoByAccountIdAsync(verifyModel.AccountId, verifyModel.RegionName);
 
             if (sumonerData.ProfileIconId == verifyModel.IconId)
             {
-                await this.summoners.Verify(sumonerData.AccountId);
+                await this.summoners.VerifyAsync(sumonerData.AccountId);
             }
 
             return RedirectToAction(nameof(UserController.Profile), "User");

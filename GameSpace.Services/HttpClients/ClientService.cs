@@ -7,6 +7,7 @@ using GameSpace.Data;
 using GameSpace.Data.Models;
 using GameSpace.Services.HttpClients.Contracts;
 using GameSpace.Services.HttpClients.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameSpace.Services.HttpClients
 {
@@ -19,8 +20,8 @@ namespace GameSpace.Services.HttpClients
         public ClientService(GameSpaceDbContext data)
             => this.data = data;
 
-        public APIServiceModel GetAPI(string key)
-            => this.data
+        public async Task<APIServiceModel> GetAPIAsync(string key)
+            => await this.data
                 .APIs
                 .Where(api => api.Key == key)
                 .Select(api => new APIServiceModel
@@ -28,9 +29,9 @@ namespace GameSpace.Services.HttpClients
                     Key = api.Key,
                     Value = api.Value
                 })
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
-        public async Task AddAPI(string key, string value)
+        public async Task AddAPIAsync(string key, string value)
         {
             var api = new API
             {
@@ -43,23 +44,23 @@ namespace GameSpace.Services.HttpClients
             await this.data.SaveChangesAsync();
         }
 
-        public async Task UpdateAPI(string key, string value)
+        public async Task UpdateAPIAsync(string key, string value)
         {
-            var api = this.data
+            var api = await this.data
                 .APIs
                 .Where(api => api.Key == key)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             api.Value = value;
 
             await this.data.SaveChangesAsync();
         }
 
-        public async Task<HttpResponseMessage> ReadMessage(string url, string key = null)
+        public async Task<HttpResponseMessage> ReadMessageAsync(string url, string key = null)
         {
             if (key != null)
             {
-                var api = GetAPI(key);
+                var api = await GetAPIAsync(key);
 
                 url = url.Replace(key, api.Value);
             }
@@ -67,11 +68,11 @@ namespace GameSpace.Services.HttpClients
             return await client.GetAsync(url);
         }
 
-        public async Task<byte[]> ReadByteArray(string url, string key = null)
+        public async Task<byte[]> ReadByteArrayAsync(string url, string key = null)
         {
             if (key != null)
             {
-                var api = GetAPI(key);
+                var api = await GetAPIAsync(key);
 
                 url = url.Replace(key, api.Value);
             }

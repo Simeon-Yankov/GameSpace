@@ -117,18 +117,18 @@ namespace GameSpace.Controllers
 
             var regionName = this.regions.GetRegionName(regionId);
 
-            if (!this.summoners.AccountExistsByRegionId(userId, regionId))
+            if (!await this.summoners.AccountExistsByRegionIdAsync(userId, regionId))
             {
                 TempData[GlobalMessageKeyDanger] = $"You must have summoner in {regionName} first to check in.";
 
                 return RedirectToAction(nameof(TournamentController.Details), "Tournament", new { tournamentId = tournamentId });
             }
 
-            if (!this.summoners.IsVerifiedByRegion(userId, regionId))
+            if (!await this.summoners.IsVerifiedByRegionAsync(userId, regionId))
             {
                 TempData[GlobalMessageKeyDanger] = $"You must verify your summoner first.";
 
-                var accountId = this.summoners.GetIdByRegion(userId, regionId);
+                var accountId = await this.summoners.GetIdByRegionAsync(userId, regionId);
 
                 return RedirectToAction(nameof(SummonerController.Verify), "Summoner", new { accountId = accountId, regionName = regionName });
             }

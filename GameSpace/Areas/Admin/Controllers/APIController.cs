@@ -29,7 +29,7 @@ namespace GameSpace.Areas.Admin.Controllers
                 return View(api);
             }
 
-            await this.client.UpdateAPI(RiotAPI, api.Value);
+            await this.client.UpdateAPIAsync(RiotAPI, api.Value);
 
             return RedirectToAction(nameof(HomeController.Index), "Home", new { area = ""});
         }

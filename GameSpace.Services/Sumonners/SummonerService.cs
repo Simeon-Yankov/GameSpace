@@ -8,13 +8,15 @@ using GameSpace.Services.HttpClients.Contracts;
 using GameSpace.Services.Regions.Contracts;
 using GameSpace.Services.Sumonners.Contracts;
 using GameSpace.Services.Sumonners.Models;
-
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace GameSpace.Services.Sumonners
 {
     public class SummonerService : ISummonerService
     {
+        private static Random random = new Random();
+
         private readonly IClientService clients;
         private readonly GameSpaceDbContext data;
         private readonly IRegionService regions;
@@ -28,12 +30,13 @@ namespace GameSpace.Services.Sumonners
             this.regions = regions;
         }
 
-        public async Task<VerifySummonerServiceModel> RandomDefaultIcon(string accountId, string regionName, int currentIconId)
+        public async Task<VerifySummonerServiceModel> RandomDefaultIconAsync(
+            string accountId,
+            string regionName,
+            int currentIconId)
         {
             const int DefaultMaxIconId = 28;
             const int DefaultMinIconId = 1;
-
-            var random = new Random(); //TODO: not sure
 
             int rendomDefaultIconId = default;
 
@@ -43,7 +46,7 @@ namespace GameSpace.Services.Sumonners
             }
             while (rendomDefaultIconId == currentIconId);
 
-            var randomDefaultIcon = await GetProfileImage(rendomDefaultIconId);
+            var randomDefaultIcon = await GetProfileImageAsync(rendomDefaultIconId);
 
             return new VerifySummonerServiceModel
             {
@@ -56,10 +59,10 @@ namespace GameSpace.Services.Sumonners
 
         public async Task Remove(string userId, string accountId)
         {
-            var gameAccount = this.data
+            var gameAccount = await this.data
                 .GameAccounts
                 .Where(ga => ga.AccountId == accountId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             this.data
                 .Users
@@ -71,24 +74,26 @@ namespace GameSpace.Services.Sumonners
             await this.data.SaveChangesAsync();
         }
 
-        public async Task<byte[]> GetProfileImage(int profileIconId)
+        public async Task<byte[]> GetProfileImageAsync(int profileIconId)
         {
             const string version = "11.14.1";
 
             var profileIconUrl = $"https://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{profileIconId}.png";
 
-            var profileIcon = await this.clients.ReadByteArray(profileIconUrl);
+            var profileIcon = await this.clients.ReadByteArrayAsync(profileIconUrl);
 
             return profileIcon;
         }
 
-        public async Task<ImportSummonerService> GetJsonInfoBySummonerName(string summonerName, string regionName)
-        {                                                                       //TODO: What will happend if request overload
+        public async Task<ImportSummonerService> GetJsonInfoBySummonerNameAsync(
+            string summonerName,
+            string regionName)
+        {  //TODO: What will happend if request overload
             var regionNameFormated = this.regions.FormatName(regionName);
 
             var url = $"https://{regionNameFormated}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summonerName}?api_key={RiotAPI}";
 
-            var response = await clients.ReadMessage(url, RiotAPI);
+            var response = await clients.ReadMessageAsync(url, RiotAPI);
 
             var jsonString = await response.Content.ReadAsStringAsync();
 
@@ -97,13 +102,13 @@ namespace GameSpace.Services.Sumonners
             return summoner;
         }
 
-        public async Task<ImportSummonerService> GetJsonInfoByAccountId(string accountId, string regionName)
-        {                                                                       //TODO: What will happend if request overload
+        public async Task<ImportSummonerService> GetJsonInfoByAccountIdAsync(string accountId, string regionName)
+        {  //TODO: What will happend if request overload
             var regionNameFormated = this.regions.FormatName(regionName);
 
             var url = $"https://{regionNameFormated}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}?api_key={RiotAPI}";
 
-            var response = await this.clients.ReadMessage(url, RiotAPI);
+            var response = await this.clients.ReadMessageAsync(url, RiotAPI);
 
             var jsonString = await response.Content.ReadAsStringAsync();
 
@@ -112,9 +117,17 @@ namespace GameSpace.Services.Sumonners
             return summoner;
         }
 
-        public async Task Add(string userId, string accountId, string summonerName, int regionId, byte[] profileIcon)
+        public async Task AddAsync(
+            string userId,
+            string accountId,
+            string summonerName,
+            int regionId,
+            byte[] profileIcon)
         {
-            var user = GetUserQuery(userId).FirstOrDefault();
+            var user = await this.data
+                .Users
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
 
             var gameAccount = new GameAccount
             {
@@ -132,14 +145,20 @@ namespace GameSpace.Services.Sumonners
             await this.data.SaveChangesAsync();
         }
 
-        public async Task Refresh(string userId, string accountId, string summonerName, byte[] profileIcon)
+        public async Task RefreshAsync(
+            string userId,
+            string accountId,
+            string summonerName,
+            byte[] profileIcon)
         {
-            var gameAccount = GetUserQuery(userId)
-                            .Select(u => u
-                                        .GameAccounts
-                                        .Where(ga => ga.AccountId == accountId)
-                                        .FirstOrDefault())
-                            .FirstOrDefault();
+            var gameAccount = await this.data
+                .Users
+                .Where(u => u.Id == userId)
+                .Select(u => u
+                            .GameAccounts
+                            .Where(ga => ga.AccountId == accountId)
+                            .FirstOrDefault())
+                .FirstOrDefaultAsync();
 
             gameAccount.SummonerName = summonerName;
             gameAccount.Icon = profileIcon;
@@ -148,8 +167,10 @@ namespace GameSpace.Services.Sumonners
             await this.data.SaveChangesAsync();
         }
 
-        public SummonerServiceModel GetAccountByRegion(string userId, int regionId)
-            => GetGameAccountByUserAndRegionQuery(userId, regionId)
+        public async Task<SummonerServiceModel> GetAccountByRegionAsync(string userId, int regionId)
+            => await this.data
+                .GameAccounts
+                .Where(ga => ga.UserId == userId && ga.Region.Id == regionId)
                 .Select(ga => new SummonerServiceModel
                 {
                     Id = ga.Id,
@@ -160,62 +181,56 @@ namespace GameSpace.Services.Sumonners
                     Name = ga.SummonerName,
                     RegionName = ga.Region.Name
                 })
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
-        public string GetIdByRegion(string userId, int regionId)
-            => GetGameAccountByUserAndRegionQuery(userId, regionId)
-                .Select(ga => ga.AccountId)
-                .FirstOrDefault();
-
-        public bool AccountExistsByRegionId(string userId, int regionId)
-            => this.data
+        public async Task<string> GetIdByRegionAsync(string userId, int regionId)
+            => await this.data
                 .GameAccounts
-                .Any(ga => ga.UserId == userId && ga.Region.Id == regionId);
+                .Where(ga => ga.UserId == userId && ga.Region.Id == regionId)
+                .Select(ga => ga.AccountId)
+                .FirstOrDefaultAsync();
 
-        public bool AccountExists(string userId, string accountId)
-            => GetUserQuery(userId)
-                .Any(u => u
+        public async Task<bool> AccountExistsByRegionIdAsync(string userId, int regionId)
+            => await this.data
+                .GameAccounts
+                .AnyAsync(ga => ga.UserId == userId && ga.Region.Id == regionId);
+
+        public async Task<bool> AccountExistsAsync(string userId, string accountId)
+            => await this.data
+                .Users
+                .Where(u => u.Id == userId)
+                .AnyAsync(u => u
                         .GameAccounts
                         .Any(ga => ga.AccountId == accountId));
 
-        public bool AlreadyAdded(string summonerName, string regionName, string userId)
-            => GetUserQuery(userId)
-                .Any(u => u
+        public async Task<bool> AlreadyAddedAsync(string summonerName, string regionName, string userId)
+            => await this.data
+                .Users
+                .Where(u => u.Id == userId)
+                .AnyAsync(u => u
                         .GameAccounts
                         .Any(ga => ga.SummonerName == summonerName && ga.Region.Name == regionName));
 
-        public bool AlreadySummonerWithRegion(string userId, string regionName)
-            => this.data
+        public async Task<bool> AlreadySummonerWithRegionAsync(string userId, string regionName)
+            => await this.data
                 .GameAccounts
-                .Any(ga => ga.UserId == userId && ga.Region.Name == regionName);
+                .AnyAsync(ga => ga.UserId == userId && ga.Region.Name == regionName);
 
-        public bool IsVerifiedByRegion(string userId, int regionId)
-            => this.data
+        public async Task<bool> IsVerifiedByRegionAsync(string userId, int regionId)
+            => await this.data
                 .GameAccounts
-                .Any(ga => ga.UserId == userId && ga.Region.Id == regionId && ga.IsVerified == true);
+                .AnyAsync(ga => ga.UserId == userId && ga.Region.Id == regionId && ga.IsVerified == true);
 
-        public async Task Verify(string accountId)
+        public async Task VerifyAsync(string accountId)
         {
-            var account = this.data
+            var account = await this.data
                 .GameAccounts
                 .Where(ga => ga.AccountId == accountId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             account.IsVerified = true;
 
             await this.data.SaveChangesAsync();
         }
-
-        private IQueryable<GameAccount> GetGameAccountByUserAndRegionQuery(string userId, int regionId)
-            => this.data
-                .GameAccounts
-                .Where(ga => ga.UserId == userId && ga.Region.Id == regionId)
-                .AsQueryable();
-
-        private IQueryable<User> GetUserQuery(string userId)
-            => this.data
-            .Users
-            .Where(u => u.Id == userId)
-            .AsQueryable();
     }
 }
