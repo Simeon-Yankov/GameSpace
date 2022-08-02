@@ -134,7 +134,7 @@ namespace GameSpace.Services.Sumonners
                 AccountId = accountId,
                 SummonerName = summonerName,
                 Icon = profileIcon,
-                Region = this.regions.GetRegion(regionId),
+                Region = await this.regions.GetRegionAsync(regionId),
                 LastUpdated = DateTime.UtcNow
             };
 

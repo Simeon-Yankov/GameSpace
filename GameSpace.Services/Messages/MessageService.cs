@@ -8,6 +8,7 @@ using GameSpace.Data.Models;
 using GameSpace.Services.Messages.Contracts;
 using GameSpace.Services.Messages.Modles;
 using GameSpace.Services.Users.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameSpace.Services.Messages
 {
@@ -22,19 +23,20 @@ namespace GameSpace.Services.Messages
             this.users = users;
         }
 
-        public async Task Clear(int notificationId)
+        public async Task ClearAsync(int notificationId)
         {
-            var notification = this.data
+            var notification = await this.data
                  .Notifications
-                 .First(n => n.Id == notificationId && n.IsDeleted == false);
+                 .FirstAsync(n => n.Id == notificationId && n.IsDeleted == false);
 
             notification.IsDeleted = true;
 
             await this.data.SaveChangesAsync();
         }
 
-        public IEnumerable<NotificationMessageServiceModel> GetNotifications(string userId)
-            => this.data
+        public async Task<IEnumerable<NotificationMessageServiceModel>> GetNotificationsAsync(
+            string userId)
+            => await this.data
                 .Notifications
                 .Where(n => n.ReceiverId == userId && n.IsDeleted == false)
                 .Select(n => new NotificationMessageServiceModel
@@ -45,9 +47,11 @@ namespace GameSpace.Services.Messages
                     CreatedOn = n.CreatedOn,
                     IsDeleted = n.IsDeleted
                 })
-                .ToList();
+                .ToListAsync();
 
-        public async Task SendNotification(string reciverId, string message)
+        public async Task SendNotificationAsync(
+            string reciverId,
+            string message)
         {
             var notificaion = new Notification
             {
@@ -56,13 +60,14 @@ namespace GameSpace.Services.Messages
                 CreatedOn = DateTime.UtcNow
             };
 
-            this.data.Notifications.Add(notificaion);
+            await this.data.Notifications.AddAsync(notificaion);
             await this.data.SaveChangesAsync();
         }
 
-        public IEnumerable<TeamInvitationMessageServiceModel> TeamsInvitationBySender(string userId)
+        public async Task<IEnumerable<TeamInvitationMessageServiceModel>> TeamsInvitationBySenderAsync(
+            string userId)
         {
-            var teamsInvitation = this.data
+            var teamsInvitation = await this.data
                             .PendingTeamsRequests
                             .Where(request => request.SenderId == userId && request.IsDeleted == false)
                             .Select(request => new TeamInvitationMessageServiceModel
@@ -75,7 +80,7 @@ namespace GameSpace.Services.Messages
                                 IsSender = true
                             })
                             .OrderByDescending(t => t.CreatedOn)
-                            .ToList();
+                            .ToListAsync();
 
             foreach (var teamInitation in teamsInvitation)
             {
@@ -85,8 +90,9 @@ namespace GameSpace.Services.Messages
             return teamsInvitation;
         }
 
-        public IEnumerable<TeamInvitationMessageServiceModel> TeamsInvitationByReciver(string userId)
-            => this.data
+        public async Task<IEnumerable<TeamInvitationMessageServiceModel>> TeamsInvitationByReciverAsync(
+            string userId)
+            => await this.data
                 .PendingTeamsRequests
                 .Where(request => request.ReceiverId == userId && request.IsDeleted == false)
                 .Select(request => new TeamInvitationMessageServiceModel
@@ -98,11 +104,11 @@ namespace GameSpace.Services.Messages
                     CreatedOn = request.CreatedOn // TODO: maybe cast
                 })
                 .OrderByDescending(t => t.CreatedOn)
-                .ToList();
+                .ToListAsync();
 
-        public TeamInvitationMessageServiceModel Get(int id)
+        public async Task<TeamInvitationMessageServiceModel> GetAsync(int id)
         {
-            var requestData = this.data
+            var requestData = await this.data
                             .PendingTeamsRequests
                             .Where(request => request.Id == id && request.IsDeleted == false)
                             .Select(request => new TeamInvitationMessageServiceModel
@@ -112,7 +118,7 @@ namespace GameSpace.Services.Messages
                                 ReciverId = request.ReceiverId,
                                 TeamName = request.TeamName
                             })
-                            .FirstOrDefault();
+                            .FirstOrDefaultAsync();
 
             if (requestData is not null)
             {
@@ -122,21 +128,23 @@ namespace GameSpace.Services.Messages
             return requestData;
         }
 
-        public async Task Delete(int requestId)
+        public async Task DeleteAsync(int requestId)
         {
-            var requestData = this.data.PendingTeamsRequests.FirstOrDefault(ptr => ptr.Id == requestId);
+            var requestData = await this.data
+                .PendingTeamsRequests
+                .FirstOrDefaultAsync(ptr => ptr.Id == requestId);
 
             requestData.IsDeleted = true;
 
             await this.data.SaveChangesAsync();
         }
 
-        public async Task DeleteAllWithGivenTeamName(string teamName)
+        public async Task DeleteAllWithGivenTeamNameAsync(string teamName)
         {
-            var requests = this.data
+            var requests = await this.data
                             .PendingTeamsRequests
                             .Where(ptr => ptr.TeamName == teamName)
-                            .ToList();
+                            .ToListAsync();
 
             foreach (var request in requests)
             {
@@ -146,10 +154,10 @@ namespace GameSpace.Services.Messages
             await this.data.SaveChangesAsync();
         }
 
-        public bool IsRequestSend(string reciverId, string teamName)
+        public Task<bool> IsRequestSendAsync(string reciverId, string teamName)
             => this.data
                 .PendingTeamsRequests
                 .Where(request => request.IsDeleted == false)
-                .Any(request => request.TeamName == teamName && request.ReceiverId == reciverId);
+                .AnyAsync(request => request.TeamName == teamName && request.ReceiverId == reciverId);
     }
 }

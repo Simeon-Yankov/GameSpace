@@ -12,7 +12,7 @@ namespace GameSpace.Test.Mocks
             {
                 var mock = new Mock<IMessageService>();
 
-                mock.Setup(ms => ms.Clear(1));
+                mock.Setup(ms => ms.ClearAsync(1));
 
                 return mock.Object;
             }

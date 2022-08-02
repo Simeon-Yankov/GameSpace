@@ -36,9 +36,9 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
-            var regions = this.mapper.Map<List<SummonerRegionServiceModel>>(this.regions.AllRegions());
+            var regions = this.mapper.Map<List<SummonerRegionServiceModel>>(await this.regions.AllRegionsAsync());
 
             return View(new AddSummonerFormModel
             {
@@ -52,12 +52,12 @@ namespace GameSpace.Controllers
         {
             var riotApiKey = this.configuration.GetValue(typeof(string), "RiotApiKey");
 
-            if (!this.regions.RegionExists(summoner.RegionId))
+            if (!await this.regions.RegionExistsAsync(summoner.RegionId))
             {
                 this.ModelState.AddModelError(nameof(summoner.RegionId), $"Region does not exist.");
             }
 
-            var regionName = this.regions.GetRegionName(summoner.RegionId);
+            var regionName = await this.regions.GetRegionNameAsync(summoner.RegionId);
 
             if (await this.summoners.AlreadyAddedAsync(summoner.Name, regionName, this.User.Id()))
             {
@@ -78,7 +78,7 @@ namespace GameSpace.Controllers
 
             if (!this.ModelState.IsValid)
             {
-                summoner.Regions = this.mapper.Map<List<SummonerRegionServiceModel>>(this.regions.AllRegions());
+                summoner.Regions = this.mapper.Map<List<SummonerRegionServiceModel>>(await this.regions.AllRegionsAsync());
 
                 return View(summoner);
             }

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using GameSpace.Data;
 using GameSpace.Data.Models;
 using GameSpace.Services.Regions.Contracts;
 using GameSpace.Services.Regions.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameSpace.Services.Regions
 {
@@ -26,40 +28,43 @@ namespace GameSpace.Services.Regions
                 _ => "na1"
             };
 
-        public int GetRegionId(string regionNameFormated) 
-            => this.data
+        public async Task<int> GetRegionIdAsync(string regionNameFormated) 
+            => await this.data
                 .Regions
                 .Where(r => r.Name == regionNameFormated)
                 .Select(r => r.Id)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
-        public string GetRegionName(int regionId)
-            => GetRegionQueryable(regionId)
+        public async Task<string> GetRegionNameAsync(int regionId)
+            => (await this.data
+            .Regions
+            .Where(r => r.Id == regionId)
             .Select(r => new
             {
                 Name = r.Name
             })
-            .FirstOrDefault()
+            .FirstOrDefaultAsync())
             .Name;
 
-        public Region GetRegion(int regionId) => GetRegionQueryable(regionId).FirstOrDefault();
+        public async Task<Region> GetRegionAsync(int regionId)
+            => await this.data
+            .Regions
+            .Where(r => r.Id == regionId)
+            .FirstOrDefaultAsync();
 
-        public IEnumerable<RegionServiceModel> AllRegions()
-            => this.data
+        public async Task<IEnumerable<RegionServiceModel>> AllRegionsAsync()
+            => await this.data
                 .Regions
                 .Select(r => new RegionServiceModel 
                 { 
                     Id = r.Id,
                     Name = r.Name
                 })
-                .ToList();
+                .ToListAsync();
 
-        public bool RegionExists(int regionId) => this.data.Regions.Any(r => r.Id == regionId);
-
-        private IQueryable<Region> GetRegionQueryable(int regionId)
-            => this.data
+        public async Task<bool> RegionExistsAsync(int regionId)
+            => await this.data
             .Regions
-            .Where(r => r.Id == regionId)
-            .AsQueryable();
+            .AnyAsync(r => r.Id == regionId);
     }
 }

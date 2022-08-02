@@ -115,7 +115,7 @@ namespace GameSpace.Controllers
 
             var userId = this.User.Id();
 
-            var regionName = this.regions.GetRegionName(regionId);
+            var regionName = await this.regions.GetRegionNameAsync(regionId);
 
             if (!await this.summoners.AccountExistsByRegionIdAsync(userId, regionId))
             {
@@ -321,10 +321,10 @@ namespace GameSpace.Controllers
         //}
 
         [Authorize]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
             => View(new CreateTournamentFormModel
             {
-                Regions = this.regions.AllRegions(),
+                Regions = await this.regions.AllRegionsAsync(),
                 BracketTypes = this.tournaments.AllBracketTypes(),
                 MaximumTeamsFormats = this.tournaments.AllMaximumTeamsFormats(),
                 TeamSizes = this.tournaments.AllTeamSizes(),
@@ -336,7 +336,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Create(CreateTournamentFormModel tournament)
         {
-            if (!this.regions.RegionExists(tournament.RegionId))
+            if (!await this.regions.RegionExistsAsync(tournament.RegionId))
             {
                 this.ModelState.AddModelError(nameof(tournament.RegionId), "Region does not exist");
             }
@@ -377,7 +377,7 @@ namespace GameSpace.Controllers
             {
                 var tournamentForm = mapper.Map<CreateTournamentFormModel>(tournament);
 
-                tournamentForm.Regions = regions.AllRegions();
+                tournamentForm.Regions = await regions.AllRegionsAsync();
                 tournamentForm.BracketTypes = tournaments.AllBracketTypes();
                 tournamentForm.MaximumTeamsFormats = tournaments.AllMaximumTeamsFormats();
                 tournamentForm.TeamSizes = tournaments.AllTeamSizes();

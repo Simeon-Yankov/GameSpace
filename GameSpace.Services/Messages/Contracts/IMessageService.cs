@@ -7,22 +7,22 @@ namespace GameSpace.Services.Messages.Contracts
 {
     public interface IMessageService
     {
-        Task Clear(int notificationId);
+        Task ClearAsync(int notificationId);
 
-        IEnumerable<NotificationMessageServiceModel> GetNotifications(string userId);
+        Task<IEnumerable<NotificationMessageServiceModel>> GetNotificationsAsync(string userId);
 
-        Task SendNotification(string recipientId, string message);
+        Task SendNotificationAsync(string recipientId, string message);
 
-        IEnumerable<TeamInvitationMessageServiceModel> TeamsInvitationByReciver(string userId);
+        Task<IEnumerable<TeamInvitationMessageServiceModel>> TeamsInvitationByReciverAsync(string userId);
 
-        IEnumerable<TeamInvitationMessageServiceModel> TeamsInvitationBySender(string userId);
+        Task<IEnumerable<TeamInvitationMessageServiceModel>> TeamsInvitationBySenderAsync(string userId);
 
-        TeamInvitationMessageServiceModel Get(int id);
+        Task<TeamInvitationMessageServiceModel> GetAsync(int id);
 
-        Task Delete(int requestId);
+        Task DeleteAsync(int requestId);
 
-        Task DeleteAllWithGivenTeamName(string teamName);
+        Task DeleteAllWithGivenTeamNameAsync(string teamName);
 
-        bool IsRequestSend(string reciverId, string teamName);
+        Task<bool> IsRequestSendAsync(string reciverId, string teamName);
     }
 }

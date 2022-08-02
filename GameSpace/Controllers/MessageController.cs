@@ -27,14 +27,14 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
             //TODO: Friend requests..
             var userId = this.User.Id();
 
             var list = new List<MessageViewModel>(); //TODO: Not sure!
 
-            var invitationsSend = this.messages.TeamsInvitationBySender(userId);
+            var invitationsSend = await this.messages.TeamsInvitationBySenderAsync(userId);
 
             foreach (var request in invitationsSend)
             {
@@ -43,7 +43,7 @@ namespace GameSpace.Controllers
                 list.Add(view);
             }
 
-            var invitationsRecive = this.messages.TeamsInvitationByReciver(userId);
+            var invitationsRecive = await this.messages.TeamsInvitationByReciverAsync(userId);
 
             foreach (var request in invitationsRecive)
             {
@@ -52,7 +52,7 @@ namespace GameSpace.Controllers
                 list.Add(view);
             }
 
-            var notifications = this.messages.GetNotifications(userId);
+            var notifications = await this.messages.GetNotificationsAsync(userId);
 
             foreach (var notification in notifications)
             {
@@ -67,7 +67,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Clear(int notificationId)
         {
-            await this.messages.Clear(notificationId);
+            await this.messages.ClearAsync(notificationId);
 
             return RedirectToAction(nameof(MessageController.All));
         }

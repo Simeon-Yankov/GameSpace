@@ -109,7 +109,7 @@ namespace GameSpace.Controllers
 
             var teamName = await this.teams.GetName(teamId);
 
-            if (!this.messages.IsRequestSend(reciverId, teamName))
+            if (!await this.messages.IsRequestSendAsync(reciverId, teamName))
             {
                 await this.teams.SendInvitation(senderId, reciverId, teamName);
             }
@@ -120,7 +120,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> AcceptInvitation(int requestId)
         {
-            var messageData = this.messages.Get(requestId);
+            var messageData = await this.messages.GetAsync(requestId);
 
             if (messageData is null)
             {
@@ -148,7 +148,7 @@ namespace GameSpace.Controllers
                 await this.teams.AddMember(teamId, messageData.ReciverId);
             }
 
-            await this.messages.Delete(messageData.RequestId);
+            await this.messages.DeleteAsync(messageData.RequestId);
 
             await SendNotification(messageData, teamName);
 
@@ -158,7 +158,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> DeclineInvitation(int requestId)
         {
-            await this.messages.Delete(requestId);
+            await this.messages.DeleteAsync(requestId);
 
             return RedirectToAction(nameof(MessageController.All), "Message");
         }
@@ -317,9 +317,9 @@ namespace GameSpace.Controllers
 
             if (messageData.SenderId != ownerId)
             {
-                await this.messages.SendNotification(ownerId, message);
+                await this.messages.SendNotificationAsync(ownerId, message);
             }
-            await this.messages.SendNotification(messageData.SenderId, message);
+            await this.messages.SendNotificationAsync(messageData.SenderId, message);
         }
     }
 }

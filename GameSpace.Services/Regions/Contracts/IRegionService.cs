@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using GameSpace.Data.Models;
 using GameSpace.Services.Regions.Models;
@@ -9,14 +10,14 @@ namespace GameSpace.Services.Regions.Contracts
     {
         string FormatName(string regionName);
 
-        int GetRegionId(string regionNameFormated);
+        Task<int> GetRegionIdAsync(string regionNameFormated);
 
-        string GetRegionName(int regionId);
+        Task<string> GetRegionNameAsync(int regionId);
 
-        bool RegionExists(int regionId);
+        Task<bool> RegionExistsAsync(int regionId);
 
-        IEnumerable<RegionServiceModel> AllRegions();
+        Task<IEnumerable<RegionServiceModel>> AllRegionsAsync();
 
-        Region GetRegion(int regionId);
+        Task<Region> GetRegionAsync(int regionId);
     }
 }

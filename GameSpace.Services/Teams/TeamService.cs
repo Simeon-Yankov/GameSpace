@@ -234,7 +234,7 @@ namespace GameSpace.Services.Teams
             this.data.UsersTeams.RemoveRange(userTeamRelation);
             this.data.Teams.Remove(teamData);
 
-            await this.messages.DeleteAllWithGivenTeamName(teamData.Name);
+            await this.messages.DeleteAllWithGivenTeamNameAsync(teamData.Name);
             await this.data.SaveChangesAsync();
         }
 
