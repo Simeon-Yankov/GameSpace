@@ -43,41 +43,41 @@ namespace GameSpace.Services.Users
 
         public UserProfileServiceModel Profile(string userId) 
             => this.data
-               .Users
-               .Where(u => u.Id == userId)
-            .Select(u => new UserProfileServiceModel
-            {
-                Id = u.Id,
-                Nickname = u.Nickname,
-                Biography = u.ProfileInfo.Biography,
-                CreatedOn = u.CreatedOn,
-                Appearance = new AppearanceServiceModel
+                .Users
+                .Where(u => u.Id == userId)
+                .Select(u => new UserProfileServiceModel
                 {
-                    Image = u.ProfileInfo.Appearance.Image,
-                    Banner = u.ProfileInfo.Appearance.Banner
-                },
-                SocialNetwork = new SocialNotworkServiceModel
-                {
-                    FacebookUrl = u.ProfileInfo.SocialNetwork.FacebookUrl,
-                    YoutubeUrl = u.ProfileInfo.SocialNetwork.YoutubeUrl,
-                    TwitchUrl = u.ProfileInfo.SocialNetwork.TwitchUrl,
-                    TwitterUrl = u.ProfileInfo.SocialNetwork.TwitterUrl,
-                },
-                GameAccounts = u.
-                                GameAccounts
-                                .Select(ga => new SummonerServiceModel
-                                {
-                                    Id = ga.Id,
-                                    Name = ga.SummonerName,
-                                    Icon = ga.Icon,
-                                    RegionName = ga.Region.Name,
-                                    AccountId = ga.AccountId,
-                                    LastUpdate = DateTime.UtcNow,
-                                    LastUpdateDiff = DateTime.UtcNow.Subtract(ga.LastUpdated),
-                                    IsVerified = ga.IsVerified
-                                })
-            })
-            .FirstOrDefault();
+                    Id = u.Id,
+                    Nickname = u.Nickname,
+                    Biography = u.ProfileInfo.Biography,
+                    CreatedOn = u.CreatedOn,
+                    Appearance = new AppearanceServiceModel
+                    {
+                        Image = u.ProfileInfo.Appearance.Image,
+                        Banner = u.ProfileInfo.Appearance.Banner
+                    },
+                    SocialNetwork = new SocialNotworkServiceModel
+                    {
+                        FacebookUrl = u.ProfileInfo.SocialNetwork.FacebookUrl,
+                        YoutubeUrl = u.ProfileInfo.SocialNetwork.YoutubeUrl,
+                        TwitchUrl = u.ProfileInfo.SocialNetwork.TwitchUrl,
+                        TwitterUrl = u.ProfileInfo.SocialNetwork.TwitterUrl,
+                    },
+                    GameAccounts = u.
+                                    GameAccounts
+                                    .Select(ga => new SummonerServiceModel
+                                    {
+                                        Id = ga.Id,
+                                        Name = ga.SummonerName,
+                                        Icon = ga.Icon,
+                                        RegionName = ga.Region.Name,
+                                        AccountId = ga.AccountId,
+                                        LastUpdate = ga.LastUpdated,
+                                        LastUpdateDiff = DateTime.UtcNow.Subtract(ga.LastUpdated),
+                                        IsVerified = ga.IsVerified
+                                    })
+                })
+                .FirstOrDefault();
 
         public async Task Edit(
             string userId,

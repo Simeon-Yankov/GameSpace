@@ -74,7 +74,7 @@
                             {
                                 <p class="card-text text-danger"><strong>Not Verified</strong></p>
                             }
-                            <a asp-controller="Summoner" asp-action="Refresh" asp-route-accountId="@gameAccount.AccountId" asp-route-regionName="@gameAccount.RegionName" asp-route-userId="@Model.Id" asp-route-timer="@gameAccount.LastUpdate" class="btn btn-outline-success m-1">Refresh</a>
+                            <a asp-controller="Summoner" asp-action="Refresh" asp-route-accountId="@gameAccount.AccountId" asp-route-regionName="@gameAccount.RegionName" asp-route-userId="@Model.Id" asp-route-timer="@gameAccount.LastUpdate.ToString("u")" class="btn btn-outline-success m-1">Refresh</a>
                             @if (Model.Id == this.User.Id())
                             {
                                 @if (!gameAccount.IsVerified)
