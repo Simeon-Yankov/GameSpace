@@ -23,19 +23,19 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Profile(string userId = null)
+        public async Task<IActionResult> Profile(string userId = null)
         {
             userId ??= this.User.Id();
 
-            var profileData = this.users.Profile(userId);
+            var profileData = await this.users.Profile(userId);
 
             return View(profileData);
         }
 
         [Authorize]
-        public IActionResult Edit(string id)
+        public async Task<IActionResult> Edit(string id)
         {
-            var profileData = this.users.Profile(id);
+            var profileData = await this.users.Profile(id);
 
             var profileForm = this.mapper.Map<EditUserFormModel>(profileData);
 
@@ -46,12 +46,14 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(EditUserFormModel profile)
         {
-            if (!this.users.ExcistsById(profile.Id))
+            if (!await this.users.ExcistsByIdAsync(profile.Id))
             {
                 return BadRequest();
             }
 
-            if (this.users.ExcistsWantedName(this.users.GetNickname(profile.Id), profile.Nickname))
+            var nickname = await this.users.GetNicknameAsync(profile.Id);
+
+            if (await this.users.ExcistsWantedNameAsync(nickname, profile.Nickname))
             {
                 this.ModelState.AddModelError(nameof(profile.Nickname), "There is already a user with this given name.");
             }

@@ -13,9 +13,9 @@ namespace GameSpace.Services.Tournaments.Contracts
     {
         Task CheckInParticipant(int tournamentId, int teamId, string userId);
 
-        TournamentServiceModel Details(int tournamentId);
+        Task<TournamentServiceModel> DetailsAsync(int tournamentId);
 
-        AllTournamentsServiceModel AllUpcomingTournaments(
+        Task<AllTournamentsServiceModel> AllUpcomingTournamentsAsync(
             int daysFromNow = default,
             int daysToNow = MaxDifferenceDaysInSchedule,
             string orderBy = "date",
@@ -25,33 +25,19 @@ namespace GameSpace.Services.Tournaments.Contracts
             string searchTerm = null,
             TournamentSorting sorting = 0);
 
-        IEnumerable<IdNamePairTeamServiceModel> CheckedInTeamsKvp(int tournamentId);
+        Task<IEnumerable<IdNamePairTeamServiceModel>> CheckedInTeamsKvpAsync(int tournamentId);
 
-        IEnumerable<TeamServiceModel> CheckedInTeams(int tournamentId);
+        Task<IEnumerable<TeamServiceModel>> CheckedInTeamsAsync(int tournamentId);
 
-        IEnumerable<TeamServiceModel> TournamentParticipants(int tournamentId);
+        Task<IEnumerable<TeamServiceModel>> TournamentParticipants(int tournamentId);
 
-        IEnumerable<RegisteredMemberServiceModel> RegisteredMembers(int tournamentTeamId);
+        Task<IEnumerable<RegisteredMemberServiceModel>> RegisteredMembersAsync(int tournamentTeamId);
 
-        IEnumerable<RegisteredMemberServiceModel> RegisteredMembers(int tournamentId, int teamId);
+        Task<IEnumerable<RegisteredMemberServiceModel>> RegisteredMembersAsync(int tournamentId, int teamId);
 
-        string GetBracketType(int bracketType);
+        Task<int> GetHosterIdAsync(string userId);
 
-        int GetCapacity(int capacityId);
-
-        public string GetFormat(int formatId);
-
-        string GetMapName(int mapId);
-
-        string GetModeName(int modeId);
-
-        string GetHosterName(int hosterId);
-
-        int GetHosterId(string userId);
-
-        string GetInformation(int id);
-
-        string GetRegionName(int regionId);
+        Task<string> GetInformationAsync(int id);
 
         Task AddInPending(
             string name,
@@ -76,38 +62,38 @@ namespace GameSpace.Services.Tournaments.Contracts
 
         Task Unverify(int tournamentId);
 
-        int GetTeamSize(int tournamentId);
+        Task<int> GetTeamSizeAsync(int tournamentId);
 
-        bool IsHoster(string userId, string hosterName);
+        Task<bool> IsHosterAsync(string userId, string hosterName);
 
-        bool IsFull(int tournamentId);
+        Task<bool> IsFullAsync(int tournamentId);
 
-        bool IsTeamAlreadyRegistered(int tournamentId , int teamId);
+        Task<bool> IsTeamAlreadyRegisteredAsync(int tournamentId , int teamId);
 
-        bool IsTeamChecked(int tournamentId, int registeredTeamId);
+        Task<bool> IsTeamCheckedAsync(int tournamentId, int registeredTeamId);
 
-        bool HasAlreadyStarted(int tournamentId);
+        Task<bool> HasAlreadyStartedAsync(int tournamentId);
 
-        bool BracketTypeExists(int bracketTypeId);
+        Task<bool> BracketTypeExistsAsync(int bracketTypeId);
 
-        bool MapExists(int mapId);
+        Task<bool> MapExistsAsync(int mapId);
 
-        bool MaximumTeamsExists(int maximumTeamsId);
+        Task<bool> MaximumTeamsExistsAsync(int maximumTeamsId);
 
-        bool ModeExists(int modeId);
+        Task<bool> ModeExistsAsync(int modeId);
 
-        bool TeamSizeExists(int teamSizeId);
+        Task<bool> TeamSizeExistsAsync(int teamSizeId);
 
-        bool IsUserChecked(int tournamentId, int teamId, string userId);
+        Task<bool> IsUserCheckedAsync(int tournamentId, int teamId, string userId);
 
-        IEnumerable<BracketTypeServiceModel> AllBracketTypes();
+        Task<IEnumerable<BracketTypeServiceModel>> AllBracketTypesAsync();
 
-        IEnumerable<MapServiceModel> AllMaps();
+        Task<IEnumerable<MapServiceModel>> AllMapsAsync();
 
-        IEnumerable<MaximumTeamsFormatServiceModle> AllMaximumTeamsFormats();
+        Task<IEnumerable<MaximumTeamsFormatServiceModle>> AllMaximumTeamsFormatsAsync();
 
-        IEnumerable<ModeServiceModel> AllModes();
+        Task<IEnumerable<ModeServiceModel>> AllModesAsync();
 
-        IEnumerable<TeamSizeServiceModel> AllTeamSizes();
+        Task<IEnumerable<TeamSizeServiceModel>> AllTeamSizesAsync();
     }
 }

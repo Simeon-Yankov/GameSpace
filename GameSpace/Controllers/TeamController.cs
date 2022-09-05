@@ -73,7 +73,7 @@ namespace GameSpace.Controllers
                 return BadRequest(); // invalid operation exception
             }
 
-            if (!this.users.ExcistsByNickname(model.Nickname))
+            if (!await this.users.ExcistsByNicknameAsync(model.Nickname))
             {
                 this.ModelState.AddModelError(nameof(model.Nickname), "There is no existing user with the given name.");
             }
@@ -95,7 +95,7 @@ namespace GameSpace.Controllers
                 this.ModelState.AddModelError(nameof(model.Nickname), $"Team is already full."); //TODO: maybe do it in summary or redirect to other page
             }
 
-            var reciverId = this.users.Id(model.Nickname);
+            var reciverId = await this.users.Id(model.Nickname);
 
             if (await this.teams.IsMemberInTeam(teamId, reciverId))
             {
@@ -195,7 +195,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> PromoteToOwner(int teamId, string memberId)
         {
-            if (!this.users.ExcistsById(memberId)) //TODO: when you del you acc
+            if (!await this.users.ExcistsByIdAsync(memberId)) //TODO: when you del you acc
             {
                 return RedirectToAction(nameof(TeamController.Memberships), "Team"); //TODO: maybe throw bad request 3x
             }

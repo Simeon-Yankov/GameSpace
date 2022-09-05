@@ -53,11 +53,11 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Administration(int tournamentId)
+        public async Task<IActionResult> Administration(int tournamentId)
         {
-            var detailsService = this.tournaments.Details(tournamentId);
+            var detailsService = await this.tournaments.DetailsAsync(tournamentId);
 
-            var nickname = this.users.GetNickname(this.User.Id());
+            var nickname = await this.users.GetNicknameAsync(this.User.Id());
 
             var isHoster = nickname != detailsService.HosterName;
 
@@ -71,9 +71,9 @@ namespace GameSpace.Controllers
                 return BadRequest();
             }
 
-            var checkedInTeams = this.tournaments.CheckedInTeams(tournamentId);
+            var checkedInTeams = await this.tournaments.CheckedInTeamsAsync(tournamentId);
 
-            var checkedInTeamsIdNamePair = this.tournaments.CheckedInTeamsKvp(tournamentId);
+            var checkedInTeamsIdNamePair = await this.tournaments.CheckedInTeamsKvpAsync(tournamentId);
 
             var teamsSeeds = algorithms.SingleEliminationFirstRoundSeeds(checkedInTeamsIdNamePair.OrderBy(t => t.Id).ToList());
 
@@ -143,7 +143,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Details(int tournamentId)
         {
-            var tournament = this.tournaments.Details(tournamentId);
+            var tournament = await this.tournaments.DetailsAsync(tournamentId);
 
             if (tournament.IsVerified == false)
             {
@@ -157,7 +157,7 @@ namespace GameSpace.Controllers
 
             var tournamentsView = this.mapper.Map<TournamentViewModel>(tournament);
 
-            tournamentsView.Participants = this.tournaments.TournamentParticipants(tournamentId);
+            tournamentsView.Participants = await this.tournaments.TournamentParticipants(tournamentId);
 
             var isUserAlreadyRegistered = await IsUserAlreadyRegistered(tournamentId);
 
@@ -165,14 +165,17 @@ namespace GameSpace.Controllers
             {
                 var registeredTeamId = GetRegistratedTeam(tournamentId).Id;
 
-                tournamentsView.IsTeamChecked = this.tournaments.IsTeamChecked(tournamentId, registeredTeamId);
+                tournamentsView.IsTeamChecked = await this.tournaments.IsTeamCheckedAsync(tournamentId, registeredTeamId);
 
-                tournamentsView.IsUserChecked = this.tournaments.IsUserChecked(tournamentId, registeredTeamId, this.User.Id());
+                tournamentsView.IsUserChecked = await this.tournaments.IsUserCheckedAsync(
+                    tournamentId,
+                    registeredTeamId,
+                    this.User.Id());
             }
 
             tournamentsView.IsRegistrated = isUserAlreadyRegistered;
 
-            tournamentsView.IsHoster = this.tournaments.IsHoster(this.User.Id(), tournamentsView.HosterName);
+            tournamentsView.IsHoster = await this.tournaments.IsHosterAsync(this.User.Id(), tournamentsView.HosterName);
 
             return View(tournamentsView);
         }
@@ -226,7 +229,7 @@ namespace GameSpace.Controllers
                 dic.Add(members[i], listIsSelected[i]);
             }
 
-            var teamSize = this.tournaments.GetTeamSize(tournamentId);
+            var teamSize = await this.tournaments.GetTeamSizeAsync(tournamentId);
 
             var owner = members.Where(k => k.IsMemberOwner == true).FirstOrDefault();
 
@@ -257,11 +260,11 @@ namespace GameSpace.Controllers
             {
                 this.ModelState.AddModelError("All", "Team does not exists.");
             }
-            else if (this.tournaments.IsFull(tournamentId))
+            else if (await this.tournaments.IsFullAsync(tournamentId))
             {
                 this.ModelState.AddModelError("All", "Tournament is full.");
             }
-            else if (!this.tournaments.HasAlreadyStarted(tournamentId))
+            else if (!await this.tournaments.HasAlreadyStartedAsync(tournamentId))
             {
                 this.ModelState.AddModelError("All", "The event has already started.");
             }
@@ -297,9 +300,9 @@ namespace GameSpace.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        public IActionResult Upcoming([FromQuery] AllTournamentsQueryModel query)
+        public async Task<IActionResult> Upcoming([FromQuery] AllTournamentsQueryModel query)
         {
-            var tournamentsService = this.tournaments.AllUpcomingTournaments(
+            var tournamentsService = await this.tournaments.AllUpcomingTournamentsAsync(
                 onlyVerified: true,
                 searchTerm: query.SearchTerm,
                 currentPage: query.CurrentPage,
@@ -325,11 +328,11 @@ namespace GameSpace.Controllers
             => View(new CreateTournamentFormModel
             {
                 Regions = await this.regions.AllRegionsAsync(),
-                BracketTypes = this.tournaments.AllBracketTypes(),
-                MaximumTeamsFormats = this.tournaments.AllMaximumTeamsFormats(),
-                TeamSizes = this.tournaments.AllTeamSizes(),
-                Maps = this.tournaments.AllMaps(),
-                Modes = this.tournaments.AllModes()
+                BracketTypes = await this.tournaments.AllBracketTypesAsync(),
+                MaximumTeamsFormats = await this.tournaments.AllMaximumTeamsFormatsAsync(),
+                TeamSizes = await this.tournaments.AllTeamSizesAsync(),
+                Maps = await this.tournaments.AllMapsAsync(),
+                Modes = await this.tournaments.AllModesAsync()
             });
 
         [HttpPost]
@@ -341,22 +344,22 @@ namespace GameSpace.Controllers
                 this.ModelState.AddModelError(nameof(tournament.RegionId), "Region does not exist");
             }
 
-            if (!tournaments.BracketTypeExists(tournament.BracketTypeId))
+            if (!await tournaments.BracketTypeExistsAsync(tournament.BracketTypeId))
             {
                 this.ModelState.AddModelError(nameof(tournament.BracketTypeId), "Bracket Type does not exist");
             }
 
-            if (!tournaments.MapExists(tournament.MapId))
+            if (!await tournaments.MapExistsAsync(tournament.MapId))
             {
                 this.ModelState.AddModelError(nameof(tournament.MapId), "Map does not exist");
             }
 
-            if (!tournaments.ModeExists(tournament.ModeId))
+            if (!await tournaments.ModeExistsAsync(tournament.ModeId))
             {
                 this.ModelState.AddModelError(nameof(tournament.ModeId), "Mode does not exist");
             }
 
-            if (!this.tournaments.TeamSizeExists(tournament.TeamSizeId))
+            if (!await this.tournaments.TeamSizeExistsAsync(tournament.TeamSizeId))
             {
                 this.ModelState.AddModelError(nameof(tournament.TeamSizeId), "Team Size does not exist");
             }
@@ -375,14 +378,14 @@ namespace GameSpace.Controllers
 
             if (!this.ModelState.IsValid)
             {
-                var tournamentForm = mapper.Map<CreateTournamentFormModel>(tournament);
+                var tournamentForm = mapper.Map<CreateTournamentFormModel>(tournament); //TODO: Make Custom map logic
 
                 tournamentForm.Regions = await regions.AllRegionsAsync();
-                tournamentForm.BracketTypes = tournaments.AllBracketTypes();
-                tournamentForm.MaximumTeamsFormats = tournaments.AllMaximumTeamsFormats();
-                tournamentForm.TeamSizes = tournaments.AllTeamSizes();
-                tournamentForm.Maps = tournaments.AllMaps();
-                tournamentForm.Modes = tournaments.AllModes();
+                tournamentForm.BracketTypes = await tournaments.AllBracketTypesAsync();
+                tournamentForm.MaximumTeamsFormats = await tournaments.AllMaximumTeamsFormatsAsync();
+                tournamentForm.TeamSizes = await tournaments.AllTeamSizesAsync();
+                tournamentForm.Maps = await tournaments.AllMapsAsync();
+                tournamentForm.Modes = await tournaments.AllModesAsync();
                 tournamentForm.StartsOn = StartOfTournament;
 
                 return View(tournamentForm);
@@ -417,7 +420,7 @@ namespace GameSpace.Controllers
                 userId = this.User.Id();
             }
 
-            var participants = this.tournaments.TournamentParticipants(tournamentId);
+            var participants = await this.tournaments.TournamentParticipants(tournamentId);
 
             var memberships = await this.teams.UserMemberships(userId);
 
