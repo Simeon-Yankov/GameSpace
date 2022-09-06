@@ -29,7 +29,7 @@ namespace GameSpace.Services.Tournaments.Contracts
 
         Task<IEnumerable<TeamServiceModel>> CheckedInTeamsAsync(int tournamentId);
 
-        Task<IEnumerable<TeamServiceModel>> TournamentParticipants(int tournamentId);
+        Task<IEnumerable<TeamServiceModel>> TournamentParticipantsAsync(int tournamentId);
 
         Task<IEnumerable<RegisteredMemberServiceModel>> RegisteredMembersAsync(int tournamentTeamId);
 

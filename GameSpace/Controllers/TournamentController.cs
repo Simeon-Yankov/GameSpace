@@ -99,7 +99,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> CheckIn(int tournamentId, int regionId)
         {
-            var team = GetRegistratedTeam(tournamentId);
+            var team = await GetRegistratedTeamAsync(tournamentId);
 
             int teamId = default;
 
@@ -157,19 +157,19 @@ namespace GameSpace.Controllers
 
             var tournamentsView = this.mapper.Map<TournamentViewModel>(tournament);
 
-            tournamentsView.Participants = await this.tournaments.TournamentParticipants(tournamentId);
+            tournamentsView.Participants = await this.tournaments.TournamentParticipantsAsync(tournamentId);
 
-            var isUserAlreadyRegistered = await IsUserAlreadyRegistered(tournamentId);
+            var isUserAlreadyRegistered = await IsUserAlreadyRegisteredAsync(tournamentId);
 
             if (isUserAlreadyRegistered)
             {
-                var registeredTeamId = GetRegistratedTeam(tournamentId).Id;
+                var registeredTeam = await GetRegistratedTeamAsync(tournamentId);
 
-                tournamentsView.IsTeamChecked = await this.tournaments.IsTeamCheckedAsync(tournamentId, registeredTeamId);
+                tournamentsView.IsTeamChecked = await this.tournaments.IsTeamCheckedAsync(tournamentId, registeredTeam.Id);
 
                 tournamentsView.IsUserChecked = await this.tournaments.IsUserCheckedAsync(
                     tournamentId,
-                    registeredTeamId,
+                    registeredTeam.Id,
                     this.User.Id());
             }
 
@@ -247,7 +247,7 @@ namespace GameSpace.Controllers
             {
                 if (dic[member] == true)
                 {
-                    if (await IsUserAlreadyRegistered(tournamentId, member.Id))
+                    if (await IsUserAlreadyRegisteredAsync(tournamentId, member.Id))
                     {
                         var message = member.Id == this.User.Id() ? "You are already registrated." : $"'{member.Nickname}' is already registrated in the Tournament.";
 
@@ -420,14 +420,14 @@ namespace GameSpace.Controllers
                 userId = this.User.Id();
             }
 
-            var participants = await this.tournaments.TournamentParticipants(tournamentId);
+            var participants = await this.tournaments.TournamentParticipantsAsync(tournamentId);
 
             var memberships = await this.teams.UserMemberships(userId);
 
             return (participants, memberships);
         }
 
-        private async Task<TeamServiceModel> GetRegistratedTeam(int tournamentId)
+        private async Task<TeamServiceModel> GetRegistratedTeamAsync(int tournamentId)
         {
             var (participants, memberships) = await GetParticipantsAndMemberships(tournamentId);
 
@@ -450,7 +450,7 @@ namespace GameSpace.Controllers
             return teamService;
         }
 
-        private async Task<bool> IsUserAlreadyRegistered(int tournamentId, string userId = null)
+        private async Task<bool> IsUserAlreadyRegisteredAsync(int tournamentId, string userId = null)
         {
             if (userId is null)
             {

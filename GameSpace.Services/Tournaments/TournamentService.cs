@@ -243,7 +243,7 @@ namespace GameSpace.Services.Tournaments
                 .FirstOrDefaultAsync())
                 .CheckedInTeams;
 
-        public async Task<IEnumerable<TeamServiceModel>> TournamentParticipants(int tournamentId)
+        public async Task<IEnumerable<TeamServiceModel>> TournamentParticipantsAsync(int tournamentId)
             => (await this.data
                 .TeamsTournaments
                 .Where(tt => tt.Id == tournamentId)
