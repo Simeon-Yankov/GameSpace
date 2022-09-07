@@ -9,3 +9,8 @@ GameSpace is a tournament platform for the video game "League of Legends". You c
 - Entity Framework
 - SQL Server
 - Bootstrap
+
+# How To Run
+To properly work you need to update the API key from the administrator account - https://localhost:44331/Admin/API/Update
+Email: admin@gmail.com (fake email)
+Password: GodLovesTheBraves
