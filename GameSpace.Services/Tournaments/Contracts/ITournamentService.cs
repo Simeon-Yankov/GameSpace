@@ -58,9 +58,9 @@ namespace GameSpace.Services.Tournaments.Contracts
 
         Task RegisterTeam(int tournamentId, int teamId, IEnumerable<string> usersId);
 
-        Task Verify(int tournamentId);
+        Task VerifyAsync(int tournamentId);
 
-        Task Unverify(int tournamentId);
+        Task UnverifyAsync(int tournamentId);
 
         Task<int> GetTeamSizeAsync(int tournamentId);
 

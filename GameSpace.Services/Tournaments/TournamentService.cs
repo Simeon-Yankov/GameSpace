@@ -100,7 +100,10 @@ namespace GameSpace.Services.Tournaments
                     })
                     .FirstOrDefaultAsync();
 
-            details.StartsInMessage = GetStartsInMessage(details.StartsOn);
+            if (details != null)
+            {
+                details.StartsInMessage = GetStartsInMessage(details.StartsOn);
+            }
 
             return details;
         }
@@ -432,7 +435,7 @@ namespace GameSpace.Services.Tournaments
             await this.data.SaveChangesAsync();
         }
 
-        public async Task Verify(int tournamentId)
+        public async Task VerifyAsync(int tournamentId)
         {
             var tournamentData = await this.data
                     .TeamsTournaments
@@ -444,7 +447,7 @@ namespace GameSpace.Services.Tournaments
             await this.data.SaveChangesAsync();
         }
 
-        public async Task Unverify(int tournamentId)
+        public async Task UnverifyAsync(int tournamentId)
         {
             var tournamentData = await this.data
                     .TeamsTournaments

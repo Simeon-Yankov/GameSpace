@@ -43,14 +43,14 @@ namespace GameSpace.Areas.Admin.Controllers
 
         public async Task<IActionResult> Verify(int tournamentId)
         {
-            await this.tournaments.Verify(tournamentId);
+            await this.tournaments.VerifyAsync(tournamentId);
 
             return RedirectToAction(nameof(All));
         }
 
         public async Task<IActionResult> UnVerify(int tournamentId)
         {
-            await this.tournaments.Unverify(tournamentId);
+            await this.tournaments.UnverifyAsync(tournamentId);
 
             return RedirectToAction(nameof(All));
         }

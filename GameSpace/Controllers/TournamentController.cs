@@ -59,17 +59,17 @@ namespace GameSpace.Controllers
 
             var nickname = await this.users.GetNicknameAsync(this.User.Id());
 
-            var isHoster = nickname != detailsService.HosterName;
+            var isHoster = nickname == detailsService.HosterName;
 
-            if (isHoster)
+            if (!isHoster)
             {
                 return BadRequest();
             }
 
-            if (!detailsService.HasBegun) //TODO: VERY IMPORTANT FOR TESTING PUR
-            {
-                return BadRequest();
-            }
+            //if (!detailsService.HasBegun) //TODO: VERY IMPORTANT FOR TESTING PUR
+            //{
+            //    return BadRequest();
+            //}
 
             var checkedInTeams = await this.tournaments.CheckedInTeamsAsync(tournamentId);
 
@@ -77,14 +77,14 @@ namespace GameSpace.Controllers
 
             var teamsSeeds = algorithms.SingleEliminationFirstRoundSeeds(checkedInTeamsIdNamePair.OrderBy(t => t.Id).ToList());
 
-            teamsSeeds.TeamsSeeds[3].IsEliminated = true;
-            teamsSeeds.TeamsSeeds[1].IsEliminated = true;
+            //teamsSeeds.TeamsSeeds[3].IsEliminated = true;
+            //teamsSeeds.TeamsSeeds[1].IsEliminated = true;
 
-            teamsSeeds = this.algorithms.SingleEliminationSecondRound(teamsSeeds);
+            //teamsSeeds = this.algorithms.SingleEliminationSecondRound(teamsSeeds);
 
-            teamsSeeds.TeamsSeeds[0].IsEliminated = true;
+            //teamsSeeds.TeamsSeeds[0].IsEliminated = true;
 
-            teamsSeeds = this.algorithms.SingleEliminationThirdRound(teamsSeeds);
+            //teamsSeeds = this.algorithms.SingleEliminationThirdRound(teamsSeeds);
 
             return View(new AdministrationTournamentViewModel
             {
