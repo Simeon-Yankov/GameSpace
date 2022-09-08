@@ -60,8 +60,9 @@ namespace GameSpace.Controllers
             var nickname = await this.users.GetNicknameAsync(this.User.Id());
 
             var isHoster = nickname == detailsService.HosterName;
+            var isAdmin = this.User.IsAdmin();
 
-            if (!isHoster)
+            if (!isHoster && !isAdmin)
             {
                 return BadRequest();
             }
