@@ -2,13 +2,15 @@
 
 @{
     ViewData["Title"] = "Tournament Administration";
+
+    int counter = 0;
 }
 
 <div class="row">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
         <h1 class="text-center">Tournament Administration</h1>
         <br />
-        <table class="table table-striped w-50 p-3 table-mable" >
+        <table class="table table-striped w-50 p-3 table-mable">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col" class="text-center"><a class="btn btn-outline-dark">Round One</a></th>
@@ -17,29 +19,36 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 1; i <= Model.TeamSeeds.TeamsSeeds.Count() / 2; i++)
+                @foreach (var team in Model.TeamSeeds.TeamsSeeds)
                 {
-                    var team = Model.TeamSeeds.TeamsSeeds;
-                    <tr>
-                        <td scope="col" class="text-center"><a asp-area="Admin" asp-controller="Tournament" asp-action="All" asp-route-orderBy="name" class="btn btn-primary">@team[i - 1].teamIdNamePair.Name</a></td>
-                        <td scope="col" class="text-center"></td>
-                        <td scope="col" class="text-center"></td>
-                    </tr>
-                    <tr>
-                        <td scope="col" class="text-center">Vs</td>
-                        <td scope="col" class="text-center">Winner</td>
-                        <td scope="col" class="text-center"></td>
-                    </tr>
-                    <tr>
-                        <td scope="col" class="text-center"><a asp-area="Admin" asp-controller="Tournament" asp-action="All" asp-route-orderBy="name" class="btn btn-danger">@(@team[i] is null ? "Empty" : team[i].teamIdNamePair.Name)</a></td>
-                        <td scope="col" class="text-center"></td>
-                        <td scope="col" class="text-center"></td>
-                    </tr>
-                    <tr class="thd">
-                        <td scope="col" class="text-center"></td>
-                        <td scope="col" class="text-center"></td>
-                        <td scope="col" class="text-center"></td>
-                    </tr>
+                    if (counter % 2 == 0)
+                    {
+                        <tr>
+                            <td scope="col" class="text-center"><a asp-area="Admin" asp-controller="Tournament" asp-action="All" asp-route-orderBy="name" class="btn btn-primary">@team.teamIdNamePair.Name</a></td>
+                            <td scope="col" class="text-center"></td>
+                            <td scope="col" class="text-center"></td>
+                        </tr>
+                        <tr>
+                            <td scope="col" class="text-center">Vs</td>
+                            <td scope="col" class="text-center">Winner</td>
+                            <td scope="col" class="text-center"></td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td scope="col" class="text-center"><a asp-area="Admin" asp-controller="Tournament" asp-action="All" asp-route-orderBy="name" class="btn btn-danger">@(@team is null ? "Empty" : team.teamIdNamePair.Name)</a></td>
+                            <td scope="col" class="text-center"></td>
+                            <td scope="col" class="text-center"></td>
+                        </tr>
+                        <tr class="thd">
+                            <td scope="col" class="text-center"></td>
+                            <td scope="col" class="text-center"></td>
+                            <td scope="col" class="text-center"></td>
+                        </tr>
+                    }
+
+                    counter++;
                 }
             </tbody>
         </table>

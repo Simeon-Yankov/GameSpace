@@ -7,14 +7,14 @@ namespace GameSpace.Services.HttpClients.Contracts
 {
     public interface IClientService
     {
-        APIServiceModel GetAPI(string key);
+        Task<APIServiceModel> GetAPIAsync(string key);
 
-        Task AddAPI(string key, string value);
+        Task AddAPIAsync(string key, string value);
 
-        Task UpdateAPI(string key, string value);
+        Task UpdateAPIAsync(string key, string value);
 
-        Task<HttpResponseMessage> ReadMessage(string url, string apiKey = null);
+        Task<HttpResponseMessage> ReadMessageAsync(string url, string apiKey = null);
 
-        Task<byte[]> ReadByteArray(string url, string apiKey = null);
+        Task<byte[]> ReadByteArrayAsync(string url, string apiKey = null);
     }
 }

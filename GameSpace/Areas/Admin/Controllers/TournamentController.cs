@@ -22,18 +22,18 @@ namespace GameSpace.Areas.Admin.Controllers
             this.mapper = mapper;
         }
 
-        public IActionResult All(string orderBy = "date")
+        public async Task<IActionResult> All(string orderBy = "date")
         {
-            var tournamentsData = this.tournaments.AllUpcomingTournaments(orderBy: orderBy);
+            var tournamentsData = await this.tournaments.AllUpcomingTournamentsAsync(orderBy: orderBy);
 
             var tournamentsForm = mapper.Map<AllTournamentsQueryModel>(tournamentsData);
 
             return View(tournamentsForm);
         }
 
-        public IActionResult Information(int tournamentId)
+        public async Task<IActionResult> Information(int tournamentId)
         {
-            var informationData = this.tournaments.GetInformation(tournamentId);
+            var informationData = await this.tournaments.GetInformationAsync(tournamentId);
 
             return View(new InformationViewModel 
             {
@@ -43,14 +43,14 @@ namespace GameSpace.Areas.Admin.Controllers
 
         public async Task<IActionResult> Verify(int tournamentId)
         {
-            await this.tournaments.Verify(tournamentId);
+            await this.tournaments.VerifyAsync(tournamentId);
 
             return RedirectToAction(nameof(All));
         }
 
         public async Task<IActionResult> UnVerify(int tournamentId)
         {
-            await this.tournaments.Unverify(tournamentId);
+            await this.tournaments.UnverifyAsync(tournamentId);
 
             return RedirectToAction(nameof(All));
         }

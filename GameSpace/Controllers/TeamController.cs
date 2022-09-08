@@ -37,11 +37,11 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Details(int teamId, string userId = null)
+        public async Task<IActionResult> Details(int teamId, string userId = null)
         {
             userId ??= this.User.Id();
 
-            var teamData = teams.Details(teamId, userId);
+            var teamData = await teams.Details(teamId, userId);
 
             return View(teamData);
         }
@@ -68,12 +68,12 @@ namespace GameSpace.Controllers
 
             var teamId = model.TeamId;
 
-            if (!this.teams.Excists(teamId))
+            if (!await this.teams.Excists(teamId))
             {
                 return BadRequest(); // invalid operation exception
             }
 
-            if (!this.users.ExcistsByNickname(model.Nickname))
+            if (!await this.users.ExcistsByNicknameAsync(model.Nickname))
             {
                 this.ModelState.AddModelError(nameof(model.Nickname), "There is no existing user with the given name.");
             }
@@ -85,19 +85,19 @@ namespace GameSpace.Controllers
 
             var senderId = this.User.Id();
 
-            if (!this.teams.IsMemberInTeam(teamId, senderId))
+            if (!await this.teams.IsMemberInTeam(teamId, senderId))
             {
                 return BadRequest();
             }
 
-            if (this.teams.IsTeamFull(teamId))
+            if (await this.teams.IsTeamFull(teamId))
             {
                 this.ModelState.AddModelError(nameof(model.Nickname), $"Team is already full."); //TODO: maybe do it in summary or redirect to other page
             }
 
-            var reciverId = this.users.Id(model.Nickname);
+            var reciverId = await this.users.Id(model.Nickname);
 
-            if (this.teams.IsMemberInTeam(teamId, reciverId))
+            if (await this.teams.IsMemberInTeam(teamId, reciverId))
             {
                 this.ModelState.AddModelError(nameof(model.Nickname), $"The user '{model.Nickname}' is already a member of the team.");
             }
@@ -107,9 +107,9 @@ namespace GameSpace.Controllers
                 return View(model);
             }
 
-            var teamName = this.teams.GetName(teamId);
+            var teamName = await this.teams.GetName(teamId);
 
-            if (!this.messages.IsRequestSend(reciverId, teamName))
+            if (!await this.messages.IsRequestSendAsync(reciverId, teamName))
             {
                 await this.teams.SendInvitation(senderId, reciverId, teamName);
             }
@@ -120,7 +120,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> AcceptInvitation(int requestId)
         {
-            var messageData = this.messages.Get(requestId);
+            var messageData = await this.messages.GetAsync(requestId);
 
             if (messageData is null)
             {
@@ -129,26 +129,26 @@ namespace GameSpace.Controllers
 
             var teamName = messageData.TeamName;
 
-            if (!this.teams.Excists(teamName))
+            if (!await this.teams.Excists(teamName))
             {
                 return RedirectToAction(nameof(MessageController.All), "Message");
             }
 
-            var teamId = this.teams.GetId(teamName);
+            var teamId = await this.teams.GetId(teamName);
 
-            if (this.teams.IsTeamFull(teamId))
+            if (await this.teams.IsTeamFull(teamId))
             {
                 return RedirectToAction(nameof(MessageController.All), "Message"); // SHOW SOME ERROR
             }
 
-            var isMember = this.teams.IsMemberInTeam(teamId, messageData.ReciverId);
+            var isMember = await this.teams.IsMemberInTeam(teamId, messageData.ReciverId);
 
             if (!isMember)
             {
                 await this.teams.AddMember(teamId, messageData.ReciverId);
             }
 
-            await this.messages.Delete(messageData.RequestId);
+            await this.messages.DeleteAsync(messageData.RequestId);
 
             await SendNotification(messageData, teamName);
 
@@ -158,23 +158,23 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> DeclineInvitation(int requestId)
         {
-            await this.messages.Delete(requestId);
+            await this.messages.DeleteAsync(requestId);
 
             return RedirectToAction(nameof(MessageController.All), "Message");
         }
 
         [Authorize]
-        public IActionResult Memberships()
+        public async Task<IActionResult> Memberships()
         {
-            var MyTeamsData = this.teams.UserMemberships(this.User.Id());
+            var MyTeamsData = await this.teams.UserMemberships(this.User.Id());
 
             return View(MyTeamsData);
         }
 
         [Authorize]
-        public IActionResult Members(int teamId)
+        public async Task<IActionResult> Members(int teamId)
         {
-            var teamMembersData = this.teams.Members(this.User.Id(), teamId);
+            var teamMembersData = await this.teams.Members(this.User.Id(), teamId);
 
             return View(teamMembersData);
         }
@@ -183,7 +183,7 @@ namespace GameSpace.Controllers
         public async Task<IActionResult> Leave(int teamId, string memberId = null)
         {
 
-            if (this.teams.Excists(teamId))
+            if (await this.teams.Excists(teamId))
             {
                 memberId ??= this.User.Id();
                 await this.teams.RemoveMember(teamId, memberId);
@@ -195,17 +195,17 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> PromoteToOwner(int teamId, string memberId)
         {
-            if (!this.users.ExcistsById(memberId)) //TODO: when you del you acc
+            if (!await this.users.ExcistsByIdAsync(memberId)) //TODO: when you del you acc
             {
                 return RedirectToAction(nameof(TeamController.Memberships), "Team"); //TODO: maybe throw bad request 3x
             }
 
-            if (!this.teams.Excists(teamId))
+            if (!await this.teams.Excists(teamId))
             {
                 return RedirectToAction(nameof(TeamController.Memberships), "Team");
             }
 
-            if (!this.teams.IsMemberInTeam(teamId, memberId))
+            if (!await this.teams.IsMemberInTeam(teamId, memberId))
             {
                 return RedirectToAction(nameof(TeamController.Memberships), "Team");
             }
@@ -224,7 +224,7 @@ namespace GameSpace.Controllers
         {
             var nameExcists = this.teams.Excists(team.Name);
 
-            if (nameExcists)
+            if (await nameExcists)
             {
                 this.ModelState.AddModelError(nameof(team.Name), $"There is already a team with name '{team.Name}'.");
             }
@@ -254,14 +254,14 @@ namespace GameSpace.Controllers
         }
 
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (!this.teams.Excists(id))
+            if (!await this.teams.Excists(id))
             {
                 return NotFound();
             }
 
-            var teamData = teams.Details(id, null);
+            var teamData = await teams.Details(id, null);
 
             var teamForm = this.mapper.Map<EditTeamFromModel>(teamData);
 
@@ -272,12 +272,12 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(EditTeamFromModel team)
         {
-            if (!this.teams.Excists(team.Id))
+            if (!await this.teams.Excists(team.Id))
             {
                 return BadRequest(); //TODO: NotFound redirect.
             }
 
-            if (this.teams.ExcistsWantedName(this.teams.GetName(team.Id), team.Name))
+            if (await this.teams.ExcistsWantedName(await this.teams.GetName(team.Id), team.Name))
             {
                 this.ModelState.AddModelError(nameof(team.Name), "There is already a team with this given name.");
             }
@@ -300,7 +300,7 @@ namespace GameSpace.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int teamId)
         {
-            if (!this.teams.Excists(teamId))
+            if (!await this.teams.Excists(teamId))
             {
                 return RedirectToAction(nameof(TeamController.Memberships), "Team");
             }
@@ -312,14 +312,14 @@ namespace GameSpace.Controllers
 
         private async Task SendNotification(TeamInvitationMessageServiceModel messageData, string teamName)
         {
-            var ownerId = this.teams.GetOwnerId(teamName);
+            var ownerId = await this.teams.GetOwnerId(teamName);
             var message = $"{messageData.ReciverUsername} has accepted invitation for Team {teamName}.";
 
             if (messageData.SenderId != ownerId)
             {
-                await this.messages.SendNotification(ownerId, message);
+                await this.messages.SendNotificationAsync(ownerId, message);
             }
-            await this.messages.SendNotification(messageData.SenderId, message);
+            await this.messages.SendNotificationAsync(messageData.SenderId, message);
         }
     }
 }

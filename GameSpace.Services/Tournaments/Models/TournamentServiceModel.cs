@@ -54,7 +54,7 @@ namespace GameSpace.Services.Tournaments.Models
 
         public string HosterName { get; init; }
 
-        public string StartsInMessage { get; init; }
+        public string StartsInMessage { get; set; }
 
         public bool HasBegun => StartsOn <= DateTime.UtcNow;
     }

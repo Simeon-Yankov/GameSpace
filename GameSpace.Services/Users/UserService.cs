@@ -9,6 +9,7 @@ using GameSpace.Services.SocialNetworks.Models;
 using GameSpace.Services.Sumonners.Models;
 using GameSpace.Services.Users.Contracts;
 using GameSpace.Services.Users.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameSpace.Services.Users
 {
@@ -19,65 +20,65 @@ namespace GameSpace.Services.Users
         public UserService(GameSpaceDbContext data)
             => this.data = data;
 
-        public string Id(string nickname) // Performance boost
-            => this.data
+        public async Task<string> Id(string nickname) // Performance boost
+            => (await this.data
                 .Users
                 .Where(u => u.Nickname.ToUpper() == nickname.ToUpper())
                 .Select(u => new
                 {
                     Id = u.Id
                 })
-                .First()
+                .FirstAsync())
                 .Id;
 
-        public string GetNickname(string id)
-            => this.data
+        public async Task<string> GetNicknameAsync(string id)
+            => (await this.data
                 .Users
                 .Where(u => u.Id == id)
                 .Select(u => new
                 {
                     Nickname = u.Nickname
                 })
-                .First()
+                .FirstAsync())
                 .Nickname;
 
-        public UserProfileServiceModel Profile(string userId) 
-            => this.data
-               .Users
-               .Where(u => u.Id == userId)
-            .Select(u => new UserProfileServiceModel
-            {
-                Id = u.Id,
-                Nickname = u.Nickname,
-                Biography = u.ProfileInfo.Biography,
-                CreatedOn = u.CreatedOn,
-                Appearance = new AppearanceServiceModel
+        public async Task<UserProfileServiceModel> Profile(string userId) 
+            => await this.data
+                .Users
+                .Where(u => u.Id == userId)
+                .Select(u => new UserProfileServiceModel
                 {
-                    Image = u.ProfileInfo.Appearance.Image,
-                    Banner = u.ProfileInfo.Appearance.Banner
-                },
-                SocialNetwork = new SocialNotworkServiceModel
-                {
-                    FacebookUrl = u.ProfileInfo.SocialNetwork.FacebookUrl,
-                    YoutubeUrl = u.ProfileInfo.SocialNetwork.YoutubeUrl,
-                    TwitchUrl = u.ProfileInfo.SocialNetwork.TwitchUrl,
-                    TwitterUrl = u.ProfileInfo.SocialNetwork.TwitterUrl,
-                },
-                GameAccounts = u.
-                                GameAccounts
-                                .Select(ga => new SummonerServiceModel
-                                {
-                                    Id = ga.Id,
-                                    Name = ga.SummonerName,
-                                    Icon = ga.Icon,
-                                    RegionName = ga.Region.Name,
-                                    AccountId = ga.AccountId,
-                                    LastUpdate = DateTime.UtcNow,
-                                    LastUpdateDiff = DateTime.UtcNow.Subtract(ga.LastUpdated),
-                                    IsVerified = ga.IsVerified
-                                })
-            })
-            .FirstOrDefault();
+                    Id = u.Id,
+                    Nickname = u.Nickname,
+                    Biography = u.ProfileInfo.Biography,
+                    CreatedOn = u.CreatedOn,
+                    Appearance = new AppearanceServiceModel
+                    {
+                        Image = u.ProfileInfo.Appearance.Image,
+                        Banner = u.ProfileInfo.Appearance.Banner
+                    },
+                    SocialNetwork = new SocialNotworkServiceModel
+                    {
+                        FacebookUrl = u.ProfileInfo.SocialNetwork.FacebookUrl,
+                        YoutubeUrl = u.ProfileInfo.SocialNetwork.YoutubeUrl,
+                        TwitchUrl = u.ProfileInfo.SocialNetwork.TwitchUrl,
+                        TwitterUrl = u.ProfileInfo.SocialNetwork.TwitterUrl,
+                    },
+                    GameAccounts = u.
+                                    GameAccounts
+                                    .Select(ga => new SummonerServiceModel
+                                    {
+                                        Id = ga.Id,
+                                        Name = ga.SummonerName,
+                                        Icon = ga.Icon,
+                                        RegionName = ga.Region.Name,
+                                        AccountId = ga.AccountId,
+                                        LastUpdate = ga.LastUpdated,
+                                        LastUpdateDiff = DateTime.UtcNow.Subtract(ga.LastUpdated),
+                                        IsVerified = ga.IsVerified
+                                    })
+                })
+                .FirstOrDefaultAsync();
 
         public async Task Edit(
             string userId,
@@ -90,7 +91,7 @@ namespace GameSpace.Services.Users
             string twitterUrl,
             string facebookUrl)
         {
-            var userData = this.data.Users.First(u => u.Id == userId);
+            var userData = await this.data.Users.FirstAsync(u => u.Id == userId);
 
             userData.Nickname = nickname;
 
@@ -116,16 +117,25 @@ namespace GameSpace.Services.Users
             await this.data.SaveChangesAsync();
         }
 
-        public bool AnyMessages(string userId) => this.data.PendingTeamsRequests.Any(request => request.ReceiverId == userId); //TODO FOR FRIEND REQUEST AND MOVE TO MESSAGE CONTROLLER
+        public async Task<bool> AnyMessages(string userId)
+            => await this.data
+                .PendingTeamsRequests
+                .AnyAsync(request => request.ReceiverId == userId); //TODO FOR FRIEND REQUEST AND MOVE TO MESSAGE CONTROLLER
 
-        public bool ExcistsById(string userId) => this.data.Users.Any(u => u.Id == userId);
+        public async Task<bool> ExcistsByIdAsync(string userId)
+            => await this.data
+                .Users
+                .AnyAsync(u => u.Id == userId);
 
-        public bool ExcistsByNickname(string nickname) => this.data.Users.Any(u => u.Nickname.ToUpper() == nickname.ToUpper());
+        public async Task<bool> ExcistsByNicknameAsync(string nickname)
+            => await this.data
+                .Users
+                .AnyAsync(u => u.Nickname.ToUpper() == nickname.ToUpper());
 
-        public bool ExcistsWantedName(string currName, string wantedName)
-            => this.data
+        public async Task<bool> ExcistsWantedNameAsync(string currName, string wantedName)
+            => await this.data
                 .Users
                 .Where(u => u.Nickname != currName)
-                .Any(u => u.Nickname == wantedName);
+                .AnyAsync(u => u.Nickname == wantedName);
     }
 }

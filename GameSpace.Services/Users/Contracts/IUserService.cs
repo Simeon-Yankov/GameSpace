@@ -6,11 +6,11 @@ namespace GameSpace.Services.Users.Contracts
 {
     public interface IUserService
     {
-        string Id(string nickname);
+        Task<string> Id(string nickname);
 
-        string GetNickname(string id);
+        Task<string> GetNicknameAsync(string id);
 
-        UserProfileServiceModel Profile(string userId);
+        Task<UserProfileServiceModel> Profile(string userId);
 
         Task Edit(
             string userId,
@@ -23,12 +23,12 @@ namespace GameSpace.Services.Users.Contracts
             string twitterUrl,
             string facebookUrl);
 
-        bool AnyMessages(string userId);
+        Task<bool> AnyMessages(string userId);
 
-        bool ExcistsById(string userId);
+        Task<bool> ExcistsByIdAsync(string userId);
 
-        bool ExcistsByNickname(string nickname);
+        Task<bool> ExcistsByNicknameAsync(string nickname);
 
-        bool ExcistsWantedName(string currName, string wantedName);
+        Task<bool> ExcistsWantedNameAsync(string currName, string wantedName);
     }
 }
